@@ -6,15 +6,15 @@
     <meta http-equiv='pragma' content='no-cache'>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aaron's Blog</title>
+    <title>Aaron Horowitz</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        body { font-family: 'Courier New', Courier;
+            color: #0d1117;
             background-color: #0d1117; /* GitHub-like dark background */
             color: #c9d1d9;
         }
@@ -23,36 +23,52 @@
 <body class="p-4">
     <div class="max-w-4xl mx-auto py-8">
         <!-- Header -->
-        <header class="border-t border-gray-700 pt-6 mb-10">
+        <header class="pt-6 mb-4">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="text-4xl sm:text-5xl font-bold text-white hover:text-blue-400 transition">
-                    Aaron Horowitz's Blog
+                    Aaron's Portfolio
                 </a>
                 <a href="about.html" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold">
                     About
                 </a>
             </div>
-            <p class="text-lg text-gray-400 text-center mt-2">Musings on tech, life, and everything in between.</p>
         </header>
+        <div class="border-b border-gray-700 mb-10"></div>
 
         <!-- Main Content Area for Blog Posts -->
         <main class="space-y-12">
-            <!-- Example Blog Post -->
-            <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8">
-                <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white">First Steps with GitHub Pages</h2>
-                <p class="text-gray-400 text-sm mb-4">Published on September 9, 2025</p>
-                <div class="prose max-w-none text-gray-300">
-                    <p class="mb-4">
-                        Hello, world! Welcome to my new blog. This is my very first post, created to get my GitHub Pages site up and running. It's amazing how simple it is to publish a personal site or blog directly from a repository.
-                    </p>
-                    <p>
-                        The process is straightforward: just add your HTML and CSS files, set the source branch in your repository settings, and a moment later, your page is live. I'm excited to share more content here soon. Stay tuned!
-                    </p>
-                </div>
-            </article>
-
             <!-- You can add more articles here in the same format -->
-            
+            <!-- Example Blog Post -->
+            <a href="FlyingCarReview.html" class="block group">
+                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
+                        Why Learning About The Outer World Teaches You About Your Inner Self [Essay]
+                    </h2>
+                    <p class="text-gray-400 text-sm mb-4">Published on September 9, 2025</p>
+                    <div class="prose max-w-none text-gray-300">
+                        <p class="mb-4">
+                            There is a growing sense, particularly in the West, that today’s children may not attain average living standards any higher than those of their parents. <em>Where Is My Flying Car?</em> provides a much-needed technological framing for this new zeitgeist.
+                            Hall includes many of the charts popularized by “WTF Happened in 1971?” for this book’s premise of post-1970’s secular stagnation, but he does not dwell on economic indicators. The main indicator of stagnation that this book points to is is the existence of ready-to-build, yet unbuilt, technology...
+                        </p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Example Blog Post -->
+            <a href="FlyingCarReview.html" class="block group">
+                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
+                        <em>Where Is My Flying Car?</em> - J. Stoors Hall <br>[Book Review]
+                    </h2>
+                    <p class="text-gray-400 text-sm mb-4">Published on February 4, 2022</p>
+                    <div class="prose max-w-none text-gray-300">
+                        <p class="mb-4">
+                            There is a growing sense, particularly in the West, that today’s children may not attain living standards any higher than those of their parents. <em>Where Is My Flying Car?</em> provides a much-needed technological framing for this new zeitgeist.
+                            Hall includes many of the charts popularized by “WTF Happened in 1971?” for this book’s premise of post-1970’s secular stagnation, but he does not dwell on economic indicators. The main indicator of stagnation that this book points to is is the existence of ready-to-build, yet unbuilt, technology...
+                        </p>
+                    </div>
+                </article>
+            </a>
         </main>
 
         <!-- Footer -->
