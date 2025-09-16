@@ -1,1 +1,1 @@
-Projects and essays
+portfolio of my projects and essays
