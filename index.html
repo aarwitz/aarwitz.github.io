@@ -13,9 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Courier New', Courier;
-            color: #0d1117;
-            background-color: #0d1117; /* GitHub-like dark background */
+        body { font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
             color: #c9d1d9;
         }
     </style>
@@ -23,7 +22,7 @@
 <body class="p-4">
     <div class="max-w-4xl mx-auto py-8">
         <!-- Header -->
-        <header class="pt-6 mb-4">
+        <header class="pt-2 mb-2">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="text-4xl sm:text-5xl font-bold text-white hover:text-blue-400 transition">
                     Aaron's Portfolio
@@ -34,65 +33,68 @@
             </div>
         </header>
         <div class="border-b border-gray-700 mb-10"></div>
+        <p class="text-center text-gray-400 mt-4 mb-8 text-lg">
+            I'm passionate about technology, writing, and lifelong learning. Explore my projects, essays, and notes below.
+        </p>
 
-        <!-- Main Content Area for Blog Posts -->
-        <main class="space-y-12">
-            <!-- You can add more articles here in the same format -->
-            <!-- Example Blog Post -->
-            <!-- <a href="FlyingCarReview.html" class="block group">
-                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
-                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
-                        Why Learning About The Outer World Teaches You About Your Inner Self [Essay]
-                    </h2>
-                    <p class="text-gray-400 text-sm mb-4">Published on September 9, 2025</p>
-                    <div class="prose max-w-none text-gray-300">
-                        <p class="mb-4">
-                            There is a growing sense, particularly in the West, that today’s children may not attain average living standards any higher than those of their parents. <em>Where Is My Flying Car?</em> provides a much-needed technological framing for this new zeitgeist.
-                            Hall includes many of the charts popularized by “WTF Happened in 1971?” for this book’s premise of post-1970’s secular stagnation, but he does not dwell on economic indicators. The main indicator of stagnation that this book points to is is the existence of ready-to-build, yet unbuilt, technology...
-                        </p>
-                    </div>
-                </article>
-            </a> -->
-            <!-- Wireless power -->
-             
-
-            <!-- Example Blog Post -->
-            <a href="FlyingCarReview.html" class="block group">
-                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
-                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
-                        <em>Where Is My Flying Car?</em> - J. Stoors Hall <br>[Book Review]
-                    </h2>
-                    <p class="text-gray-400 text-sm mb-4">Published on February 4, 2022</p>
-                    <div class="prose max-w-none text-gray-300">
-                        <p class="mb-4">
-                            There is a growing sense, particularly in the West, that today’s children may not attain living standards any higher than those of their parents. <em>Where Is My Flying Car?</em> provides a much-needed technological framing for this new zeitgeist.
-                            Hall includes many of the charts popularized by “WTF Happened in 1971?” for this book’s premise of post-1970’s secular stagnation, but he does not dwell on economic indicators. The main indicator of stagnation that this book points to is is the existence of ready-to-build, yet unbuilt, technology...
-                        </p>
-                    </div>
-                </article>
+        <!-- Main Navigation Links -->
+        <main class="grid gap-8 sm:grid-cols-3 mt-12">
+            <!-- Projects -->
+            <a href="projects.html" class="group block bg-[#161b22] rounded-xl shadow-lg p-6 hover:bg-blue-900 transition cursor-pointer border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition text-center">Projects</h2>
+                <p class="text-gray-300 text-center text-base">
+                    I work on projects related to software engineering, automation, and data analysis. These experiences have taught me valuable lessons in industry and innovation.
+                </p>
             </a>
-
-        <!-- Another blog post -->
-            <a href="FlyingCarReview.html" class="block group">
-                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
-                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
-                        <em>Where Is My Flying Car?</em> - J. Stoors Hall <br>[Book Review]
-                    </h2>
-                    <p class="text-gray-400 text-sm mb-4">Published on February 4, 2022</p>
-                    <div class="prose max-w-none text-gray-300">
-                        <p class="mb-4">
-                            There is a growing sense, particularly in the West, that today’s children may not attain living standards any higher than those of their parents. <em>Where Is My Flying Car?</em> provides a much-needed technological framing for this new zeitgeist.
-                            Hall includes many of the charts popularized by “WTF Happened in 1971?” for this book’s premise of post-1970’s secular stagnation, but he does not dwell on economic indicators. The main indicator of stagnation that this book points to is is the existence of ready-to-build, yet unbuilt, technology...
-                        </p>
-                    </div>
-                </article>
+            <!-- Essays -->
+            <a href="projects.html" class="group block bg-[#161b22] rounded-xl shadow-lg p-6 hover:bg-blue-900 transition cursor-pointer border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition text-center">Essays</h2>
+                <p class="text-gray-300 text-center text-base">
+                    I write essays on technology, society, and personal growth. I enjoy exploring ideas and sharing perspectives on topics that matter to me.
+                </p>
+            </a>
+            <!-- Notes -->
+            <a href="projects.html" class="group block bg-[#161b22] rounded-xl shadow-lg p-6 hover:bg-blue-900 transition cursor-pointer border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition text-center">Notes</h2>
+                <p class="text-gray-300 text-center text-base">
+                    Here you'll find my notes on books, lectures, and research. I use this space to organize thoughts and document what I'm learning.
+                </p>
             </a>
         </main>
 
+        <!-- Goodreads link -->
+        <!-- External Links Section -->
+        <div class="mt-8">
+            <div class="flex justify-center space-x-6">
+                <!-- GitHub -->
+                <a href="https://github.com/AaronHorowitz" target="_blank" rel="noopener noreferrer" class="hover:opacity-75 transition" aria-label="GitHub">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.757-1.333-1.757-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.332-5.466-5.93 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 013.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.61-2.803 5.624-5.475 5.921.43.371.823 1.102.823 2.222v3.293c0 .322.218.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                </a>
+                <!-- LinkedIn -->
+                <a href="https://linkedin.com/in/aaronhorowitz" target="_blank" rel="noopener noreferrer" class="hover:opacity-75 transition" aria-label="LinkedIn">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.967v5.7h-3v-10h2.881v1.367h.041c.401-.761 1.379-1.563 2.841-1.563 3.039 0 3.6 2.002 3.6 4.604v5.592z"/>
+                    </svg>
+                </a>
+                <!-- Twitter -->
+                <a href="https://twitter.com/aaronhorowitz" target="_blank" rel="noopener noreferrer" class="hover:opacity-75 transition" aria-label="Twitter">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 4.557a9.93 9.93 0 01-2.828.775 4.932 4.932 0 002.165-2.724c-.951.555-2.005.959-3.127 1.184a4.916 4.916 0 00-8.384 4.482c-4.083-.205-7.697-2.162-10.125-5.144a4.822 4.822 0 00-.666 2.475c0 1.708.87 3.216 2.188 4.099a4.904 4.904 0 01-2.229-.616c-.054 1.997 1.397 3.872 3.448 4.292a4.936 4.936 0 01-2.224.084c.627 1.956 2.444 3.377 4.6 3.417a9.867 9.867 0 01-6.102 2.104c-.396 0-.787-.023-1.175-.069a13.945 13.945 0 007.548 2.212c9.058 0 14.009-7.513 14.009-14.009 0-.213-.005-.425-.014-.636A10.025 10.025 0 0024 4.557z"/>
+                    </svg>
+                </a>
+                <!-- Goodreads -->
+                <a href="https://www.goodreads.com/user/show/33969244-aaron" target="_blank" rel="noopener noreferrer" class="hover:opacity-75 transition" aria-label="Goodreads">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 448 512">
+                        <path d="M299.9 191.2c5.1 37.3-4.7 79-35.9 100.7-22.3 15.5-52.8 14.1-70.8 5.7-37.1-17.3-49.5-58.6-46.8-97.2 4.3-60.9 40.9-87.9 75.3-87.5 46.9-.2 71.8 31.8 78.2 78.3zM448 88v336c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V88c0-30.9 25.1-56 56-56h336c30.9 0 56 25.1 56 56zM330 313.2s-.1-34-.1-217.3h-29v40.3c-.8.3-1.2-.5-1.6-1.2-9.6-20.7-35.9-46.3-76-46-51.9.4-87.2 31.2-100.6 77.8-4.3 14.9-5.8 30.1-5.5 45.6 1.7 77.9 45.1 117.8 112.4 115.2 28.9-1.1 54.5-17 69-45.2.5-1 1.1-1.9 1.7-2.9.2.1.4.1.6.2.3 3.8.2 30.7.1 34.5-.2 14.8-2 29.5-7.2 43.5-7.8 21-22.3 34.7-44.5 39.5-17.8 3.9-35.6 3.8-53.2-1.2-21.5-6.1-36.5-19-41.1-41.8-.3-1.6-1.3-1.3-2.3-1.3h-26.8c.8 10.6 3.2 20.3 8.5 29.2 24.2 40.5 82.7 48.5 128.2 37.4 49.9-12.3 67.3-54.9 67.4-106.3z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
         <footer class="text-center mt-12 text-gray-500 text-sm">
-            <p>&copy; 2025 Aaron's Blog. All rights reserved.</p> -->
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
         </footer>
     </div>
 </body>
 </html>
-
