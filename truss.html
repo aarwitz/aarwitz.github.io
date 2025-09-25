@@ -1,63 +1,207 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Where Is My Flying Car? - J. Stoors Hall [Book Review]</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Courier New', Courier;
-            background-color: #0d1117;
-            color: #c9d1d9;
-        }
-        /* article p {
-            font-family: 'Rockwell', sans-serif;
-            line-height: 1.7;
-        } */
-    </style>
-</head>
-<body class="p-4">
-    <div class="max-w-3xl mx-auto py-8">
-        <!-- Header -->
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
-                <a href="index.html" class="text-2xl sm:text-3xl font-bold text-white hover:text-blue-400 transition">
-                    Aaron's Portfolio
-                </a>
-                <a href="about.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold">
-                    About
-                </a>
-            </div>
-        </header>
-        <div class="border-b border-gray-700 mb-10"></div>
-        <!-- Blog Post Content -->
-        <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
-                Truss Modeling in MATLAB
-            </h1>
-            <p class="text-gray-400 text-sm mb-6">Published on February 4, 2022</p>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TrussDesigner — 2D Truss Modeling & Optimization (MATLAB)</title>
 
-            <div class="prose max-w-none text-gray-300">
-                <p class="mb-4">
-                    This program enables its user to generate a graphical and mathematical model of a 2d truss. Functions for adding/removing/moving truss joints and beams allows the user to manipulate the truss, and shift the distribution of weight to optimize the load-cost ratio.
-                    The force in each beam is calculated and displayed alongside the visual model, providing a clean interface to build the truss. Specification-checking function ensures that the truss meets any desired standards, with respect to characteristics from its dimensions to its cost.
-                </p>
-                <p class="mb-4">
-                    The force in each beam is calculated and displayed alongside the visual model, providing a clean interface to build the truss. Specification-checking function ensures that the truss meets any desired standards, with respect to characteristics from its dimensions to its cost.
-                </p>
-                <p class="mb-4">
-                    To begin designing a truss, enter main() to MATLAB's command window and enter help() to see what to do next.
-                </p>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/XbTmWRqdpQU?si=kbSHklhjYH4oZQnG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #ff6b6b;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(255,107,107,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+          <!-- Header -->
+          
+          <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+    <!-- Header / Hero -->
+    <header class="mb-8">
+      <div class="flex items-start justify-between gap-6">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-semibold">TrussDesigner</h1>
+          <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+            Interactive 2-D truss modelling and analysis toolkit implemented in MATLAB.
+            Build, edit and evaluate trusses visually — then optimize member layout to improve the load-to-cost ratio.
+          </p>
+
+          <div class="mt-4 flex flex-wrap gap-2 items-center">
+            <a href="https://github.com/aarwitz/TrussDesigner" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+              View repository
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
+              </svg>
+            </a>
+
+            <a href="#demo" class="text-sm text-blue-300 hover:underline">Watch demo</a>
+            <span class="text-xs text-muted ml-3 text-gray-400">Published June 1, 2020</span>
+          </div>
+        </div>
+
+        <div class="hidden md:block text-right">
+          <div class="glow rounded-xl p-4 w-56">
+            <div class="text-xs text-gray-300">Role</div>
+            <div class="mt-1 text-sm font-medium">Author / MATLAB developer</div>
+
+            <div class="mt-4 text-xs text-gray-300">Tech</div>
+            <div class="mt-1 space-y-1 text-sm text-gray-200">
+              <div>• MATLAB (.m scripts)</div>
+              <div>• .mat design files</div>
+              <div>• Figure graphics & UI</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main column -->
+      <section class="lg:col-span-2 space-y-6">
+        <article class="glow rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-3">Project overview</h2>
+          <p class="text-gray-300 leading-relaxed">
+            <strong>TrussDesigner</strong> is a compact MATLAB toolset for creating, editing and analysing planar trusses.
+            It exposes operations to add/remove/move joints and members, computes axial forces for every member, and provides
+            a cost / specification checker so you can examine compliance and estimate cost while iterating on geometry.
+          </p>
+
+          <h3 class="mt-4 font-medium">What it does</h3>
+          <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+            <li>Interactive visual construction of 2-D trusses (graphical figures).</li>
+            <li>Static analysis: solve member axial forces for statically determinate truss configurations.</li>
+            <li>Specification checking (dimensions, member stress limits, cost estimates).</li>
+            <li>Utilities: add/remove/move joints & members, print/export design state (saved as <code>Design.mat</code>).</li>
+          </ul>
+
+          <h3 class="mt-4 font-medium">Why it’s useful</h3>
+          <p class="text-gray-300 leading-relaxed">
+            Rapid prototyping of truss layouts while simultaneously seeing the mechanical consequences of geometric changes reduces
+            iteration time. The built-in cost/load reporting lets designers trade material and geometry for structural performance.
+          </p>
         </article>
 
-        <div class="mt-8">
-            <a href="index.html" class="text-blue-400 hover:underline">&larr; Back to Home</a>
+        <article class="glow rounded-lg p-6">
+          <h2 id="demo" class="text-xl font-semibold mb-3">Demo</h2>
+          <p class="text-gray-300 mb-4">Quick walkthrough — the original explainer video demonstrates the workflow and example results.</p>
+
+          <div class="aspect-video rounded-md overflow-hidden border border-white/5">
+            <iframe class="w-full h-full" src="https://www.youtube.com/embed/XbTmWRqdpQU?si=kbSHklhjYH4oZQnG" title="TrussDesigner demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+        </article>
+
+        <article class="glow rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-3">How to run</h2>
+
+          <p class="text-gray-300">Steps to open and use the project in MATLAB:</p>
+          <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># 1. clone the repository (or download the ZIP)
+git clone https://github.com/aarwitz/TrussDesigner.git
+cd TrussDesigner
+
+# 2. open MATLAB, add the project folder to path, then run:
+addpath(genpath('path/to/TrussDesigner'))   % replace with your path
+main()                                      % starts the interactive interface
+help()                                      % shows quick usage instructions
+</code></pre>
+
+          <p class="mt-3 text-gray-300">
+            The project is implemented as a collection of <code>.m</code> functions. Running <code>main()</code> launches the interactive workflow; call <code>help()</code> in MATLAB for usage notes present in the repository.
+          </p>
+        </article>
+
+        <article class="glow rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-3">File highlights</h2>
+          <ul class="list-inside list-disc text-gray-300 space-y-2">
+            <li><code>main.m</code> — entry point and top-level UI loop.</li>
+            <li><code>design.m</code> — routines that manage the design data structure.</li>
+            <li><code>calc_forces.m</code> — computes axial forces for members given joint loads/supports.</li>
+            <li><code>check_specs.m</code> — verifies dimensions, stresses, and cost against user specs.</li>
+            <li><code>graphics.m</code>, <code>print_design.m</code> — visualization and export utilities.</li>
+            <li><code>Design.mat</code> — example saved design used by the demo scripts.</li>
+          </ul>
+        </article>
+
+        <article class="glow rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-3">Notes & limitations</h2>
+          <ul class="list-disc list-inside text-gray-300 space-y-2">
+            <li>Designed for planar, statically determinate trusses — results for indeterminate structures are not supported.</li>
+            <li>Material models are simplified: axial-only members, linear elastic behaviour assumed for reporting.</li>
+            <li>No GUI beyond MATLAB figures (i.e., not a compiled app). MATLAB with plotting support is required to use the interactive visuals.</li>
+          </ul>
+        </article>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="space-y-6">
+        <div class="glow rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-200">Tech stack</h4>
+          <div class="mt-3 text-sm text-gray-300">
+            <div>• MATLAB scripts (.m)</div>
+            <div>• Binary .mat design file</div>
+            <div>• MATLAB figure plotting</div>
+          </div>
         </div>
+
+        <div class="glow rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-200">Typical use cases</h4>
+          <ul class="mt-3 text-sm text-gray-300 space-y-2">
+            <li>Teaching statics / structural analysis concepts.</li>
+            <li>Quick conceptual design exploration and cost tradeoffs.</li>
+            <li>Prototype modal for early-stage structural ideas.</li>
+          </ul>
+        </div>
+
+        <div class="glow rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
+          <div class="mt-3 flex flex-col gap-2 text-sm">
+            <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/TrussDesigner" target="_blank" rel="noopener">Repository</a>
+            <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/TrussDesigner/blob/main/README.md" target="_blank" rel="noopener">README</a>
+            <a class="text-blue-300 hover:underline" href="#demo">Demo video</a>
+          </div>
+        </div>
+
+        <div class="glow rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-200">License</h4>
+          <p class="mt-2 text-sm text-gray-300">Check the repository for the license file (or add one) — include licensing details before distributing or using commercially.</p>
+        </div>
+      </aside>
     </div>
+
+    <!-- Footer / Contact -->
+    <footer class="mt-10 text-center text-sm text-gray-400">
+      <p>
+        Built by <strong>Taylor Olsen-Vogt</strong>. Source on <a href="https://github.com/aarwitz/TrussDesigner" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
+      </p>
+      <p class="mt-2">Want this project listed with a live demo or screenshots? I can add an exported figure or an HTML preview if you provide images or allow hosting.</p>
+    </footer>
+  </main>
+    <script src="include_header.js" defer></script>
 </body>
 </html>

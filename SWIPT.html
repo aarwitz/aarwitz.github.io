@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aaron Horowitz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Courier New', Courier;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        /* Header font override for consistency */
+        #site-header h1 {
+            font-family: 'Courier New', Courier !important;
+        }
+        #site-header nav a {
+            font-family: 'Courier New', Courier !important;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-6xl mx-auto p-6 lg:p-12">
+        <!-- Header -->
+        <div id="site-header"></div>
+
+        <article class="bg-[#161b22]  rounded-lg shadow-lg p-6 sm:p-8">
+            <h1 class="text-4xl font-bold mb-4 text-white">Simultaneous Wireless Information and Power Transfer</h1>
+            <p class="text-gray-400 text-sm mb-8">Research Paper - March 15, 2023</p>
+            
+            <h2 class="text-2xl font-bold mb-4 text-white">Abstract</h2>
+            <p class="mb-6">
+                While both energy and information can be wirelessly transmitted using electromagnetic waves, the technologies for these two applications have developed independently of one another. In this paper, the feasibility and safety of multiple methods of wireless power transmission is reviewed. Then a circuit designed for Simultaneously Wireless Power and Information Transfer (SWIPT) from a laser to a photovoltaic cell is studied. Based on this research, an early prototype is designed and initial experiments are conducted. A 535 nm laser incident on silicon PV cells at over a meters distance is used to power on a set of LEDs. A program receives and decodes the laser signals in real-time at a rate of 100 bits per second (bps). To test these technologies on a real application, a mini-quadcopter has been assembled using 3D-printed components, an Arduino Nano, a perf board, and four ESC's and motors. The next step of this project is to use these modules to produce an open-source, safe, and easy-to-assemble wirelessly-powered quadcopter. This can serve as a simple demonstration of SWIPT's utility, as well as a benchmark for future approaches in which the hardware is specialized to this application.
+            </p>
+
+            <h2 class="text-2xl font-bold mb-4 text-white">Full Paper</h2>
+            <p class="mb-6">
+                This research was conducted for BU's course EC500 Plasma Science & Engineering. The complete paper includes detailed methodology, experimental results, and technical analysis.
+            </p>
+            
+            <div class="bg-[#161b22] rounded-lg p-6 border border-gray-600">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg class="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-white">Download Full Paper</h3>
+                        <p class="text-gray-400 text-sm">Complete research paper with methodology and results</p>
+                    </div>
+                </div>
+                <a href="SWIPT.pdf" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    View PDF
+                </a>
+            </div>
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron's Blog. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

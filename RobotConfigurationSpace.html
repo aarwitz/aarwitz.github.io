@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Robot Configuration Space — Two-Link Manipulator Collision Detection & Motion Planning (Python)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #f59e0b;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(245,158,11,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">Robot Configuration Space</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Comprehensive robotics framework for two-link manipulator collision detection and optimal motion planning. 
+                        Features artificial potential fields, gradient descent optimization, and real-time visualization of robot 
+                        configurations in obstacle environments.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <a href="https://github.com/aarwitz/Robot-Configuration-Space" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+                            View repository
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
+                            </svg>
+                        </a>
+
+                        <a href="#visualizations" class="text-sm text-blue-300 hover:underline">View screenshots</a>
+                        <span class="text-xs text-muted ml-3 text-gray-400">Academic Project</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Role</div>
+                        <div class="mt-1 text-sm font-medium">Author / Python developer</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Tech</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Python (NumPy, SciPy)</div>
+                            <div>• Matplotlib visualization</div>
+                            <div>• Computational geometry</div>
+                            <div>• Motion planning algorithms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Project overview</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        <strong>Robot Configuration Space</strong> is a comprehensive Python framework for robotics motion planning 
+                        that implements collision detection and path optimization for two-link manipulators. The system combines 
+                        computational geometry, artificial potential fields, and gradient descent algorithms to enable safe navigation 
+                        in obstacle-rich environments.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Core Features</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+                        <li>Two-link manipulator forward kinematics and collision detection</li>
+                        <li>Artificial potential field generation with attractive and repulsive components</li>
+                        <li>Gradient descent motion planning with configurable parameters</li>
+                        <li>Real-time visualization of robot configurations and collision states</li>
+                        <li>Polygon-based obstacle representation with visibility algorithms</li>
+                        <li>Spherical obstacle modeling with distance influence fields</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium">Technical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The framework models robots as sets of polygons and obstacles as star-shaped boundaries or spherical influences. 
+                        Robot edges are colored red when in collision, green otherwise. The motion planning algorithm uses artificial 
+                        potential functions to guide the manipulator toward goals while avoiding obstacles through repulsive fields.
+                    </p>
+                </article>
+
+                <article id="visualizations" class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Visual Results</h2>
+                    <p class="text-gray-300 mb-4">The system provides comprehensive visualization of collision detection and motion planning results.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="aspect-square rounded-md overflow-hidden border border-white/5">
+                            <img src="https://user-images.githubusercontent.com/61487056/140775658-35227e30-9f32-4e5d-9324-2177140ed89f.png" 
+                                 alt="Two-link manipulator collision detection visualization" 
+                                 class="w-full h-full object-cover" />
+                        </div>
+                        <div class="aspect-square rounded-md overflow-hidden border border-white/5">
+                            <img src="https://user-images.githubusercontent.com/61487056/140776051-7fcd56ef-c502-4fcc-bed0-182f486b7e96.png" 
+                                 alt="Robot configuration space analysis" 
+                                 class="w-full h-full object-cover" />
+                        </div>
+                    </div>
+
+                    <div class="text-sm text-gray-400 mb-4">
+                        <strong>Collision Detection:</strong> Robot edges traced in red indicate collision with obstacles, green indicates safe configurations.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="aspect-square rounded-md overflow-hidden border border-white/5">
+                            <img src="https://user-images.githubusercontent.com/61487056/140776543-55c4e1a9-290a-4e01-944d-65bf669e5f46.png" 
+                                 alt="Linear potential field gradient descent" 
+                                 class="w-full h-full object-cover" />
+                        </div>
+                        <div class="aspect-square rounded-md overflow-hidden border border-white/5">
+                            <img src="https://user-images.githubusercontent.com/61487056/140776127-498d4e60-47b0-4f29-bb57-873e39683ed2.png" 
+                                 alt="Quadratic potential field optimization" 
+                                 class="w-full h-full object-cover" />
+                        </div>
+                    </div>
+
+                    <div class="text-sm text-gray-400 mt-4">
+                        <strong>Motion Planning:</strong> Linear (left) vs quadratic (right) potential functions. Colored trajectories show gradient descent paths from initial positions through 100 iterations. Stars represent goal positions serving as global minima.
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Algorithm Details</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-amber-500 pl-4">
+                            <h4 class="font-medium text-white">1. Collision Detection</h4>
+                            <p class="text-gray-300 text-sm">Implements polygon-based collision checking using visibility algorithms and edge intersection tests. Supports both filled and hollow obstacle representations.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-medium text-white">2. Potential Field Generation</h4>
+                            <p class="text-gray-300 text-sm">Creates attractive potentials toward goal positions and repulsive fields around obstacles. Supports both conic (linear) and quadratic potential functions for improved convergence.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-medium text-white">3. Gradient Descent Optimization</h4>
+                            <p class="text-gray-300 text-sm">Implements iterative motion planning using potential field gradients. Configurable step size and convergence criteria ensure robust path generation.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">How to run</h2>
+
+                    <p class="text-gray-300">Setup and execution steps:</p>
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># 1. Clone the repository
+git clone https://github.com/aarwitz/Robot-Configuration-Space.git
+cd Robot-Configuration-Space
+
+# 2. Install dependencies
+pip install numpy scipy matplotlib
+
+# 3. Run collision detection demo
+python me570_hw3.py
+
+# 4. Execute motion planning
+python -c "from me570_potential import Planner; Planner().run_plot()"
+
+# 5. Test specific modules
+python -c "import me570_geometry; me570_geometry.field_plot_threshold(lambda x: x[0]**2 + x[1]**2)"
+</code></pre>
+
+                    <p class="mt-3 text-gray-300">
+                        The system includes comprehensive test functions that demonstrate collision detection, potential field 
+                        visualization, and motion planning results. All visualizations use matplotlib for real-time display.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Architecture & Files</h2>
+                    <ul class="list-inside list-disc text-gray-300 space-y-2">
+                        <li><code>me570_robot.py</code> — two-link manipulator kinematics, collision detection, and visualization</li>
+                        <li><code>me570_geometry.py</code> — computational geometry classes (Polygon, Sphere, Edge, Grid, Torus)</li>
+                        <li><code>me570_potential.py</code> — artificial potential fields, motion planner, and sphere world loader</li>
+                        <li><code>me570_hw3.py</code> — demonstration functions and test cases for collision detection</li>
+                        <li><code>sphereworld.mat</code> — MATLAB data file containing obstacle world definition</li>
+                        <li><code>twolink_testData.mat</code> — test points for collision detection validation</li>
+                        <li><code>pygments_homework3.py</code> — HTML code documentation generator</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Robust Collision Detection:</strong> Polygon visibility algorithms with edge intersection testing</li>
+                        <li><strong>Flexible Obstacle Modeling:</strong> Support for both polygonal and spherical obstacle representations</li>
+                        <li><strong>Configurable Potential Fields:</strong> Linear and quadratic functions with adjustable influence parameters</li>
+                        <li><strong>Real-time Visualization:</strong> Color-coded robot states and trajectory plotting with matplotlib</li>
+                        <li><strong>Mathematical Rigor:</strong> Proper handling of signed distances, gradients, and numerical stability</li>
+                        <li><strong>Modular Architecture:</strong> Clean separation of geometry, physics, and planning components</li>
+                    </ul>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Tech stack</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>• Python 3.x</div>
+                        <div>• NumPy (numerical computing)</div>
+                        <div>• SciPy (scientific computing)</div>
+                        <div>• Matplotlib (visualization)</div>
+                        <div>• MATLAB data files (.mat)</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Key Algorithms</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Forward kinematics transformation</li>
+                        <li>Polygon collision detection</li>
+                        <li>Artificial potential field generation</li>
+                        <li>Gradient descent optimization</li>
+                        <li>Visibility and occlusion testing</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Applications</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Robotic arm motion planning</li>
+                        <li>Industrial automation pathfinding</li>
+                        <li>Academic robotics research</li>
+                        <li>Algorithm validation and testing</li>
+                        <li>Computational geometry education</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
+                    <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/Robot-Configuration-Space" target="_blank" rel="noopener">Repository</a>
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/Robot-Configuration-Space/blob/main/README.md" target="_blank" rel="noopener">README</a>
+                        <a class="text-blue-300 hover:underline" href="#visualizations">Screenshots</a>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Project Stats</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>⭐ 0 GitHub stars</div>
+                        <div>🍴 0 forks</div>
+                        <div>👁 1 watcher</div>
+                        <div>📝 100% Python</div>
+                        <div>📊 8 commits</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Academic Context</h4>
+                    <p class="mt-2 text-sm text-gray-300">Developed as part of advanced robotics coursework, demonstrating practical implementation of motion planning theory, computational geometry, and optimization algorithms in real robotic systems.</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer / Contact -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Built by <strong>Aaron Horowitz</strong>. Source on <a href="https://github.com/aarwitz/Robot-Configuration-Space" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
+            </p>
+            <p class="mt-2">Comprehensive robotics framework combining collision detection, motion planning, and real-time visualization for research and education.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
