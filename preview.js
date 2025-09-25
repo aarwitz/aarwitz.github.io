@@ -1,24 +1,48 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const previewContainer = document.getElementById("flying-car-preview");
-    try {
-        const res = await fetch("FlyingCarReview.html");
-        const text = await res.text();
-        // Extract the <article> block
-        const articleMatch = text.match(/<article[\s\S]*?<\/article>/i);
-        if (articleMatch) {
-            const articleHTML = articleMatch[0];
-            // Find all <p> tags inside <article>
-            const pMatches = [...articleHTML.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
-            if (pMatches.length > 1) {
-                // Use the second <p> (index 1)
-                previewContainer.innerHTML = pMatches[1][1];
-            } else {
-                previewContainer.textContent = "Preview not available.";
+    const previews = {
+        "flying-car-preview": { url: "FlyingCarReview.html", paragraphIndex: 1 },
+        "truss-preview": { url: "truss.html", paragraphIndex: 0 },
+        "swipt-preview": { url: "SWIPT.html", paragraphIndex: 1 },  // Extract the abstract paragraph
+        "portfolio-preview": { url: "PortfolioOptimizer.html", paragraphIndex: 0 },  // Extract the first paragraph from the overview
+        "robot-preview": { url: "RobotConfigurationSpace.html", paragraphIndex: 0 }  // Extract the project overview
+    };
+
+    for (const [previewId, config] of Object.entries(previews)) {
+        const container = document.getElementById(previewId);
+        if (!container) continue;
+
+        try {
+            const res = await fetch(config.url);
+            if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+            
+            const text = await res.text();
+            
+            // Try to find article first, then main content section
+            let contentMatch = text.match(/<article[\s\S]*?<\/article>/i);
+            if (!contentMatch) {
+                // For truss.html, look for the main content section (lg:col-span-2)
+                contentMatch = text.match(/<section class="lg:col-span-2[\s\S]*?<\/section>/i);
+                if (!contentMatch) {
+                    // Fallback to any section
+                    contentMatch = text.match(/<section[\s\S]*?<\/section>/i);
+                }
             }
-        } else {
-            previewContainer.textContent = "Preview not available.";
+            
+            if (contentMatch) {
+                const contentHTML = contentMatch[0];
+                const pMatches = [...contentHTML.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+                
+                if (pMatches.length > config.paragraphIndex) {
+                    container.innerHTML = pMatches[config.paragraphIndex][1];
+                } else {
+                    container.textContent = "Preview not available.";
+                }
+            } else {
+                container.textContent = "Preview not available.";
+            }
+        } catch (e) {
+            container.textContent = "Error loading preview.";
+            console.error(`Preview error for ${previewId}:`, e);
         }
-    } catch (e) {
-        previewContainer.textContent = "Error loading preview.";
     }
 });

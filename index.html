@@ -20,136 +20,130 @@
     </style>
 </head>
 <body class="p-4">
-    <div class="max-w-7xl mx-auto py-8 px-4">
+    <div class="max-w-6xl mx-auto p-6 lg:p-12">
         <!-- Header -->
-        <header class="pt-2 mb-2">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <!-- Logo -->
-                <a href="index.html"
-                class="text-3xl sm:text-5xl font-bold text-white hover:text-blue-400 transition mb-4 sm:mb-0 text-center sm:text-left">
-                Aaron's Portfolio
-                </a>
-
-                <!-- Nav -->
-                <div class="flex flex-wrap justify-center sm:justify-end gap-2">
-                <a href="projects.html" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold text-sm sm:text-base">Projects</a>
-                <a href="essays.html"  class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold text-sm sm:text-base">Essays</a>
-                <a href="notes.html"   class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold text-sm sm:text-base">Notes</a>
-                <a href="about.html"   class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold text-sm sm:text-base">About</a>
-                </div>
-            </div>
-            </header>
-
-
-        <div class="border-b border-gray-700 mb-10"></div>
+        <div id="site-header"></div>
         
         <!-- ...existing code... -->
-        <p class="text-center text-gray-400 mt-4 mb-8 text-lg">
-            Hi, I'm Aaron 👋<br>
-            Soon my robot assistant will be updating this website for me, but for now I am working on making it clean and pick things up around my apartment. <br></p>
+        <p class="text-gray-400 mt-4 mb-8 text-lg">
+            Hi, I'm Aaron 👋.
+            Soon my robot assistant will be updating this website for me, but for now I am working on features related to cleaning and picking things up.</p>
             <!-- Robot preview: efficient video (webm/mp4) with poster and GIF fallback -->
             <div class="flex justify-center my-6">
                 <video class="w-full max-w-md sm:max-w-lg" playsinline autoplay muted loop preload="none" poster="robot-poster.jpg" style="object-fit:cover;">
-                    <source src="quad.webm" type="video/webm">
-                    <source src="quad.mp4" type="video/mp4">
-                    <!-- GIF fallback (kept as last resort) -->
-                    <img src="quad.gif" alt="Robot demo" loading="lazy" class="w-full max-w-xl rounded shadow-lg">
+                    <source src="robot.webm" type="video/webm">
+                    <source src="robot.mp4" type="video/mp4">
+                    <img src="robot.gif" alt="Robot demo" loading="lazy" class="w-full max-w-xl rounded shadow-lg">
                 </video>
             </div>
 
-            <p class="text-center text-gray-400 mt-4 mb-8 text-lg">
-                I work in industrial automation and machine vision.
-                I have been lucky enough to work across the tech-stack, from labeling large datasets and training+deploying models, to writing C++ firmware and C#/WPF user interfaces.
+            <p class="text-gray-400 mt-4 mb-8 text-lg">
+                I have been lucky enough to work across the tech-stack in industrial automation, from labeling large datasets and training+deploying models, to writing C++ firmware and C#/WPF UI's.
             </p>
-            
-         <p class="text-center text-gray-400 mt-4 mb-8 text-lg">I am always open to collaborating on projects or discussing big ideas.</p>
+
+         <p class="text-gray-400 mt-4 mb-8 text-lg">I also like to organize my thoughts into essays, usually related to philosophy of mind.</p>
 
             <!-- ...existing code... -->
 <span class="block mt-6 text-base text-gray-400">
-    <span class="font-bold text-blue-400 text-lg block mb-2">Tech Stack & Skills</span>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Languages -->
-        <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
-            <span class="font-semibold text-blue-300">Languages</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Python</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">C++</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">C#</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Matlab</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Bash</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">HTML</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">CSS</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">JavaScript</span>
-            </div>
-        </div>
-        <!-- Frameworks & Libraries -->
-        <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
-            <span class="font-semibold text-blue-300">Frameworks & Libraries</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">PyTorch</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">YOLO</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ONNX</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">TensorRT</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">OpenCV</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">pandas</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">WPF</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ROS</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Gazebo</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Blender</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">IsaacSim</span>
-            </div>
-        </div>
-        <!-- Tools & DevOps -->
-        <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
-            <span class="font-semibold text-blue-300">Tools & DevOps</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Linux</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Git</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Docker</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">cmake</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">TeamCity</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">CI/CD</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Yocto</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Cloudflare</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Debugging</span>
-            </div>
-        </div>
-        <!-- Hardware & Robotics -->
-        <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
-            <span class="font-semibold text-blue-300">Hardware & Robotics</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Arduino</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">STM32</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">IMU Sensors</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Circuit Design</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Soldering</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Oscilloscope</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Multimeter</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">3D Printing</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">SolidWorks</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">FreeCAD</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Frame Construction</span>
-            </div>
-        </div>
-        <!-- AI & Computer Vision -->
-        <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
-            <span class="font-semibold text-blue-300">AI & Computer Vision</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Object Detection</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Autoencoder Anomaly Detection</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Model Selection & Training</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Fine-tuning & Labeling</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ONNX Export</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">TensorRT Deployment</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Segment Anything</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ControlNet</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">DINO</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Sensor Integration</span>
-                <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Calibration</span>
-            </div>
+   <span class="font-bold text-blue-400 text-lg block mb-2">Toolkit & Skills</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Languages -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">Languages</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Python</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">C++</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">C#</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">C</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">MATLAB</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Bash</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">HTML</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">CSS</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">JavaScript</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Swift</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">SQL</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Kotlin</span>
         </div>
     </div>
+
+    <!-- Frameworks & Libraries -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">Frameworks & Libraries</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">NumPy</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">pandas</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">SciPy</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Matplotlib</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">PyTorch</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">OpenCV</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Gym (RL / envs)</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">YOLO / detection tooling</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ONNX</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">TensorRT</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">GroundingSAM (Dockerized)</span>
+        </div>
+    </div>
+
+    <!-- Tools & DevOps -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">Tools & DevOps</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Linux</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Git / GitHub</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Docker</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">CI/CD (TeamCity)</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Debugging & Profiling</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">CMake</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Conda</span>
+        </div>
+    </div>
+
+    <!-- Hardware & Robotics -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">Hardware & Robotics</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Arduino</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">IMU (BNO055) integration</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Serial → TCP bridging</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">STM32 (experience)</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Oscilloscope / Multimeter</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">3D models / STL</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Motor controllers & encoders</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Frame / quad modeling</span>
+        </div>
+    </div>
+
+    <!-- AI & Computer Vision -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">AI & Computer Vision</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Object detection & datasets</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Supervised learning (CarRacing example)</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Model selection & training</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">ONNX export & inference</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Sensor fusion / calibration</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Simulation to real (Gazebo)</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Dockerized ML stacks</span>
+        </div>
+    </div>
+
+    <!-- Finance & Optimization -->
+    <div class="bg-[#161b22] rounded-lg p-4 border border-gray-700">
+        <span class="font-semibold text-blue-300">Finance & Optimization</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Mean-Variance Portfolio Theory</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Efficient frontier visualization</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Monte Carlo backtesting</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">YahooFinance API / market data</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Risk / return analysis</span>
+            <span class="px-2 py-1 rounded bg-gray-800 text-gray-200 text-sm">Portfolio backtesting scripts</span>
+        </div>
+    </div>
+</div>
 </span>
+
+        <!-- ...existing code... -->
+        <p class="text-gray-400 mt-4 mb-8 text-lg">
 <!-- ...existing code... -->
         </p>
         <!-- ...existing code... -->
@@ -188,5 +182,6 @@
             <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
         </footer>
     </div>
+    <script src="include_header.js" defer></script>
 </body>
 </html>

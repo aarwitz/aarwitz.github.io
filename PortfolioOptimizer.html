@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PortfolioOptimizer — Mean-Variance Portfolio Theory & Backtesting (Python)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #10b981;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(16,185,129,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">PortfolioOptimizer</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Python program implementing Mean-Variance Portfolio Theory to construct optimal portfolios with comprehensive backtesting capabilities. Features efficient frontier visualization, Monte Carlo simulation, and real-world performance validation.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <a href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+                            View repository
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
+                            </svg>
+                        </a>
+
+                        <a href="#demo" class="text-sm text-blue-300 hover:underline">Watch demo</a>
+                        <span class="text-xs text-muted ml-3 text-gray-400">Published November 8, 2021</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Role</div>
+                        <div class="mt-1 text-sm font-medium">Author / Python developer</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Tech</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Python (NumPy, Pandas)</div>
+                            <div>• Matplotlib visualization</div>
+                            <div>• Yahoo Finance API</div>
+                            <div>• Monte Carlo simulation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Project overview</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        <strong>PortfolioOptimizer</strong> is a comprehensive Python application that applies Modern Portfolio Theory 
+                        to construct mathematically optimal investment portfolios. It uses historical stock data to calculate the efficient 
+                        frontier and provides robust backtesting tools to validate model performance across different time periods.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Core Features</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+                        <li>Mean-variance optimization using Markowitz portfolio theory</li>
+                        <li>Efficient frontier visualization with risk-return tradeoffs</li>
+                        <li>Real-world backtesting across different time periods</li>
+                        <li>Monte Carlo simulation for portfolio performance modeling</li>
+                        <li>Yahoo Finance API integration for live market data</li>
+                        <li>Interactive command-line interface with data validation</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium">Mathematical Foundation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The program implements Lagrangian optimization to solve the constrained minimization problem for portfolio 
+                        variance. It calculates covariance matrices, constructs the global minimum variance portfolio, and generates 
+                        efficient portfolios for user-specified return levels.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 id="demo" class="text-xl font-semibold mb-3">Demo & Explainer</h2>
+                    <p class="text-gray-300 mb-4">Complete walkthrough demonstrating portfolio construction, efficient frontier analysis, and backtesting workflows.</p>
+
+                    <div class="aspect-video rounded-md overflow-hidden border border-white/5">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/videoseries?list=PLcJs7myZYvBBMXHgucfNKxhTqoHopfnmA" title="PortfolioOptimizer Demo Playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Key Workflow</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-medium text-white">1. Data Collection & Validation</h4>
+                            <p class="text-gray-300 text-sm">Enter stock tickers and time period. The system fetches historical data via Yahoo Finance API and handles missing data scenarios by allowing users to either skip periods or remove problematic tickers.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-medium text-white">2. Efficient Frontier Generation</h4>
+                            <p class="text-gray-300 text-sm">Calculate and visualize the efficient frontier showing optimal risk-return combinations. Display the global minimum variance portfolio and allow selection of target return levels.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-medium text-white">3. Backtesting Options</h4>
+                            <p class="text-gray-300 text-sm">Choose between real-world backtesting (apply optimized weights to different time periods) or Monte Carlo simulation (generate synthetic performance scenarios).</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">How to run</h2>
+
+                    <p class="text-gray-300">Setup and execution steps:</p>
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># 1. Clone the repository
+git clone https://github.com/aarwitz/PortfolioOptimizer.git
+cd PortfolioOptimizer
+
+# 2. Install dependencies
+pip install pandas numpy matplotlib yfinance
+
+# 3. Run the main program
+python -c "from find_optimized_portfolio import main; main()"
+
+# Alternative: open Python REPL and run
+python
+>>> from find_optimized_portfolio import main
+>>> main()
+</code></pre>
+
+                    <p class="mt-3 text-gray-300">
+                        The program provides an interactive command-line interface that guides you through ticker selection, date ranges, 
+                        and analysis options. All visualizations display in separate matplotlib windows.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Architecture & Files</h2>
+                    <ul class="list-inside list-disc text-gray-300 space-y-2">
+                        <li><code>find_optimized_portfolio.py</code> — main entry point and workflow orchestration</li>
+                        <li><code>matrix_manip.py</code> — core mathematical operations, Lagrangian optimization</li>
+                        <li><code>DF_helper.py</code> — data fetching, processing, and Yahoo Finance integration</li>
+                        <li><code>RealTest.py</code> — real-world backtesting engine and performance validation</li>
+                        <li><code>MonteCarlo.py</code> — Monte Carlo simulation class for synthetic modeling</li>
+                        <li><code>plots.py</code> — efficient frontier and backtesting visualization</li>
+                        <li><code>user.py</code> — interactive CLI and user input handling</li>
+                        <li><code>prints.py</code> — formatted output and results display</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Robust Data Handling:</strong> Manages missing historical data with user-configurable strategies</li>
+                        <li><strong>Mathematical Precision:</strong> Uses NumPy linear algebra for efficient covariance matrix operations</li>
+                        <li><strong>Interactive Backtesting:</strong> Color-coded scatter plots show where actual returns exceed/underperform predictions</li>
+                        <li><strong>Monte Carlo Engine:</strong> Customizable simulation parameters with statistical summary reporting</li>
+                        <li><strong>Modular Design:</strong> Separation of concerns with dedicated modules for math, data, visualization, and user interaction</li>
+                    </ul>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Tech stack</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>• Python 3.x</div>
+                        <div>• NumPy (matrix operations)</div>
+                        <div>• Pandas (data processing)</div>
+                        <div>• Matplotlib (visualization)</div>
+                        <div>• yfinance (market data)</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Key Algorithms</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Markowitz mean-variance optimization</li>
+                        <li>Lagrangian constrained minimization</li>
+                        <li>Efficient frontier computation</li>
+                        <li>Monte Carlo simulation</li>
+                        <li>Portfolio performance attribution</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Use Cases</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Academic research in portfolio theory</li>
+                        <li>Investment strategy backtesting</li>
+                        <li>Risk-return analysis for asset allocation</li>
+                        <li>Educational tool for finance students</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
+                    <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" rel="noopener">Repository</a>
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/PortfolioOptimizer/blob/main/README.md" target="_blank" rel="noopener">README</a>
+                        <a class="text-blue-300 hover:underline" href="#demo">Demo playlist</a>
+                        <a class="text-blue-300 hover:underline" href="https://www.youtube.com/watch?v=2too70WLJUo" target="_blank" rel="noopener">Main explainer video</a>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Project Stats</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>⭐ 8 GitHub stars</div>
+                        <div>🍴 4 forks</div>
+                        <div>👁 2 watchers</div>
+                        <div>📝 100% Python</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Educational Context</h4>
+                    <p class="mt-2 text-sm text-gray-300">Built to demonstrate practical application of Modern Portfolio Theory concepts including efficient frontiers, risk-return optimization, and quantitative backtesting methodologies.</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer / Contact -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Built by <strong>Aaron Horowitz</strong>. Source on <a href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
+            </p>
+            <p class="mt-2">Implements Markowitz portfolio theory with comprehensive backtesting — perfect for finance students and quantitative researchers.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
