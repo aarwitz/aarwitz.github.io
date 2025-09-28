@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         "truss-preview": { url: "truss.html", paragraphIndex: 0 },
         "swipt-preview": { url: "SWIPT.html", paragraphIndex: 1 },  // Extract the abstract paragraph
         "portfolio-preview": { url: "PortfolioOptimizer.html", paragraphIndex: 0 },  // Extract the first paragraph from the overview
-        "robot-preview": { url: "RobotConfigurationSpace.html", paragraphIndex: 0 }  // Extract the project overview
+        "robot-preview": { url: "RobotConfigurationSpace.html", paragraphIndex: 0 },  // Extract the project overview
+        "socket-preview": { url: "SocketCpp.html", paragraphIndex: 0 },  // Extract the project overview paragraph
+        "camera-calibration-preview": { url: "CameraCalibration.html", paragraphIndex: 0 }  // Extract the introduction paragraph
     };
 
     for (const [previewId, config] of Object.entries(previews)) {

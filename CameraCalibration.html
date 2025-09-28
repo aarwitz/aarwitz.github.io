@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Camera Calibration — Intrinsics, Extrinsics & Pinhole Model</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #06b6d4;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(6,182,212,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+    .math {
+      font-family: "Computer Modern", "Times", serif;
+      font-style: italic;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">Camera Calibration</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Understanding the mathematical foundations of camera calibration: intrinsic parameters, 
+                        extrinsic parameters, and the pinhole camera model that transforms 3D world coordinates 
+                        to 2D image coordinates.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <span class="text-xs text-muted ml-3 text-gray-400">Computer Vision • Camera Geometry • 3D Reconstruction</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Topic</div>
+                        <div class="mt-1 text-sm font-medium">Camera Geometry</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Key Concepts</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Pinhole camera model</div>
+                            <div>• Intrinsic parameters</div>
+                            <div>• Extrinsic parameters</div>
+                            <div>• Perspective projection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Introduction to Camera Calibration</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        We care about <strong>camera calibration</strong> when we need to know: 
+                    </p>
+                    <ul class="text-gray-300 leading-relaxed list-disc ml-5 space-y-1">
+                        <li>Where the camera is relative to a point in 3D space (requires <strong>extrinsic parameters</strong>).</li> 
+                        <li>Where a point in 3D space is relative to the camera (requires <strong>intrinsic parameters</strong>).</li>
+                    </ul>
+                    <br>
+                    <div class="flex justify-center my-4">
+                        <div class="bg-white rounded-lg p-4 inline-block">
+                            <img src="calibration-cameramodel-coords.png" alt="Camera Model Coordinates" class="max-w-full h-auto object-contain" >
+                        </div>
+                    </div>
+                    <div class="text-center text-sm text-gray-400 mb-4">
+                        Source: <a href="https://www.mathworks.com/help/vision/ug/camera-calibration.html" target="_blank" rel="noopener" class="text-blue-300 hover:underline">MathWorks Camera Calibration Documentation</a>
+                    </div>
+                    <h3 class="text-l font-semibold mb-3">Extrinsic Parameters</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Let's try to quickly wrap our heads around just that first one, the extrinsic parameters, because it's a little more intuitive.
+                        <br><br>
+                        When we ask "Where is the camera?", we are actually asking where the center of the pinhole is (where all rays intersect before they project onto the image plane). And that question is answered by finding the extrinsic parameters,
+                        which define the position of the pinhole's center in the 3D world. This requires <strong>6 degrees of freedom</strong> (3 for translation, 3 for rotation):
+                    </p>
+                    <p>
+                        \[
+                        \mathbf{P}_{camera} = \begin{bmatrix} X \\ Y \\ Z \\ \alpha \\ \beta \\ \gamma \end{bmatrix}
+                        \]
+                        where (X, Y, Z) is the camera center position and (α, β, γ) are the rotation angles.
+                    </p>
+                    <br><br>
+                    <p class="text-gray-300 leading-relaxed">
+                        Sometimes I get confused and might ask, "What do these coordinates <i>mean</i>?".
+                        I then have to repeat to myself the coordinates are defined in some world coordinate system whose origin can be chosen arbitrarily. So each of the 6 values describe, in their respective dimensions, a translation or rotation relative to the selected origin.
+                    </p>
+                    <br>
+                    <h3 class="text-l font-semibold mb-3">Intrinsic Parameters</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The intrinsic parameters are about the actual characteristics of the camera itself.
+                        They are important because even if you know where the center of the pinhole is relative to other objects in 3D space, the actual 2D image that is formed varies based on these intrinsic parameters.
+                        <br><br>
+                        This didn't make sense to me at first without looking at the diagram above (the tree being projected from world coordinates onto the 2D image plane). You can see that <strong>extrinsics</strong> transform the 3D world point into the camera's local coordinate system, then <strong>intrinsics</strong> handle the perspective projection from those 3D camera coordinates down to 2D pixel coordinates on the image plane.
+                        <br><br>
+                        Intrinsic parameters consist of 5 values that describe how the camera transforms 3D points to 2D image coordinates:
+                    </p>
+                    <ul class="text-gray-300 leading-relaxed list-disc ml-5 space-y-1">
+                        <li><strong>f<sub>x</sub>, f<sub>y</sub></strong> — focal lengths in pixels (how much the camera "zooms")</li> 
+                        <li><strong>c<sub>x</sub>, c<sub>y</sub></strong> — principal point (where the optical axis hits the image)</li>
+                        <li><strong>s</strong> — skew parameter (accounts for non-perpendicular pixel grid, usually ≈ 0)</li>
+                    </ul>
+                    <p>
+                        The intrinsic parameters can be represented as a vector with 5 elements:
+                        \[
+                        \mathbf{K}_{params} = \begin{bmatrix} f_x \\ f_y \\ c_x \\ c_y \\ s \end{bmatrix}
+                        \]
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Think of it this way: even if two identical cameras are placed at the exact same location and orientation (same extrinsics), 
+                        they can still produce different images if one has a telephoto lens and the other has a wide-angle lens. 
+                        The intrinsics capture these internal differences that affect <i>how</i> the 3D world gets projected onto the 2D image.
+                    </p>
+                    
+                    <h2 class="text-xl font-semibold mb-3">Intrinsic Matrix Implementation</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        For practical computer vision applications, intrinsic parameters are organized into the 
+                        <strong>camera matrix K</strong>, which transforms 3D camera coordinates to 2D pixel coordinates.
+                    </p>
+
+                    <h3 class="mt-4 font-medium text-blue-300">The Camera Matrix K</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The complete transformation from camera coordinates to image pixels:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \mathbf{K} \begin{bmatrix} X_c \\ Y_c \\ Z_c \end{bmatrix} = \begin{bmatrix} f_x & s & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} X_c \\ Y_c \\ Z_c \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Focal Length Parameters</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>f<sub>x</sub>, f<sub>y</sub></strong> — focal lengths in pixel units (typical values: 500-2000 pixels)</li>
+                                <li>Different values indicate non-square pixels or optical misalignment</li>
+                                <li>Conversion: \(f_x = f_{mm} \cdot \frac{pixels}{mm}\) where f<sub>mm</sub> is physical focal length</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Principal Point</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>(c<sub>x</sub>, c<sub>y</sub>)</strong> — optical center in pixel coordinates</li>
+                                <li>Ideally at image center: \((c_x, c_y) \approx (\frac{width}{2}, \frac{height}{2})\)</li>
+                                <li>Manufacturing tolerances typically cause 5-20 pixel offsets</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Skew Parameter</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>s</strong> — skew coefficient (modern cameras: s ≈ 0)</li>
+                                <li>Non-zero when sensor pixel grid isn't perfectly rectangular</li>
+                                <li>Often ignored in calibration: \(\mathbf{K} = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}\)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Practical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        In OpenCV, the camera matrix is stored as a 3×3 float array:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono">
+                            <div>camera_matrix = np.array([[fx,  0, cx],</div>
+                            <div class="ml-16">[0,  fy, cy],</div>
+                            <div class="ml-16">[0,   0,  1]], dtype=np.float32)</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Extrinsic Transformation Matrix</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Extrinsic parameters define the rigid body transformation from world coordinates to camera coordinates 
+                        using a <strong>rotation matrix R</strong> and <strong>translation vector t</strong>.
+                    </p>
+
+                    <h3 class="mt-4 font-medium text-blue-300">World-to-Camera Transformation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The complete transformation from world point to camera coordinates:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} X_c \\ Y_c \\ Z_c \end{bmatrix} = \mathbf{R} \begin{bmatrix} X_w \\ Y_w \\ Z_w \end{bmatrix} + \mathbf{t}
+                            \]
+                        </div>
+                    </div>
+
+                    <p class="text-gray-300 leading-relaxed mt-4">
+                        Or in homogeneous coordinates using the extrinsic matrix \([\mathbf{R} | \mathbf{t}]\):
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} X_c \\ Y_c \\ Z_c \\ 1 \end{bmatrix} = \begin{bmatrix} \mathbf{R} & \mathbf{t} \\ \mathbf{0}^T & 1 \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mt-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Rotation Matrix R (3×3)</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>Orthogonal matrix:</strong> \(\mathbf{R}^T\mathbf{R} = \mathbf{I}\), \(\det(\mathbf{R}) = +1\)</li>
+                                <li><strong>3 degrees of freedom:</strong> roll (φ), pitch (θ), yaw (ψ)</li>
+                                <li><strong>Rodrigues formula:</strong> Convert between 3×3 matrix and 3×1 rotation vector</li>
+                                <li>Parameterizations: Euler angles, axis-angle, quaternions</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Translation Vector t (3×1)</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>Camera position:</strong> \(\mathbf{t} = -\mathbf{R}\mathbf{C}\) where \(\mathbf{C}\) is camera center in world coords</li>
+                                <li><strong>3 degrees of freedom:</strong> [t<sub>x</sub>, t<sub>y</sub>, t<sub>z</sub>]<sup>T</sup></li>
+                                <li>Units match world coordinate system (typically meters or millimeters)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Practical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        In OpenCV, extrinsics are stored as rotation vector (rvec) and translation vector (tvec):
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono">
+                            <div>rvec = np.array([rx, ry, rz], dtype=np.float32)  # 3x1</div>
+                            <div>tvec = np.array([tx, ty, tz], dtype=np.float32)  # 3x1</div>
+                            <div>R, _ = cv2.Rodrigues(rvec)  # Convert to 3x3 matrix</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Distortion Models</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Real camera lenses introduce distortions that deviate from the ideal pinhole model. 
+                        The most common distortions are <strong>radial distortion</strong> and 
+                        <strong>tangential distortion</strong>.
+                    </p>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Radial Distortion</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Caused by lens curvature. Points farther from the optical center experience more distortion:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono text-center">
+                            <div>x_corrected = x · (1 + k₁r² + k₂r⁴ + k₃r⁶)</div>
+                            <div>y_corrected = y · (1 + k₁r² + k₂r⁴ + k₃r⁶)</div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Tangential Distortion</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Caused by lens and sensor misalignment:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono text-center">
+                            <div>x_corrected = x + [2p₁xy + p₂(r² + 2x²)]</div>
+                            <div>y_corrected = y + [p₁(r² + 2y²) + 2p₂xy]</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Complete Camera Pipeline</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Now that we understand intrinsics, extrinsics, and distortion separately, let's walk through 
+                        the complete transformation from a 3D world point to a 2D image pixel using matrices.
+                    </p>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Step 1: World to Camera Coordinates (Extrinsics)</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Transform 3D world point \(\mathbf{P}_w = [X_w, Y_w, Z_w, 1]^T\) to camera coordinates:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \mathbf{P}_c = \begin{bmatrix} X_c \\ Y_c \\ Z_c \\ 1 \end{bmatrix} = \begin{bmatrix} \mathbf{R} & \mathbf{t} \\ \mathbf{0}^T & 1 \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 2: Camera to Image Coordinates (Intrinsics)</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Project 3D camera coordinates to 2D homogeneous image coordinates:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \mathbf{p}_{homog} = \begin{bmatrix} s \cdot u \\ s \cdot v \\ s \end{bmatrix} = \mathbf{K} \begin{bmatrix} X_c \\ Y_c \\ Z_c \end{bmatrix} = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} X_c \\ Y_c \\ Z_c \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 3: Normalize to Pixel Coordinates</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Divide by the scale factor \(s = Z_c\) to get actual pixel coordinates:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} \frac{s \cdot u}{s} \\ \frac{s \cdot v}{s} \end{bmatrix} = \begin{bmatrix} \frac{f_x X_c + c_x Z_c}{Z_c} \\ \frac{f_y Y_c + c_y Z_c}{Z_c} \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 4: Apply Distortion Correction</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Apply radial and tangential distortion to the normalized coordinates:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3">
+                        <div class="text-sm">
+                            \[
+                            \begin{align}
+                            x_n &= \frac{u - c_x}{f_x}, \quad y_n = \frac{v - c_y}{f_y} \\
+                            r^2 &= x_n^2 + y_n^2 \\
+                            x_{dist} &= x_n(1 + k_1r^2 + k_2r^4 + k_3r^6) + 2p_1x_ny_n + p_2(r^2 + 2x_n^2) \\
+                            y_{dist} &= y_n(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2 + 2y_n^2) + 2p_2x_ny_n \\
+                            u_{final} &= f_x \cdot x_{dist} + c_x \\
+                            v_{final} &= f_y \cdot y_{dist} + c_y
+                            \end{align}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Complete Pipeline in One Equation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The full transformation (ignoring distortion for clarity) can be written as:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \mathbf{K} \begin{bmatrix} \mathbf{R} & \mathbf{t} \end{bmatrix} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Pipeline Summary</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>Input:</strong> 3D world point [X<sub>w</sub>, Y<sub>w</sub>, Z<sub>w</sub>]</li>
+                                <li><strong>Extrinsics [R|t]:</strong> Transform to camera coordinates [X<sub>c</sub>, Y<sub>c</sub>, Z<sub>c</sub>]</li>
+                                <li><strong>Intrinsics K:</strong> Project to homogeneous image coordinates</li>
+                                <li><strong>Normalization:</strong> Divide by Z<sub>c</sub> to get pixel coordinates [u, v]</li>
+                                <li><strong>Distortion:</strong> Apply lens distortion model for final pixel position</li>
+                                <li><strong>Output:</strong> Final 2D image pixel [u<sub>final</sub>, v<sub>final</sub>]</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Practical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        In OpenCV, this entire pipeline is handled by <code>cv2.projectPoints()</code>:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono">
+                            <div># 3D world points</div>
+                            <div>world_points = np.array([[X_w, Y_w, Z_w]], dtype=np.float32)</div>
+                            <div></div>
+                            <div># Project to image coordinates</div>
+                            <div>image_points, _ = cv2.projectPoints(</div>
+                            <div class="ml-4">world_points, rvec, tvec, camera_matrix, dist_coeffs)</div>
+                            <div></div>
+                            <div># Result: [u_final, v_final] pixel coordinates</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Inverse Camera Pipeline: 2D Image to 3D World</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Now let's work backwards - given a 2D pixel coordinate and camera calibration parameters, 
+                        how do we recover the 3D world point? This is the foundation of 3D reconstruction and depth estimation.
+                    </p>
+
+                    <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-4 mb-6">
+                        <p class="text-yellow-200 text-sm">
+                            <strong>Key Challenge:</strong> A single 2D point corresponds to infinite 3D points along a ray. 
+                            We need additional constraints (stereo vision, known depth, or multiple views) to uniquely determine the 3D position.
+                        </p>
+                    </div>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Step 1: Undistort Image Coordinates</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Given distorted pixel coordinates [u<sub>dist</sub>, v<sub>dist</sub>], remove lens distortion:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3">
+                        <div class="text-sm">
+                            \[
+                            \begin{align}
+                            x_n &= \frac{u_{dist} - c_x}{f_x}, \quad y_n = \frac{v_{dist} - c_y}{f_y} \\
+                            r^2 &= x_n^2 + y_n^2 \\
+                            x_{undist} &= \frac{x_n}{1 + k_1r^2 + k_2r^4 + k_3r^6} - [2p_1x_ny_n + p_2(r^2 + 2x_n^2)] \\
+                            y_{undist} &= \frac{y_n}{1 + k_1r^2 + k_2r^4 + k_3r^6} - [p_1(r^2 + 2y_n^2) + 2p_2x_ny_n] \\
+                            u &= f_x \cdot x_{undist} + c_x \\
+                            v &= f_y \cdot y_{undist} + c_y
+                            \end{align}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 2: Image to Normalized Camera Coordinates</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Convert pixel coordinates to normalized camera coordinates using inverse intrinsics:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} x_c \\ y_c \\ 1 \end{bmatrix} = \mathbf{K}^{-1} \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} \frac{1}{f_x} & 0 & -\frac{c_x}{f_x} \\ 0 & \frac{1}{f_y} & -\frac{c_y}{f_y} \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} u \\ v \\ 1 \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 3: Camera Ray in 3D</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The normalized coordinates define a ray in camera coordinates. Any 3D point along this ray projects to our 2D pixel:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \mathbf{P}_c(t) = t \begin{bmatrix} x_c \\ y_c \\ 1 \end{bmatrix} = t \begin{bmatrix} \frac{u - c_x}{f_x} \\ \frac{v - c_y}{f_y} \\ 1 \end{bmatrix}
+                            \]
+                        </div>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed text-sm mt-2">
+                        where <strong>t > 0</strong> is the depth parameter (distance from camera center along the ray).
+                    </p>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Step 4: Camera to World Coordinates</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Transform the camera ray to world coordinates using inverse extrinsics:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \mathbf{P}_w(t) = \mathbf{R}^T (\mathbf{P}_c(t) - \mathbf{t}) = \mathbf{R}^T \mathbf{P}_c(t) - \mathbf{R}^T \mathbf{t}
+                            \]
+                        </div>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed text-sm mt-2">
+                        This gives us the 3D ray in world coordinates. The camera center in world coordinates is <strong>-R<sup>T</sup>t</strong>.
+                    </p>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Determining Depth (Additional Constraints Needed)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Stereo Vision</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>Use corresponding point in second camera to triangulate 3D position</li>
+                                <li>You may also, like I do with my Intel Realsense D455, have to align depth (infared) and color (rgb) pixels to avoid parallax</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Known Depth Value</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>If depth t is known (from depth sensor, LiDAR, etc.), directly compute 3D point</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Plane Intersection</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>If point lies on known plane (ground, table, etc.), solve ray-plane intersection</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Complete Inverse Pipeline</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        With known depth t, the complete transformation is:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-4 mt-3 text-center">
+                        <div class="text-lg">
+                            \[
+                            \begin{bmatrix} X_w \\ Y_w \\ Z_w \end{bmatrix} = \mathbf{R}^T \left( t \mathbf{K}^{-1} \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} - \mathbf{t} \right)
+                            \]
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Inverse Pipeline Summary</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li><strong>Input:</strong> 2D pixel [u, v] + calibration parameters</li>
+                                <li><strong>Undistortion:</strong> Remove lens distortion effects</li>
+                                <li><strong>Inverse Intrinsics K<sup>-1</sup>:</strong> Convert to normalized camera coordinates</li>
+                                <li><strong>3D Ray:</strong> Define ray in camera coordinate system</li>
+                                <li><strong>Inverse Extrinsics R<sup>T</sup>:</strong> Transform ray to world coordinates</li>
+                                <li><strong>Depth Constraint:</strong> Use additional information to determine unique 3D point</li>
+                                <li><strong>Output:</strong> 3D world point [X<sub>w</sub>, Y<sub>w</sub>, Z<sub>w</sub>]</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-6 font-medium text-blue-300">Practical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        In OpenCV, this inverse process involves multiple functions:
+                    </p>
+                    <div class="bg-[#07101a] rounded-md p-3 mt-2 text-sm">
+                        <div class="font-mono">
+                            <div># Undistort image points</div>
+                            <div>undistorted = cv2.undistortPoints(image_points, K, dist_coeffs)</div>
+                            <div></div>
+                            <div># Convert to 3D ray (with known depth t)</div>
+                            <div>ray_3d = np.array([undistorted[0] * t, undistorted[1] * t, t])</div>
+                            <div></div>
+                            <div># Transform to world coordinates</div>
+                            <div>R_inv = R.T</div>
+                            <div>world_point = R_inv @ ray_3d - R_inv @ t_vec</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Calibration Process</h2>
+                    
+                    <h3 class="font-medium text-blue-300">Data Collection</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Capture multiple images of a calibration pattern (checkerboard)</li>
+                        <li>Vary viewpoints and distances to ensure good parameter estimation</li>
+                        <li>Ensure pattern covers different regions of the image</li>
+                        <li>Maintain sharp focus and avoid motion blur</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Parameter Estimation</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Detect corner points in calibration images</li>
+                        <li>Establish correspondences between 3D pattern points and 2D image points</li>
+                        <li>Use non-linear optimization (Levenberg-Marquardt) to minimize reprojection error</li>
+                        <li>Refine parameters iteratively until convergence</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium text-blue-300">Validation</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Analyze reprojection errors across all calibration images</li>
+                        <li>Check parameter consistency and physical reasonableness</li>
+                        <li>Test calibration on independent validation images</li>
+                        <li>Verify distortion correction quality visually</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Applications</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-300">3D Reconstruction</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>Stereo vision systems</li>
+                                <li>Structure from motion</li>
+                                <li>Multi-view geometry</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-300">Augmented Reality</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>Pose estimation</li>
+                                <li>Virtual object overlay</li>
+                                <li>Registration accuracy</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-300">Robotics</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>Visual servoing</li>
+                                <li>Hand-eye calibration</li>
+                                <li>Navigation and SLAM</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-300">Metrology</h4>
+                            <ul class="mt-1 text-gray-300 text-sm space-y-1">
+                                <li>Dimensional measurement</li>
+                                <li>Quality inspection</li>
+                                <li>Photogrammetry</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Key Parameters</h4>
+                    <div class="mt-3 text-sm text-gray-300 space-y-2">
+                        <div><strong>Intrinsic (5-9 params):</strong></div>
+                        <div>• fx, fy (focal length)</div>
+                        <div>• cx, cy (principal point)</div>
+                        <div>• s (skew)</div>
+                        <div>• k1, k2, k3 (radial distortion)</div>
+                        <div>• p1, p2 (tangential distortion)</div>
+                        
+                        <div class="mt-4"><strong>Extrinsic (6 params):</strong></div>
+                        <div>• R (3×3 rotation matrix)</div>
+                        <div>• t (3×1 translation vector)</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Common Tools</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• OpenCV calibration functions</li>
+                        <li>• MATLAB Camera Calibrator</li>
+                        <li>• Caltech Camera Calibration</li>
+                        <li>• Zhang's calibration method</li>
+                        <li>• Bouguet's Camera Calibration</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quality Metrics</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><strong>Reprojection Error:</strong> RMS distance between detected and projected points</li>
+                        <li><strong>Typical Values:</strong> < 0.5 pixels for good calibration</li>
+                        <li><strong>Parameter Uncertainty:</strong> Confidence intervals from covariance matrix</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Best Practices</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Use high-contrast patterns</li>
+                        <li>• Capture 10-20 good images</li>
+                        <li>• Vary viewpoints and distances</li>
+                        <li>• Fill entire image area</li>
+                        <li>• Check for systematic errors</li>
+                        <li>• Validate on test patterns</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Mathematical Foundation</h4>
+                    <p class="mt-2 text-sm text-gray-300">Camera calibration relies on projective geometry, linear algebra, and non-linear optimization. The fundamental equation relates 3D world points to 2D image observations through the camera matrix.</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer / Contact -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Camera calibration notes by <strong>Aaron Horowitz</strong>. Essential for computer vision and 3D reconstruction.
+            </p>
+            <p class="mt-2">Understanding the mathematics behind how cameras see the world.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
