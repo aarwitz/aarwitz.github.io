@@ -28,14 +28,38 @@
         <p class="text-gray-400 mt-4 mb-8 text-lg">
             Hi, I'm Aaron 👋.
             Soon my robot assistant will be updating this website for me, but for now I am working on features related to cleaning and picking things up.</p>
-            <!-- Robot preview: efficient video (webm/mp4) with poster and GIF fallback -->
+            <!-- Robot preview: efficient video (webm/mp4) with GIF fallback -->
             <div class="flex justify-center my-6">
-                <video class="w-full max-w-md sm:max-w-lg" playsinline autoplay muted loop preload="none" poster="robot-poster.jpg" style="object-fit:cover;">
+                <video class="w-full max-w-md sm:max-w-lg" playsinline autoplay muted loop preload="metadata" poster="robot-poster.jpg" style="object-fit:cover;">
                     <source src="robot.webm" type="video/webm">
                     <source src="robot.mp4" type="video/mp4">
-                    <img src="robot.gif" alt="Robot demo" loading="lazy" class="w-full max-w-xl rounded shadow-lg">
+                    <!-- Fallback for browsers that don't support video -->
+                    Your browser doesn't support video playback.
                 </video>
+                <!-- GIF fallback shown with JavaScript if video fails -->
+                <img id="robot-gif-fallback" src="robot.gif" alt="Robot demo" loading="lazy" class="w-full max-w-md sm:max-w-lg rounded shadow-lg hidden">
             </div>
+            
+            <script>
+                // Fallback to GIF if video fails to load/play
+                document.addEventListener('DOMContentLoaded', function() {
+                    const video = document.querySelector('video');
+                    const gifFallback = document.getElementById('robot-gif-fallback');
+                    
+                    if (video && gifFallback) {
+                        video.addEventListener('error', function() {
+                            video.style.display = 'none';
+                            gifFallback.classList.remove('hidden');
+                        });
+                        
+                        // Also check if video can play
+                        video.addEventListener('canplay', function() {
+                            // Video loaded successfully, ensure GIF stays hidden
+                            gifFallback.classList.add('hidden');
+                        });
+                    }
+                });
+            </script>
 
             <p class="text-gray-400 mt-4 mb-8 text-lg">
                 I have been lucky enough to work across the tech-stack in industrial automation, from labeling large datasets and training+deploying models, to writing C++ firmware and C#/WPF UI's.
