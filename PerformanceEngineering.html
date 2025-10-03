@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>6.172 Performance Engineering of Software Systems</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #06b6d4;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(6,182,212,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+    .math {
+      font-family: "Computer Modern", "Times", serif;
+      font-style: italic;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">6.172 Performance Engineering</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        MIT's course on performance engineering of software systems. As Moore's law slows, 
+                        we need to focus on optimizing code through parallelization, cache optimization, 
+                        and understanding modern processor architecture.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <span class="text-xs text-muted ml-3 text-gray-400">Systems Programming • Performance • Parallel Computing</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Course</div>
+                        <div class="mt-1 text-sm font-medium">MIT 6.172</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Key Topics</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Cache optimization</div>
+                            <div>• Parallel programming</div>
+                            <div>• Bentley's rules</div>
+                            <div>• Bit manipulation</div>
+                            <div>• Processor architecture</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Lecture 1: Parallelization & Memory Optimization</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Why Performance Engineering Matters</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        I really like how the lecturer teach this course. He motivates the importance of performance engineering by explaining that as <strong>Moore's law slows</strong>, we can no longer rely on hardware improvements alone. 
+                        Performance engineering focuses on optimizing code to achieve maximum computational efficiency, 
+                        measured as "percent of peak" - how close we get to the theoretical maximum performance.
+                    </p>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Parallelization Rules</h3>
+                    <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-4 mb-4">
+                        <p class="text-yellow-200 text-sm font-medium">
+                            🚀 Rule of Thumb: Parallelize outer loops rather than inner loops
+                        </p>
+                    </div>
+                    
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        With proper parallelization, you can achieve <strong>N× speedup with N cores</strong>. 
+                        For example, with 18 cores, well-parallelized code can run up to 18× faster.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Matrix Multiplication Example</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Matrix multiplication requires a triple nested loop. Using Cilk parallel programming:
+                    </p>
+                    
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <code class="text-sm text-gray-200">
+                            <span class="text-blue-400">cilk_for</span> (int i = 0; i &lt; n; ++i) {<br/>
+                            &nbsp;&nbsp;<span class="text-green-400">// Loop iterations distributed among threads</span><br/>
+                            &nbsp;&nbsp;for (int j = 0; j &lt; n; ++j) {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;for (int k = 0; k &lt; n; ++k) {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C[i][j] += A[i][k] * B[k][j];<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            &nbsp;&nbsp;}<br/>
+                            }
+                        </code>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Why Parallelize Outer Loops?</h4>
+                    <ul class="text-gray-300 list-disc list-inside space-y-2 mb-4">
+                        <li><strong>Reduced overhead:</strong> Thread creation once per row vs. once per element</li>
+                        <li><strong>Less synchronization:</strong> Threads work independently on entire rows</li>
+                        <li><strong>Cache-friendly:</strong> Each thread accesses contiguous memory locations</li>
+                        <li><strong>Better scheduling:</strong> Fewer context switches between threads</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Cache Optimization</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Cache Hierarchy</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Modern processors have <strong>three levels of cache</strong> (L1, L2, L3), with L1 split into 
+                        data and instruction caches. Each processor reads/writes memory in contiguous blocks called 
+                        <strong>cache lines</strong>.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Cache Replacement Policies</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>LRU (Least Recently Used):</strong> Replace the longest unused cache line</li>
+                            <li><strong>FIFO (First In, First Out):</strong> Replace the oldest cache line</li>
+                            <li><strong>Random:</strong> Replace a random cache line</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Memory Layout & Spatial Locality</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Matrices are stored in <strong>row-major order</strong> in C (vs. column-major in Fortran). 
+                        This means consecutive elements in a row are adjacent in memory, leading to better spatial locality 
+                        when accessing rows sequentially.
+                    </p>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Tiling (Blocking) Optimization</h3>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Breaking matrices into smaller blocks can dramatically improve cache performance:
+                    </p>
+                    
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <div class="text-sm text-gray-300">
+                            <div class="mb-2"><strong>Without tiling:</strong> 16,785,408 memory accesses</div>
+                            <div><strong>With 32×32 tiling:</strong> Significant speedup due to cache reuse</div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Recursive Matrix Multiplication</h4>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        The solution to optimizing for multiple cache levels is <strong>divide-and-conquer</strong> 
+                        recursive multiplication, which naturally adapts to the cache hierarchy without needing 
+                        to manually tune block sizes for L1, L2, and L3.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">SIMD Vectorization</h2>
+                    
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Modern microprocessors incorporate <strong>vector hardware</strong> - Single Instruction, 
+                        Multiple Data (SIMD) units that can perform one instruction on multiple data elements simultaneously.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Vector Processing Benefits</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li>8 floating-point units per core</li>
+                            <li>Single instruction operates on entire vector</li>
+                            <li>Compiler flags can automatically vectorize code</li>
+                            <li>Significant speedup for data-parallel operations</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Lecture 2: Bentley's Optimization Rules</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Data Structure Optimization</h3>
+                    
+                    <h4 class="text-md font-medium text-green-300 mb-2">1. Encoding & Bit Fields</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Pack multiple boolean flags into a single byte using bit fields:
+                    </p>
+                    
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <code class="text-sm text-gray-200">
+                            <span class="text-purple-400">typedef struct</span> {<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">unsigned int</span> isEnabled : 1;<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">unsigned int</span> hasError : 1;<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">unsigned int</span> isRunning : 1;<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">unsigned int</span> mode : 2;<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">unsigned int</span> reserved : 3;<br/>
+                            } PackedStatus; <span class="text-green-400">// Only 1 byte total</span>
+                        </code>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">2. Data Structure Augmentation</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Add information to make common operations more efficient. Example: augmenting a linked list 
+                        with a tail pointer allows O(1) appending instead of O(n).
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">3. Precomputation</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Calculate values ahead of time. Example: precompute Pascal's triangle during initialization 
+                        rather than calculating values at runtime.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">4. Compile-time Initialization</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Store constant values during compilation to save runtime computation.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">5. Caching</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Store recently accessed results to avoid recomputation. Particularly effective for 
+                        expensive operations with temporal locality.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">6. Exploiting Sparsity</h4>
+                    <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-3 mb-4">
+                        <p class="text-yellow-200 text-sm font-medium">
+                            💡 "The fastest way to compute is not to compute at all"
+                        </p>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Avoid storing and computing on zero values. Use sparse data structures for matrices 
+                        with many zeros.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">7. Constant Folding & Propagation</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Let the compiler evaluate constant expressions at compile time rather than runtime.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">8. Function Inlining</h4>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Eliminate function call overhead by inserting function code directly at call sites.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Lecture 3: Bit Manipulation Tricks</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Efficient Bit Operations</h3>
+                    
+                    <h4 class="text-md font-medium text-green-300 mb-2">No-Temp Swap</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Swap two variables without using a temporary variable:
+                    </p>
+                    
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <code class="text-sm text-gray-200">
+                            a ^= b; <span class="text-green-400">// a = a XOR b</span><br/>
+                            b ^= a; <span class="text-green-400">// b = b XOR (a XOR b) = original a</span><br/>
+                            a ^= b; <span class="text-green-400">// a = (a XOR b) XOR original a = original b</span>
+                        </code>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Branchless Calculations</h4>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Use bit manipulation to avoid conditional branches, which can cause pipeline stalls 
+                        in modern processors due to branch prediction misses.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Lecture 4: Processor Architecture</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Instruction Set Architecture (ISA)</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        The ISA is the interface between hardware and software, defining the vocabulary for 
+                        binary machine language programs. It specifies the syntax and semantics of assembly language.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Four Key ISA Concepts</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>Registers:</strong> Where the processor stores data (typically 64 general-purpose registers)</li>
+                            <li><strong>Instructions:</strong> The operations the processor can perform</li>
+                            <li><strong>Data types:</strong> How data is interpreted (integers, floats, etc.)</li>
+                            <li><strong>Memory addressing modes:</strong> How to reference memory locations</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">x86-64 Architecture</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        x86-64 evolved from the original x86 architecture. It features <strong>register aliasing</strong> 
+                        where you can access parts of a 32-bit register as separate 16-bit or 8-bit registers.
+                    </p>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Modern Architectural Improvements</h3>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Historically, computer architects have improved performance through two main approaches:
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">1. Exploit Parallelism</h4>
+                            <ul class="text-gray-300 list-disc list-inside space-y-1 text-sm ml-4">
+                                <li><strong>Instruction-Level Parallelism (ILP):</strong> Execute multiple instructions simultaneously</li>
+                                <li><strong>Vectorization:</strong> SIMD operations on multiple data elements</li>
+                                <li><strong>Multicore:</strong> Multiple processor cores on one chip</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">2. Exploit Locality</h4>
+                            <ul class="text-gray-300 list-disc list-inside space-y-1 text-sm ml-4">
+                                <li><strong>Caching:</strong> Keep frequently accessed data close to the processor</li>
+                                <li><strong>Prefetching:</strong> Predict and load data before it's needed</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2 mt-6">Advanced Processor Features</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Vector Hardware</h4>
+                            <p class="text-gray-300 text-sm">SIMD units that process multiple data elements with single instructions</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Superscalar Processing</h4>
+                            <p class="text-gray-300 text-sm">Multiple execution units working in parallel within a single core</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Out-of-Order Execution</h4>
+                            <p class="text-gray-300 text-sm">Processors can execute instructions in different order than program order for efficiency</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Branch Prediction</h4>
+                            <p class="text-gray-300 text-sm">Hardware predicts which way branches will go to avoid pipeline stalls</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Lecture 5: C to Assembly Translation</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Understanding Compiler Output</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        To optimize effectively, you need to understand how C code translates to assembly. 
+                        The compiler performs many optimizations, but understanding the assembly helps identify bottlenecks.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Key Assembly Concepts</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>Registers:</strong> Fastest storage, limited quantity</li>
+                            <li><strong>Memory addressing:</strong> Direct, indirect, indexed modes</li>
+                            <li><strong>Instruction scheduling:</strong> Reordering for pipeline efficiency</li>
+                            <li><strong>Loop unrolling:</strong> Reducing loop overhead</li>
+                        </ul>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Reading Assembly Output</h4>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Use <code>gcc -S -O2</code> to generate optimized assembly. Look for patterns like 
+                        excessive memory loads/stores, missed vectorization opportunities, or suboptimal register usage.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Multicore Programming & Cilk</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">The Cilk Programming Model</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Cilk extends C with three keywords for parallel programming: <strong>cilk_spawn</strong>, 
+                        <strong>cilk_sync</strong>, and <strong>cilk_for</strong>. It provides work-stealing scheduling 
+                        that automatically load-balances parallel tasks.
+                    </p>
+
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <code class="text-sm text-gray-200">
+                            <span class="text-blue-400">int</span> fib(<span class="text-blue-400">int</span> n) {<br/>
+                            &nbsp;&nbsp;<span class="text-purple-400">if</span> (n &lt; 2) <span class="text-purple-400">return</span> n;<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">int</span> x = <span class="text-yellow-400">cilk_spawn</span> fib(n-1);<br/>
+                            &nbsp;&nbsp;<span class="text-blue-400">int</span> y = fib(n-2);<br/>
+                            &nbsp;&nbsp;<span class="text-yellow-400">cilk_sync</span>;<br/>
+                            &nbsp;&nbsp;<span class="text-purple-400">return</span> x + y;<br/>
+                            }
+                        </code>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Race Conditions & Determinism</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Parallel programs can have <strong>race conditions</strong> when multiple threads access 
+                        shared data. Cilk programs are guaranteed to be <strong>deterministic</strong> if they 
+                        are race-free.
+                    </p>
+
+                    <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-3 mb-4">
+                        <p class="text-yellow-200 text-sm font-medium">
+                            🔒 Use cilk reducer hyperobjects to avoid races in reductions
+                        </p>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Analysis of Multithreaded Algorithms</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Work and Span Model</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Analyze parallel algorithms using the <strong>work-span model</strong>:
+                    </p>
+                    
+                    <ul class="text-gray-300 list-disc list-inside space-y-2 mb-4">
+                        <li><strong>Work (T₁):</strong> Total number of operations in serial execution</li>
+                        <li><strong>Span (T∞):</strong> Length of the longest chain of dependencies</li>
+                        <li><strong>Parallelism:</strong> T₁/T∞ - maximum possible speedup</li>
+                        <li><strong>Speedup:</strong> T₁/Tₚ where Tₚ is runtime on P processors</li>
+                    </ul>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Performance Bounds</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>Work Law:</strong> Tₚ ≥ T₁/P</li>
+                            <li><strong>Span Law:</strong> Tₚ ≥ T∞</li>
+                            <li><strong>Linear Speedup:</strong> Achievable when P << T₁/T∞</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Compiler Optimizations</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">What Compilers Can and Cannot Do</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Modern compilers perform sophisticated optimizations, but have limitations due to 
+                        aliasing, function calls, and conservative assumptions about program behavior.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">Common Compiler Optimizations</h4>
+                            <ul class="text-gray-300 list-disc list-inside space-y-1 text-sm ml-4">
+                                <li><strong>Dead code elimination:</strong> Remove unused code</li>
+                                <li><strong>Common subexpression elimination:</strong> Avoid redundant calculations</li>
+                                <li><strong>Loop invariant hoisting:</strong> Move calculations out of loops</li>
+                                <li><strong>Inlining:</strong> Replace function calls with function body</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">Compiler Limitations</h4>
+                            <ul class="text-gray-300 list-disc list-inside space-y-1 text-sm ml-4">
+                                <li><strong>Pointer aliasing:</strong> Conservative assumptions about memory access</li>
+                                <li><strong>Function calls:</strong> Unknown side effects prevent optimization</li>
+                                <li><strong>Loop bounds:</strong> Unknown iteration counts limit unrolling</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2 mt-4">Helping the Compiler</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Use <code>restrict</code> keyword, avoid global variables, provide loop bounds hints, 
+                        and structure code to be optimization-friendly.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Memory Management & Storage Allocation</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Dynamic Memory Allocation</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Efficient memory management is crucial for performance. Poor allocation strategies 
+                        can cause fragmentation, cache misses, and false sharing in parallel programs.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Allocation Strategies</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>Stack allocation:</strong> Fastest, automatic cleanup</li>
+                            <li><strong>Pool allocation:</strong> Pre-allocate fixed-size blocks</li>
+                            <li><strong>Garbage collection:</strong> Automatic but unpredictable timing</li>
+                            <li><strong>Custom allocators:</strong> Optimized for specific patterns</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Parallel Storage Allocation</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        In parallel programs, avoid contention on shared allocators. Use thread-local 
+                        allocation or lock-free algorithms to maintain scalability.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Cache-Efficient Algorithms</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Cache-Aware vs Cache-Oblivious</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        <strong>Cache-aware algorithms</strong> are tuned for specific cache sizes. 
+                        <strong>Cache-oblivious algorithms</strong> perform well across all levels of 
+                        memory hierarchy without tuning parameters.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">Cache-Oblivious Matrix Transpose</h4>
+                            <p class="text-gray-300 text-sm">
+                                Recursively divide the matrix until it fits in cache, then transpose the blocks. 
+                                This approach works optimally for any cache size.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-md font-medium text-green-300 mb-2">Cache-Oblivious Sorting</h4>
+                            <p class="text-gray-300 text-sm">
+                                Funnel sort achieves optimal cache complexity O(N/B log(N/B) + N/B log M/B) 
+                                where B is block size and M is cache size.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Advanced Synchronization</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Lock-Free Programming</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Use atomic operations and careful memory ordering to implement synchronization 
+                        without locks. This avoids deadlocks and reduces contention.
+                    </p>
+
+                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
+                        <code class="text-sm text-gray-200">
+                            <span class="text-green-400">// Compare-and-swap based stack push</span><br/>
+                            <span class="text-purple-400">do</span> {<br/>
+                            &nbsp;&nbsp;old_head = stack.head;<br/>
+                            &nbsp;&nbsp;new_node-&gt;next = old_head;<br/>
+                            } <span class="text-purple-400">while</span> (!<span class="text-yellow-400">CAS</span>(&stack.head, old_head, new_node));
+                        </code>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Memory Models</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Modern processors reorder memory operations for performance. Understanding memory 
+                        models (sequential consistency, release consistency) is crucial for correct 
+                        lock-free programming.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Measurement & Profiling Tools</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Performance Measurement</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Accurate timing is essential but tricky. Use high-resolution timers, account for 
+                        measurement overhead, and run multiple trials with statistical analysis.
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4 mb-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Essential Tools</h4>
+                        <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                            <li><strong>Cachegrind:</strong> Cache behavior simulation</li>
+                            <li><strong>Callgrind:</strong> Call graph profiling</li>
+                            <li><strong>Perf:</strong> Hardware performance counters</li>
+                            <li><strong>Valgrind:</strong> Memory debugging and profiling</li>
+                            <li><strong>Intel VTune:</strong> Advanced CPU profiling</li>
+                        </ul>
+                    </div>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Cachegrind Cache Simulator</h4>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Part of the Valgrind suite, Cachegrind simulates cache behavior and reports miss rates 
+                        for different access patterns. Essential for understanding cache performance bottlenecks.
+                    </p>
+
+                    <h4 class="text-md font-medium text-green-300 mb-2">Percent of Peak Performance</h4>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        A key metric throughout the course - measures how close your implementation comes to the 
+                        theoretical maximum performance of the hardware. Helps identify optimization opportunities.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Domain-Specific Optimization</h2>
+                    
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Autotuning & DSLs</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Domain-specific languages (DSLs) can generate highly optimized code for specific 
+                        problem domains. Autotuning searches the optimization space automatically.
+                    </p>
+
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Graph Algorithms</h4>
+                            <p class="text-gray-300 text-sm">Optimize for memory layout, cache-friendly traversals, and parallel decomposition</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">Chess Engines</h4>
+                            <p class="text-gray-300 text-sm">Speculative parallelism, move ordering, and transposition tables</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-green-300">TSP Algorithms</h4>
+                            <p class="text-gray-300 text-sm">Branch-and-bound with careful pruning and parallel search</p>
+                        </div>
+                    </div>
+                </article>
+
+                
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Course Overview</h4>
+                    <div class="mt-3 text-sm text-gray-300 space-y-2">
+                        <div><strong>Focus:</strong> Software performance optimization</div>
+                        <div><strong>Key Insight:</strong> Moore's law is slowing</div>
+                        <div><strong>Solution:</strong> Better algorithms & system design</div>
+                        <div><strong>Goal:</strong> Maximize "percent of peak" performance</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Parallelization Rules</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Parallelize outer loops first</li>
+                        <li>• Minimize thread synchronization</li>
+                        <li>• Exploit cache-friendly access patterns</li>
+                        <li>• Aim for N× speedup with N cores</li>
+                        <li>• Reduce context switching overhead</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Cache Optimization</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><strong>Spatial Locality:</strong> Access contiguous memory</li>
+                        <li><strong>Temporal Locality:</strong> Reuse recently accessed data</li>
+                        <li><strong>Cache Hierarchy:</strong> L1 → L2 → L3 → Memory</li>
+                        <li><strong>Tiling:</strong> Break work into cache-sized blocks</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Bentley's Rules</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Data structure augmentation</li>
+                        <li>• Precomputation</li>
+                        <li>• Compile-time initialization</li>
+                        <li>• Caching</li>
+                        <li>• Exploiting sparsity</li>
+                        <li>• Constant folding</li>
+                        <li>• Function inlining</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Modern Processor Features</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• SIMD vector operations</li>
+                        <li>• Superscalar execution</li>
+                        <li>• Out-of-order execution</li>
+                        <li>• Branch prediction</li>
+                        <li>• Multi-level caching</li>
+                        <li>• Register aliasing</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Performance Tools</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Cachegrind (cache simulation)</li>
+                        <li>• Valgrind suite</li>
+                        <li>• Intel VTune Profiler</li>
+                        <li>• Perf (hardware counters)</li>
+                        <li>• Compiler optimization flags</li>
+                        <li>• Statistical timing analysis</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Cilk Parallel Programming</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• cilk_spawn (fork computation)</li>
+                        <li>• cilk_sync (join computation)</li>
+                        <li>• cilk_for (parallel loops)</li>
+                        <li>• Work-stealing scheduler</li>
+                        <li>• Reducer hyperobjects</li>
+                        <li>• Race detection tools</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Advanced Topics</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><strong>Memory Models:</strong> Sequential consistency, weak ordering</li>
+                        <li><strong>Lock-Free Programming:</strong> CAS, ABA problem</li>
+                        <li><strong>Cache-Oblivious:</strong> Algorithms optimal for all cache sizes</li>
+                        <li><strong>Autotuning:</strong> Automatic optimization space exploration</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Performance engineering notes from <strong>MIT 6.172</strong> by <strong>Aaron Horowitz</strong>.
+            </p>
+            <p class="mt-2">Understanding how to make software fast in the post-Moore's law era.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         "portfolio-preview": { url: "PortfolioOptimizer.html", paragraphIndex: 0 },  // Extract the first paragraph from the overview
         "robot-preview": { url: "RobotConfigurationSpace.html", paragraphIndex: 0 },  // Extract the project overview
         "socket-preview": { url: "SocketCpp.html", paragraphIndex: 0 },  // Extract the project overview paragraph
+        "smbus-preview": { url: "SMBusProtocol.html", paragraphIndex: 0 },  // Extract the SMBus overview
+        "uart-i2c-preview": { url: "UartVsI2c.html", paragraphIndex: 0 },  // Extract the serial communication overview
+        "performance-engineering-preview": { url: "PerformanceEngineering.html", paragraphIndex: 0 },  // Extract the introduction paragraph
         "camera-calibration-preview": { url: "CameraCalibration.html", paragraphIndex: 0 }  // Extract the introduction paragraph
     };
 

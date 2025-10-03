@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UART vs I2C Communication Protocols</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #06b6d4;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* Override header font to match index.html */
+    #site-header {
+      font-family: 'Courier New', Courier;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(6,182,212,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+    .protocol-box {
+      background: linear-gradient(135deg, #1a2332 0%, #0f1720 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .uart-accent { color: #10b981; }
+    .i2c-accent { color: #3b82f6; }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-6xl mx-auto p-6 lg:p-12">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">UART vs I2C Protocols</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Understanding the fundamental differences between asynchronous and synchronous serial 
+                        communication protocols commonly used in embedded systems and Arduino projects.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <span class="text-xs text-muted ml-3 text-gray-400">Embedded Systems • Serial Communication • Hardware Protocols</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Topic</div>
+                        <div class="mt-1 text-sm font-medium">Serial Communication</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Key Concepts</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Async vs Sync protocols</div>
+                            <div>• Data framing</div>
+                            <div>• Bus architecture</div>
+                            <div>• Arduino implementations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Serial Communication Overview</h2>
+                    
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Both <strong>UART</strong> and <strong>I2C</strong> are examples of <strong>serial communication</strong> 
+                        - transmitting data one bit at a time over a line, as opposed to parallel communication 
+                        which sends multiple bits simultaneously.
+                    </p>
+
+                    <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-4 mb-4">
+                        <p class="text-yellow-200 text-sm font-medium">
+                            🔄 Key Difference: UART is asynchronous, I2C is synchronous
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="protocol-box rounded-lg p-4">
+                            <h3 class="uart-accent font-semibold mb-2">UART (Asynchronous)</h3>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                <li>• Uses start/stop bits for timing</li>
+                                <li>• No shared clock required</li>
+                                <li>• Point-to-point communication</li>
+                                <li>• Simple 2-wire connection</li>
+                            </ul>
+                        </div>
+                        <div class="protocol-box rounded-lg p-4">
+                            <h3 class="i2c-accent font-semibold mb-2">I2C (Synchronous)</h3>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                <li>• Requires shared clock signal</li>
+                                <li>• Multi-device bus architecture</li>
+                                <li>• Address-based device selection</li>
+                                <li>• 2-wire bus (SDA + SCL)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-blue-300 mb-2">Protocol vs Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        When discussing communication protocols, it's important to distinguish between the 
+                        <strong>protocol itself</strong> (the standard/specification) and the 
+                        <strong>implementation</strong> (the library or package that provides functions to use it).
+                    </p>
+
+                    <div class="bg-[#161b22] rounded-lg p-4">
+                        <h4 class="text-md font-medium text-green-300 mb-2">Common Implementations</h4>
+                        <ul class="text-gray-300 text-sm space-y-1">
+                            <li><strong>Arduino Serial library:</strong> UART protocol implementation</li>
+                            <li><strong>Arduino Wire library:</strong> I2C protocol implementation</li>
+                            <li><strong>smbus2 package:</strong> I2C implementation for motor drivers and IMUs</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">UART: Asynchronous Serial Communication</h2>
+                    
+                    <h3 class="uart-accent text-lg font-medium mb-3">What Happens During Serial.print()?</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Let's trace through exactly what happens when you call <code>Serial.print()</code> 
+                        in Arduino code - it's more complex than it appears!
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">Step 1: Data Conversion</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                The <code>Serial.print()</code> function converts your data into bytes. 
+                                For example, the number <strong>123</strong> becomes ASCII characters: 
+                                '1' (49), '2' (50), '3' (51), plus a null terminator.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">Step 2: Buffering</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                Converted bytes are placed in a <strong>transmit buffer</strong> in RAM. 
+                                The function returns immediately without waiting - this allows your 
+                                main program to continue executing while data transmits in the background.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">Step 3: Hardware Interrupt</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                The UART hardware continuously monitors the buffer. When data is detected, 
+                                a <strong>hardware interrupt</strong> is triggered, causing the microcontroller 
+                                to pause and execute the transmission routine.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">Step 4: Data Framing</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-3">
+                                Each byte is wrapped in a <strong>data frame</strong>:
+                            </p>
+                            <div class="bg-[#07101a] rounded-md p-3">
+                                <code class="text-xs text-gray-200">
+                                    [START BIT] [8 DATA BITS] [STOP BIT(S)]<br/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01100001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1
+                                </code>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">Step 5: Bit-by-Bit Transmission</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                The internal clock (configured by <code>Serial.begin()</code>) controls timing. 
+                                At <strong>9600 baud</strong>, each bit is transmitted for ~1/9600th of a second. 
+                                Both devices must be pre-configured with the same baud rate and packet structure.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mt-4">
+                        <p class="text-green-200 text-sm">
+                            <strong>💡 Key Advantage:</strong> The UART hardware handles everything automatically, 
+                            freeing the main processor for other tasks. Arbitrary idle time between transmissions is allowed.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">I2C: Synchronous Serial Communication</h2>
+                    
+                    <h3 class="i2c-accent text-lg font-medium mb-3">What Happens During Wire.write()?</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        I2C is more complex than UART because it's a <strong>bus protocol</strong> - multiple 
+                        devices can share the same two wires (SDA for data, SCL for clock).
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">Step 1: Preparing Transmission</h4>
+                            <div class="bg-[#07101a] rounded-md p-3 mb-2">
+                                <code class="text-sm text-gray-200">
+                                    Wire.beginTransmission(address); <span class="text-green-400">// Target specific device</span><br/>
+                                    Wire.write(command_byte);        <span class="text-green-400">// Queue command</span><br/>
+                                    Wire.write(data_byte);          <span class="text-green-400">// Queue data</span>
+                                </code>
+                            </div>
+                            <p class="text-gray-300 text-sm">
+                                Each <code>Wire.write()</code> adds bytes to a transmit buffer. 
+                                Nothing is sent until <code>Wire.endTransmission()</code> is called.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">Step 2: Start Condition</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                The master pulls <strong>SDA low while SCL is high</strong>. This special signal 
+                                alerts all devices on the bus that a new transmission is starting.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">Step 3: Address & R/W Bit</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-2">
+                                The master sends a 7-bit device address plus a read/write bit:
+                            </p>
+                            <div class="bg-[#07101a] rounded-md p-3">
+                                <code class="text-xs text-gray-200">
+                                    [7-bit Address][R/W] → Device responds with ACK if address matches
+                                </code>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">Step 4: Data Transmission</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                Each byte is clocked out <strong>synchronized by SCL</strong>. After every byte, 
+                                the receiving device sends an <strong>ACK</strong> (acknowledge) to confirm 
+                                successful reception.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#161b22] rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">Step 5: Stop Condition</h4>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                The master pulls <strong>SDA high while SCL is high</strong>, signaling 
+                                the end of transmission. The bus is now free for another device to use.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4 mt-4">
+                        <p class="text-blue-200 text-sm">
+                            <strong>🔧 Real-world Example:</strong> When controlling a Hiwonder motor board, 
+                            the Arduino sends the motor's I2C address, followed by command bytes for 
+                            "set motor speed" and the actual speed value (e.g., 150).
+                        </p>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Detailed Protocol Comparison</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-600">
+                                    <th class="text-left p-3 text-gray-300">Aspect</th>
+                                    <th class="text-left p-3 uart-accent">UART</th>
+                                    <th class="text-left p-3 i2c-accent">I2C</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Synchronization</td>
+                                    <td class="p-3">Asynchronous (no shared clock)</td>
+                                    <td class="p-3">Synchronous (shared SCL clock)</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Wires Required</td>
+                                    <td class="p-3">2 (TX, RX) + ground</td>
+                                    <td class="p-3">2 (SDA, SCL) + ground</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Device Count</td>
+                                    <td class="p-3">Point-to-point (1:1)</td>
+                                    <td class="p-3">Multi-device bus (1:many)</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Addressing</td>
+                                    <td class="p-3">None (direct connection)</td>
+                                    <td class="p-3">7-bit or 10-bit addresses</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Speed</td>
+                                    <td class="p-3">Up to ~1 Mbps (typical)</td>
+                                    <td class="p-3">100 kHz (standard), 400 kHz (fast)</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Error Detection</td>
+                                    <td class="p-3">Optional parity bit</td>
+                                    <td class="p-3">ACK/NACK for each byte</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-3 font-medium">Complexity</td>
+                                    <td class="p-3">Simple to implement</td>
+                                    <td class="p-3">More complex (arbitration, etc.)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Arduino Library Examples</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="uart-accent text-lg font-medium mb-3">UART Example (Serial)</h3>
+                            <div class="bg-[#07101a] rounded-md p-4">
+                                <code class="text-sm text-gray-200">
+                                    <span class="text-purple-400">void</span> <span class="text-yellow-400">setup</span>() {<br/>
+                                    &nbsp;&nbsp;Serial.<span class="text-blue-400">begin</span>(9600); <span class="text-green-400">// Set baud rate</span><br/>
+                                    }<br/><br/>
+                                    
+                                    <span class="text-purple-400">void</span> <span class="text-yellow-400">loop</span>() {<br/>
+                                    &nbsp;&nbsp;<span class="text-blue-400">int</span> sensor = <span class="text-yellow-400">analogRead</span>(A0);<br/>
+                                    &nbsp;&nbsp;Serial.<span class="text-blue-400">print</span>(<span class="text-orange-400">"Sensor: "</span>);<br/>
+                                    &nbsp;&nbsp;Serial.<span class="text-blue-400">println</span>(sensor);<br/>
+                                    &nbsp;&nbsp;<span class="text-yellow-400">delay</span>(1000);<br/>
+                                    }
+                                </code>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="i2c-accent text-lg font-medium mb-3">I2C Example (Wire)</h3>
+                            <div class="bg-[#07101a] rounded-md p-4">
+                                <code class="text-sm text-gray-200">
+                                    <span class="text-green-400">#include &lt;Wire.h&gt;</span><br/><br/>
+                                    
+                                    <span class="text-purple-400">void</span> <span class="text-yellow-400">setup</span>() {<br/>
+                                    &nbsp;&nbsp;Wire.<span class="text-blue-400">begin</span>(); <span class="text-green-400">// Join I2C bus</span><br/>
+                                    }<br/><br/>
+                                    
+                                    <span class="text-purple-400">void</span> <span class="text-yellow-400">controlMotor</span>(<span class="text-blue-400">int</span> speed) {<br/>
+                                    &nbsp;&nbsp;Wire.<span class="text-blue-400">beginTransmission</span>(0x42);<br/>
+                                    &nbsp;&nbsp;Wire.<span class="text-blue-400">write</span>(0x01); <span class="text-green-400">// Command byte</span><br/>
+                                    &nbsp;&nbsp;Wire.<span class="text-blue-400">write</span>(speed); <span class="text-green-400">// Speed data</span><br/>
+                                    &nbsp;&nbsp;Wire.<span class="text-blue-400">endTransmission</span>();<br/>
+                                    }
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">When to Use Each Protocol</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-green-900/20 border border-green-600/30 rounded-lg p-4">
+                            <h3 class="uart-accent text-lg font-semibold mb-3">Choose UART When:</h3>
+                            <ul class="text-gray-300 space-y-2 text-sm">
+                                <li>✓ Simple point-to-point communication</li>
+                                <li>✓ High-speed data transfer needed</li>
+                                <li>✓ Debugging/logging to computer</li>
+                                <li>✓ GPS modules, Bluetooth modules</li>
+                                <li>✓ Long-distance communication</li>
+                                <li>✓ Minimal complexity desired</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4">
+                            <h3 class="i2c-accent text-lg font-semibold mb-3">Choose I2C When:</h3>
+                            <ul class="text-gray-300 space-y-2 text-sm">
+                                <li>✓ Multiple devices on same bus</li>
+                                <li>✓ Limited pins available</li>
+                                <li>✓ Sensor networks (IMU, temperature)</li>
+                                <li>✓ Motor controllers, servo drivers</li>
+                                <li>✓ Short-distance, reliable communication</li>
+                                <li>✓ Built-in error checking needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Common Issues & Troubleshooting</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 class="uart-accent font-semibold mb-2">UART Problems</h4>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                <li><strong>Baud rate mismatch:</strong> Garbled characters, ensure both ends use same rate</li>
+                                <li><strong>Missing ground connection:</strong> Unreliable communication, connect GND</li>
+                                <li><strong>Voltage level differences:</strong> 3.3V vs 5V logic level conflicts</li>
+                                <li><strong>Buffer overflow:</strong> Data loss if sending faster than transmission rate</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 class="i2c-accent font-semibold mb-2">I2C Problems</h4>
+                            <ul class="text-gray-300 text-sm space-y-1">
+                                <li><strong>Missing pull-up resistors:</strong> Bus won't work, need 4.7kΩ on SDA/SCL</li>
+                                <li><strong>Address conflicts:</strong> Multiple devices with same address</li>
+                                <li><strong>Bus lockup:</strong> Device holding SDA low, reset required</li>
+                                <li><strong>Cable length:</strong> Too long cables cause signal integrity issues</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick Reference</h4>
+                    <div class="mt-3 text-sm text-gray-300 space-y-2">
+                        <div><strong>UART:</strong> Asynchronous, point-to-point</div>
+                        <div><strong>I2C:</strong> Synchronous, multi-device bus</div>
+                        <div><strong>Both:</strong> Serial (1-bit-at-a-time) communication</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">UART Characteristics</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• No shared clock needed</li>
+                        <li>• Start/stop bit framing</li>
+                        <li>• 2 wires (TX/RX) + ground</li>
+                        <li>• Higher speeds possible</li>
+                        <li>• Arduino Serial library</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">I2C Characteristics</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Shared clock (SCL) required</li>
+                        <li>• 7-bit device addressing</li>
+                        <li>• 2 wires (SDA/SCL) + ground</li>
+                        <li>• Multiple devices per bus</li>
+                        <li>• Arduino Wire library</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Common Applications</h4>
+                    <div class="mt-3 text-sm text-gray-300 space-y-3">
+                        <div>
+                            <div class="uart-accent font-medium">UART Uses:</div>
+                            <div class="text-xs">GPS, Bluetooth, WiFi modules, debugging</div>
+                        </div>
+                        <div>
+                            <div class="i2c-accent font-medium">I2C Uses:</div>
+                            <div class="text-xs">IMU sensors, motor controllers, OLED displays</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Troubleshooting Tips</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-1">
+                        <li>• Check baud rates (UART)</li>
+                        <li>• Verify pull-up resistors (I2C)</li>
+                        <li>• Confirm wiring connections</li>
+                        <li>• Test with simple examples</li>
+                        <li>• Use logic analyzer if available</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Python Libraries</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><strong>smbus2:</strong> I2C communication for RPi</li>
+                        <li><strong>pyserial:</strong> UART communication</li>
+                        <li><strong>Adafruit libraries:</strong> Sensor-specific implementations</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Serial communication protocol notes by <strong>Aaron Horowitz</strong>.
+            </p>
+            <p class="mt-2">Understanding the fundamentals of embedded system communication.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
