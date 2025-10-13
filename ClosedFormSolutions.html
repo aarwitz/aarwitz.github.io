@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Which Math Problems Have Closed-Form Solutions and Why? - Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Courier New', Courier;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-6xl mx-auto p-6 lg:p-12">
+        <!-- Header -->
+        <div id="site-header"></div>
+        <!-- Essay Content -->
+        <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
+                Which Math Problems Have Closed-Form Solutions and Why?
+                A soft intro to the Abel–Ruffini theorem and Galois theory
+            </h1>
+            <p class="text-gray-400 text-sm mb-6">Published on October 10, 2025</p>
+            
+            <div class="prose max-w-none text-gray-300">
+                <p class="mb-4">
+                    You probably remember from Algebra class that many problems ask one to "solve for x". This process of applying a finite sequence of algebraic operations (addition, subtraction, multiplication, division, and taking roots) to isolate the unknown variable and express it in terms of the known values is what we call finding a <strong>closed-form solution</strong>.
+                    <br><br>
+                    Some math problems can be solved in this way, but for a lot of interesting problems, finding a closed-form solution is hard or even impossible.
+                    Such problems require numerical solvers, like Gradient Descent, that find an approximate solution through iterative calculations.
+                    <br><br>
+                    We all learn about this a little in school, but I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of our knowledge. What can be known for certain, and how well we can estimate the things that cannot be known for certain?
+                    How do we know when we can't know something?<br><br>
+                    Before diving into the cause of these relationships between types of problems and ways of solving them, let's spend some time looking at an example of each, (I) closed-form solutions and (II) numerical solutions.:
+                </p>
+                <h2 class="text-lg font-bold text-white mb-3">I. Closed-Form Soluton Examples</h3>
+                <br><h3 class="text-lg font-bold text-white mb-3">Linear systems</h3>
+                <p class="mb-4">
+                    Consider the simple linear equation $2x + 3 = 7$. We can isolate $x$ as follows:
+                    <div class="flex justify-center my-6">
+                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
+                            <div class="text-sm text-gray-400 mb-2">Problem</div>
+                            <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
+                                $2x + 3 = 7$
+                            </div>
+                            <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
+                            <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
+                                \[x = \frac{7 - 3}{2} = 2\]
+                            </div>
+                            <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = 2$</span></div>
+                        </div>
+                    </div>
+                    <br>
+
+                    And then consider a slightly more complex example, a system of two linear equations with two unknowns:
+                    <div class="flex justify-center my-6">
+                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
+                            <div class="text-sm text-gray-400 mb-2">Problem</div>
+                            <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">\[
+                            \begin{aligned}
+                            2x + 3y &= 8 \\
+                            4x - y &= 2
+                            \end{aligned}
+                            \]</div>
+
+                            <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
+                            <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
+                            \begin{aligned}
+                            &\text{From the second equation: } y = 4x - 2 \\
+                            &\text{Substitute into the first: } 2x + 3(4x - 2) = 8 \\
+                            &\Rightarrow\ 2x + 12x - 6 = 8 \\
+                            &\Rightarrow\ 14x = 14 \\
+                            &\Rightarrow\ x = 1 \\
+                            &\text{Then } y = 4(1) - 2 = 2
+                            \end{aligned}
+                            \]</div>
+
+                            <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = 1$, $y = 2$</span></div>
+                        </div>
+                    </div>
+                    <br>
+                    But is there any way to know in advance if an equation (or set of equations) will have a closed-form solution like those examples above?
+                    <br><br>
+                    Well there are two requirements that guarantee a closed-form solution for a linear system.
+                    You can find other ways of stating these two requirements, but I find the most intuitive to be:
+                    <div class="bg-[#0b1220] rounded-lg p-4 border border-gray-800 mb-6">
+                    <h4 class="text-sm font-semibold text-white mb-2">When to expect closed-form solutions for linear systems</h4>
+                    <ul class="space-y-2 text-gray-200">
+                        <li class="flex items-start"><span class="text-green-400 mr-3">✔</span><div><strong>System is determined:</strong> There are the same number of linear equations as unknown variables. In the above example there is one unknown, $x$, and one equation that contains that unknown.</div></li>
+                        <li class="flex items-start"><span class="text-green-400 mr-3">✔</span><div><strong>System is linearly independent:</strong> One equation cannot be expressed as a linear combination of the others, meaning that the two equations encompass all the necessary information to find a unique solution in all of $\mathbb{R}^2$, or the coefficient vectors' <em>"span"</em> is equal to $\mathbb{R}^2$.</div></li>
+                    </ul>
+                    </div>
+                    So if we consider the example above that has two equations<br>
+                    <span class="text-green-400 mr-3">✔</span> It has two unknowns and two equations (it is <em>determined</em>)<br>
+                    <span class="text-green-400 mr-3">✔</span> The equations are <em>linearly independent</em>, which you can show yourself by drawing their coefficient vectors $\mathbf{v_1} = \begin{pmatrix} 2 \\ 3 \end{pmatrix}$ and $\mathbf{v_2} = \begin{pmatrix} 4 \\ -1 \end{pmatrix}$ in 2D space and observing that they are not parallel.
+                    <br><br><h3 class="text-lg font-bold text-white mb-3">Beyond linear systems</h3>
+                    We have up until now only mentioned linear equations because they are the simplest case. Quadratic equations (polynomials of degree 2) are an example of non-linear equations that have a closed-form solution (the quadratic formula).
+                    <div class="flex justify-center my-6">
+                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
+                            <div class="text-sm text-gray-400 mb-2">Problem</div>
+                            <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
+                                x^2 + 5x + 6 = 0
+                            </div>
+                            <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
+                            <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
+                                x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} = \frac{-5 \pm \sqrt{25 - 24}}{2} = \frac{-5 \pm 1}{2}
+                            \]</div>
+
+                            <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = -2, -3$</span></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-start gap-6 md:gap-8 my-6">
+                        <div class="md:flex-1 prose max-w-none text-gray-300">
+                            <p>
+                                The reason all quadratic equations have a closed-form solution is that any expression of the form $ax^2 + bx + c = 0$ can be <em>completed into a perfect square</em>. This process—called <em>completing the square</em>—lets us isolate $x$ using only addition, multiplication, division, and square roots. In other words, the structure of a quadratic inherently allows exact isolation of the variable, so we can always find its solutions symbolically.
+                            </p>
+                            <p>
+                                Cubic and quartic equations (degree 3 and 4) also have closed-form solutions, though they were discovered much later and involve more complex substitutions. But starting at degree 5, mathematicians proved that there is <em>no general formula</em> that can express the solutions using only arithmetic and roots. This result, known as the <strong>Abel–Ruffini theorem</strong>, marks a boundary in mathematics: beyond it, some equations simply cannot be solved exactly, only approximated numerically.
+                            </p>
+                        </div>
+
+                        <div class="md:w-64 flex-shrink-0 md:pl-6">
+                            <div class="bg-gray-50 rounded-md p-2 shadow-sm border border-gray-200">
+                                <img src="Completing_the_square.png" alt="Completing the square diagram" class="w-full h-auto rounded-md" />
+                                <p class="mt-2">By <a href="//commons.wikimedia.org/wiki/User:Krishnavedala" title="User:Krishnavedala">Krishnavedala</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by-sa/3.0" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=37056917">Link</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-3">II. Numeric Solution Example</h3>
+
+                <p class="mb-4">
+                    Now let's look at examples where there is no closed-form solution.
+                    Here is a very small numeric example that shows an iterative solver in action.
+                    We'll compute $\sqrt{2}$ by solving $x^2 = 2$ using Newton's method. This method produces a sequence of approximations $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$ which converges rapidly for this problem.
+                </p>
+
+                <div class="flex justify-center my-6">
+                    <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
+                        <div class="text-sm text-gray-400 mb-2">Problem</div>
+                        <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">Find $x$ such that $f(x)=x^2 - 2 = 0$ (i.e. $x=\sqrt{2}$).</div>
+
+                        <div class="text-sm text-gray-400 mt-3 mb-2">Solution (Newton's method — numeric iteration)</div>
+                        <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
+                        x_{n+1} = x_n - \frac{x_n^2 - 2}{2x_n} = \frac{1}{2}\left(x_n + \frac{2}{x_n}\right)
+                        \]</div>
+
+                        <div class="text-sm text-gray-400 mt-3 mb-2">Sample iterations (start $x_0 = 1$)</div>
+                        <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
+                        x_0 = 1 \quad\Rightarrow\quad x_1 = \tfrac{1}{2}(1 + 2/1) = 1.5 \\
+                        x_2 = \tfrac{1}{2}(1.5 + 2/1.5) = 1.416\overline{6} \\
+                        x_3 \approx 1.4142156862745099 \quad(\text{accurate to }6\text{ digits})
+                        \]</div>
+
+                        <div class="text-sm text-gray-300 mt-3">Result (approx): <span class="text-gray-100">$x \approx 1.41421356$</span> — arrived at numerically by iteration.</div>
+                    </div>
+                </div>
+
+                <p class="mb-4">
+                    Before going deeper, it helps to classify the kinds of problems we try to solve. One useful lens is that there are four common goal types in mathematics; this context makes it clearer when closed forms exist and when they usually do not.
+                </p>
+
+                <div class="my-6">
+                    <h3 class="text-lg font-bold text-white mb-3">Level I — Goal Type (What you’re trying to find)</h3>
+                    <div class="overflow-x-auto rounded-lg border border-gray-700">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead class="bg-[#1b2430]">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Category</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Description</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Typical Form</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Closed-Form Chance</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800 bg-[#161b22]">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">A. Equation / Root Finding</td>
+                                    <td class="px-4 py-3">Find $x$ such that $f(x)=0$.</td>
+                                    <td class="px-4 py-3">Polynomial, exponential, trigonometric equations.</td>
+                                    <td class="px-4 py-3">High for linear or low-degree polynomials; falls rapidly for general nonlinear equations.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">B. Optimization</td>
+                                    <td class="px-4 py-3">Find $x$ minimizing or maximizing $f(x)$.</td>
+                                    <td class="px-4 py-3">Linear, quadratic, or nonlinear objectives (with constraints).</td>
+                                    <td class="px-4 py-3">Depends on convexity and constraints; closed form mostly for simple linear/quadratic with equality constraints.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">C. Integration / Summation</td>
+                                    <td class="px-4 py-3">Compute an area or total, $\int f(x)\,dx$ or $\sum f(x)$.</td>
+                                    <td class="px-4 py-3">Integrals, series.</td>
+                                    <td class="px-4 py-3">Often no closed form; numeric approximation (e.g., Simpson’s rule, Gaussian quadrature, Monte Carlo) is standard.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">D. Differential / Dynamic Systems</td>
+                                    <td class="px-4 py-3">Solve for a function $y(t)$ such that $F(y, y', t)=0$ (or systems/PDEs).</td>
+                                    <td class="px-4 py-3">ODEs, PDEs, state-space models.</td>
+                                    <td class="px-4 py-3">Rare closed forms; iterative or symbolic approximation dominates.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p class="mb-4">
+                    Understanding when you can expect a neat formula versus when you'll need computational power is crucial for both theoretical understanding and practical problem-solving. Let's explore the patterns that determine which mathematical problems yield to direct solution and which require numerical approximation.
+                </p>
+
+                <div class="bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 my-8">
+                    <h3 class="text-lg font-bold text-white mb-4">Practical Rule of Thumb</h3>
+                    <ul class="space-y-2 text-gray-200">
+                        <li><span class="text-green-400">Linear + Equality constraints</span> → Closed form</li>
+                        <li><span class="text-yellow-400">Quadratic + Convex</span> → Sometimes closed form</li>
+                        <li><span class="text-red-400">Nonlinear or inequality-constrained</span> → Numeric methods</li>
+                        <li><span class="text-blue-400">Convex</span> ⇒ Global solution exists (even if numeric)</li>
+                        <li><span class="text-orange-400">Nonconvex</span> ⇒ Only local minima guaranteed</li>
+                    </ul>
+                </div>
+
+              
+
+                <p class="mb-4">
+                    Linear regression provides a perfect example. The ordinary least squares problem minimizes $||Ax - b||^2$, which leads to the normal equation:
+                </p>
+                <div class="text-center my-6">
+                    $$x^* = (A^T A)^{-1} A^T b$$
+                </div>
+                <p class="mb-4">
+                    This closed-form solution exists because the objective function is quadratic and the constraints are linear—creating a convex optimization problem with a unique global minimum.
+                </p>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">Quadratic Problems: Sometimes Solvable</h2>
+                <p class="mb-4">
+                    Quadratic equations, despite being nonlinear, often admit closed-form solutions due to their special algebraic structure. The familiar quadratic formula for $ax^2 + bx + c = 0$ is:
+                </p>
+                <div class="text-center my-6">
+                    $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+                </div>
+                <p class="mb-4">
+                    This generalizes to quadratic optimization problems. Consider mean-variance portfolio optimization, where we minimize portfolio risk $x^T \Sigma x$ subject to achieving expected return $\mu^T x = r$. The Lagrangian approach yields:
+                </p>
+                <div class="text-center my-6">
+                    $$x^* = \frac{\Sigma^{-1} \mu (\mu^T \Sigma^{-1} \mathbf{1})^{-1} r + \Sigma^{-1} \mathbf{1} (\mathbf{1}^T \Sigma^{-1} \mathbf{1})^{-1} (1-r)}{\mu^T \Sigma^{-1} \mathbf{1}}$$
+                </div>
+                <p class="mb-4">
+                    This closed-form solution exists because the problem is convex quadratic with linear equality constraints. However, add inequality constraints (like "no short selling": $x_i \geq 0$), and you need numerical methods like quadratic programming solvers.
+                </p>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">The Convexity Boundary</h2>
+                <p class="mb-4">
+                    Convexity is the crucial dividing line in optimization. A function $f$ is convex if for any two points $x_1, x_2$ and any $\lambda \in [0,1]$:
+                </p>
+                <div class="text-center my-6">
+                    $$f(\lambda x_1 + (1-\lambda) x_2) \leq \lambda f(x_1) + (1-\lambda) f(x_2)$$
+                </div>
+                <p class="mb-4">
+                    Geometrically, this means the function lies below any line segment connecting two points on its graph—it "curves upward" like a bowl. Even when convex problems lack closed-form solutions, they guarantee that any local minimum is also a global minimum, making numerical methods reliable.
+                </p>
+
+                <div class="bg-[#1c2128] p-6 rounded-lg my-8">
+                    <p class="text-center text-gray-400 text-sm mb-4">Convex Function Visualization</p>
+                    <div class="text-center">
+                        <div class="inline-block bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg p-8 border border-gray-600">
+                            <div class="text-2xl mb-2">🥣</div>
+                            <p class="text-sm text-gray-300">Bowl-shaped level curves</p>
+                            <p class="text-xs text-gray-400 mt-2">Any path to the bottom leads to the global minimum</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="mb-4">
+                    Consider the function $f(x,y) = x^2 + y^2$. Its level curves are concentric circles centered at the origin, forming a paraboloid. Any optimization algorithm started from any point will converge to the global minimum at $(0,0)$.
+                </p>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">When Closed Forms Disappear</h2>
+                <p class="mb-4">
+                    Several factors can destroy the possibility of closed-form solutions:
+                </p>
+
+                <h3 class="text-lg font-bold text-white mb-3 mt-6">Inequality Constraints</h3>
+                <p class="mb-4">
+                    Even linear programs like maximizing $c^T x$ subject to $Ax \leq b$ and $x \geq 0$ require iterative methods (simplex, interior point) because the feasible region has corners where the gradient is undefined.
+                </p>
+
+                <h3 class="text-lg font-bold text-white mb-3 mt-6">Nonlinear Objectives</h3>
+                <p class="mb-4">
+                    Problems like $\min f(x)$ where $f$ is a neural network, exponential function, or trigonometric expression generally lack closed forms. The Abel-Ruffini theorem proves that polynomial equations of degree 5 and higher cannot be solved by radicals in general.
+                </p>
+
+                <h3 class="text-lg font-bold text-white mb-3 mt-6">Non-convex Landscapes</h3>
+                <p class="mb-4">
+                    Functions like $f(x) = x^4 - 2x^2$ have multiple local minima. Even if you could solve $f'(x) = 0$ analytically, you'd need additional methods to determine which critical point is the global minimum.
+                </p>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">The Numerical Alternative</h2>
+                <p class="mb-4">
+                    When closed forms fail, numerical methods step in:
+                </p>
+
+                <ul class="mb-4 space-y-2">
+                    <li><strong class="text-white">Gradient Descent:</strong> For smooth convex problems</li>
+                    <li><strong class="text-white">Newton's Method:</strong> When you can compute second derivatives</li>
+                    <li><strong class="text-white">Simplex Algorithm:</strong> For linear programs</li>
+                    <li><strong class="text-white">Interior Point Methods:</strong> For convex programs with constraints</li>
+                    <li><strong class="text-white">Stochastic Methods:</strong> For non-convex optimization (SGD, genetic algorithms)</li>
+                </ul>
+
+                <p class="mb-4">
+                    The trade-off is clear: numerical methods can solve far more general problems but provide approximate solutions and require computational resources proportional to desired accuracy.
+                </p>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">Practical Implications</h2>
+                <p class="mb-4">
+                    Understanding this landscape helps you:
+                </p>
+
+                <ul class="mb-4 space-y-2">
+                    <li><strong class="text-white">Choose appropriate methods:</strong> Don't use gradient descent on linear systems</li>
+                    <li><strong class="text-white">Set realistic expectations:</strong> Non-convex problems may require multiple random restarts</li>
+                    <li><strong class="text-white">Appreciate approximations:</strong> Sometimes reformulating a problem to make it convex is worth the approximation error</li>
+                    <li><strong class="text-white">Design algorithms:</strong> Machine learning models often sacrifice closed-form solutions for expressiveness</li>
+                </ul>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 mt-8">The Beauty of Structure</h2>
+                <p class="mb-4">
+                    The existence of closed-form solutions reveals the deep mathematical structure underlying a problem. Linear algebra works so elegantly because linear transformations preserve geometric relationships. Quadratic forms yield to analytical methods because they represent the simplest non-trivial curvature.
+                </p>
+
+                <p class="mb-4">
+                    When problems become complex enough to require numerical methods, we're not just trading convenience for generality—we're crossing a fundamental threshold where the problem's structure becomes too rich for symbolic manipulation but still regular enough for computational solution.
+                </p>
+
+                <p class="mb-4">
+                    The next time you see a differential equation that requires numerical integration or an optimization problem that needs iterative solving, remember: this isn't a failure of mathematics, but rather a testament to the problem's inherent complexity. The boundary between analytical and numerical solutions maps directly onto the boundary between different classes of mathematical structure.
+                </p>
+
+                <p class="mb-4">
+                    In the end, both closed-form solutions and numerical methods are tools for extracting insight from mathematical models. The key is knowing which tool fits which problem—and understanding why the mathematical structure determines that choice.
+                </p>
+            </div>
+        </article>
+        <div class="mt-8">
+            <a href="index.html" class="text-blue-400 hover:underline">&larr; Back to Home</a>
+        </div>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
