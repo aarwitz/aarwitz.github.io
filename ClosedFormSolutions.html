@@ -6,7 +6,9 @@
     <title>Which Math Problems Have Closed-Form Solutions and Why? - Aaron Horowitz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- Use current Plotly version (2.35.2) -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+    <!-- MathJax 3 (no polyfill needed for modern browsers) -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         window.MathJax = {
@@ -33,24 +35,26 @@
             <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
                 Which Math Problems Have Closed-Form Solutions and Why?
             </h1>
-            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-300">
-                A soft intro to the Abel–Ruffini theorem and Galois theory
-            </h2>
             <p class="text-gray-400 text-sm mb-6">Published on October 10, 2025</p>
             
             <div class="prose max-w-none text-gray-300">
                 <p class="mb-4">
-                    You probably remember from Algebra class that many problems ask one to "solve for x". This process of applying a finite sequence of algebraic operations (addition, subtraction, multiplication, division, and taking roots) to isolate the unknown variable and express it in terms of the known values is what we call finding a <strong>closed-form solution</strong>.
+                    When a problem states "solve for $x$", it is typically asking us express $x$ using a finite combination of elementary operations and functions (for example: +, −, ×, ÷, exponentials, logarithms, trigonometric functions, and nth roots).
+                    That desired expression is an example of a <strong>closed-form solution</strong>.
                     <br><br>
-                    Some math problems can be solved in this way, but for a lot of interesting problems, finding a closed-form solution is hard or even impossible.
+                    Some math problems can be solved this way, but for a lot of interesting problems, finding a closed-form solution is hard or even impossible.
+                    There simply does not exist a process to rearrange some equations into a finite expression such that you can claim with satisfaction that you have "solved for $x$".
                     Such problems require numerical solvers, like Gradient Descent, that find an approximate solution through iterative calculations.
                     <br><br>
-                    We all learn about this a little in school, but I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of our knowledge. What can be known for certain, and how well we can estimate the things that cannot be known for certain?
-                    How do we know when we can't know something?<br><br>
-                    Before diving into the cause of these relationships between types of problems and ways of solving them, let's spend some time looking at an example of each, (I) closed-form solutions and (II) numerical solutions.:
+                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of our knowledge. What can be known for certain, and how well can we estimate what cannot be known for certain?
+                    <br><br>What does it mean to answer a question anyway? For example, when you ask an AI a question, it is only approximating an answer using numerical methods, and so in some ways it is never truly "solving" anything.
+                    In contrast, a calculator can provide exact answers for arithmetic problems because those problems have closed-form solutions.
+                    <br><br>
+                    We'll start by exploring (I) closed-form solutions and (II) numerical solutions:
+                    TODO table of contents
                 </p>
-                <h2 class="text-lg font-bold text-white mb-3">I. Closed-Form Soluton Examples</h3>
-                <br><h3 class="text-lg font-bold text-white mb-3">Linear systems</h3>
+                <h2 class="text-lg font-bold text-white mb-3">I. Closed-Form Solution Examples</h2>
+                <h3 class="text-lg font-bold text-white mb-3">Linear systems</h3>
                 <p class="mb-4">
                     Consider the simple linear equation $2x + 3 = 7$. We can isolate $x$ as follows:
                     <div class="flex justify-center my-6">
@@ -95,9 +99,9 @@
                         </div>
                     </div>
                     <br>
-                    But is there any way to know in advance if an equation (or set of equations) will have a closed-form solution like those examples above?
+                    Nothing surprising there, but how can we predict if an equation (or set of equations) will have a closed-form solution like the above examples?
                     <br><br>
-                    Well there are two requirements that guarantee a closed-form solution for a linear system.
+                    Well there are two requirements that guarantee a closed-form solution for linear systems.
                     You can find other ways of stating these two requirements, but I find the most intuitive to be:
                     <div class="bg-[#0b1220] rounded-lg p-4 border border-gray-800 mb-6">
                     <h4 class="text-sm font-semibold text-white mb-2">When to expect closed-form solutions for linear systems</h4>
@@ -109,8 +113,8 @@
                     So if we consider the example above that has two equations<br>
                     <span class="text-green-400 mr-3">✔</span> It has two unknowns and two equations (it is <em>determined</em>)<br>
                     <span class="text-green-400 mr-3">✔</span> The equations are <em>linearly independent</em>, which you can show yourself by drawing their coefficient vectors $\mathbf{v_1} = \begin{pmatrix} 2 \\ 3 \end{pmatrix}$ and $\mathbf{v_2} = \begin{pmatrix} 4 \\ -1 \end{pmatrix}$ in 2D space and observing that they are not parallel.
-                    <br><br><h3 class="text-lg font-bold text-white mb-3">Beyond linear systems</h3>
-                    We have up until now only mentioned linear equations because they are the simplest case. Quadratic equations (polynomials of degree 2) are an example of non-linear equations that have a closed-form solution (the quadratic formula).
+                    <br><br><h3 class="text-lg font-bold text-white mb-3">Non-linear systems</h3>
+                    We have up until now only looked at linear equations because they are the simplest case. Quadratic equations (polynomials of degree 2) are an example of non-linear equations that also have a closed-form solution (the quadratic formula).
                     <div class="flex justify-center my-6">
                         <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
@@ -127,14 +131,29 @@
                     </div>
                     <div class="flex flex-col md:flex-row items-start gap-6 md:gap-8 my-6">
                         <div class="md:flex-1 prose max-w-none text-gray-300">
+                            <br>
                             <p>
-                                The reason all quadratic equations have a closed-form solution is that any expression of the form $ax^2 + bx + c = 0$ can be <em>completed into a perfect square</em>. This process—called <em>completing the square</em>—lets us isolate $x$ using only addition, multiplication, division, and square roots. In other words, the structure of a quadratic inherently allows exact isolation of the variable, so we can always find its solutions symbolically.
+                                The quadratic formula was discovered as early as 2000 BC by rearranging the terms into "a perfect square".
+                                This process, called <a href="https://en.wikipedia.org/wiki/Completing_the_square" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
+                                    completing the square</a> (visualized on the right), lets us isolate $x$ and derive a single formula that provides the exact values to solve any quadratic.
+                                    And actually there are formulas for cubic and quartic equations as well, although they were discovered much later and involve more complex substitutions.
+                                <br><br>
+                                If you feel like we're jumping ahead too quickly by trying to derive formulas that provide solutions, you are not wrong. How can we prove that a solution exists at all?
+                                Well, the <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_algebra" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Fundamental Theorem of Algebra</a> gives us a blanket rule here: <b>every polynomial of degree n has exactly n complex roots.</b>
+                                <br><br>
+                                It's easy to visualize this in the case of real roots (the three plots below). You can see that for a degree 1 polynomial (a line), there is always one root (where it crosses the x-axis), for degree 2 (a parabola) there are always two roots, and for degree 3 (a cubic curve) there are always three roots.
+                                <div class="my-6">
+                                    <p class="mb-2 text-gray-300">Visualization (real roots shown): degree 1, 2, and 3 polynomials.</p>
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div id="plot1" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
+                                        <div id="plot2" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
+                                        <div id="plot3" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
+                                    </div>
+                                </div>
                             </p>
-                            <p>
-                                Cubic and quartic equations (degree 3 and 4) also have closed-form solutions, though they were discovered much later and involve more complex substitutions. But starting at degree 5, mathematicians proved that there is <em>no general formula</em> that can express the solutions using only arithmetic and roots. This result, known as the <strong>Abel–Ruffini theorem</strong>, marks a boundary in mathematics: beyond it, some equations simply cannot be solved exactly, only approximated numerically.
-                            </p>
+                            <br>
                         </div>
-
+                        
                         <div class="md:w-64 flex-shrink-0 md:pl-6">
                             <div class="bg-gray-50 rounded-md p-2 shadow-sm border border-gray-200">
                                 <img src="Completing_the_square.png" alt="Completing the square diagram" class="w-full h-auto rounded-md" />
@@ -142,6 +161,30 @@
                             </div>
                         </div>
                     </div>
+                    <h3 class="text-lg font-bold text-white mb-3">Which systems of equations have solutions?</h3>
+                    <p>
+                        So, we know for certain that solutions exist; but, getting back to the problem-statement of this essay, can we know in advance whether there is a closed-form solution like the quadratic formula that will always work?
+                        <br><br>
+                        It sometimes frustrates me when mathematicians explain this all using vague notions of "symmetry", giving a false impression of it being intuitive, but unfortunately that is the best way to describe what comes next.
+                        <br><br>
+                        But for degree 5 and higher, those relationships between the roots become far more tangled. You can think of the roots as *moving parts* that can swap places when you manipulate the equation. Each way the roots can swap while still satisfying the polynomial is a kind of *symmetry*. Galois realized you could study these symmetries directly — they form a mathematical structure now called a <em>group</em>.
+                        For lower-degree equations, these groups of symmetries are simple enough that they can be “unwound” using addition, subtraction, multiplication, division, and roots — that’s why we have the quadratic, cubic, and quartic formulas. But starting at degree 5, the possible symmetries are too complicated: they don’t break down into smaller, solvable pieces that correspond to these algebraic operations. The operations we know just aren’t powerful enough to express all possible root patterns in a neat, finite formula.
+                    </p>
+                    <br>
+                    <p>
+                        That’s what the Abel–Ruffini theorem means in practice. It doesn’t say quintic equations can’t be solved at all — only that there’s no universal recipe, no single expression using a finite sequence of arithmetic and root extractions that works for every fifth-degree polynomial. Some special quintics <em>do</em> have closed forms, but in general, the structure of their root symmetries is beyond algebraic reach.
+                    </p>
+                                                <p>
+                                But starting at degree 5, mathematicians proved that there is no single formula involving finite steps that can solve all equations. This result, known as the <strong>Abel–Ruffini theorem</strong>, marks a boundary in mathematics: beyond it, some equations simply cannot be solved exactly, only approximated numerically.
+                            </p>
+                            <br>
+                            <p>
+                                The study of why certain classes of equations have closed-form solutions and others do not led to the development of <a href="https://en.wikipedia.org/wiki/Galois_theory" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Galois theory</a>, which uses group theory to analyze the symmetries of the roots of polynomials.
+                                This is definitely beyond the scope of this little essay, but to understand why equations above degree 4 can’t always be solved by a formula, we have to think about what these formulas really do. Every time we solve for $x$, we’re trying to “undo” the polynomial, or express the roots using only basic arithmetic and root operations.
+                                For quadratics, cubics, and quartics, this can be done through some process of rearranging the terms, as we have done so far.
+                            </p>
+
+                    
                 </div>
                 <h3 class="text-lg font-bold text-white mb-3">II. Numeric Solution Example</h3>
 
@@ -360,5 +403,72 @@
         </div>
     </div>
     <script src="include_header.js" defer></script>
+    <script>
+    // Wait for both DOM and Plotly to be ready
+    function initPlots() {
+        if (typeof Plotly === 'undefined') {
+            setTimeout(initPlots, 100);
+            return;
+        }
+        
+        // Generate x values from -3 to 3
+        const xs = [];
+        for (let i = -3; i <= 3; i += 0.1) {
+            xs.push(i);
+        }
+        
+        // n=1: y = x (one real root at x=0)
+        const y1 = xs.map(x => x);
+        Plotly.newPlot('plot1', [
+            {x: xs, y: y1, mode: 'lines', line: {color: '#60a5fa', width: 3}},
+            {x: [0], y: [0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Root'}
+        ], {
+            title: {text: 'n=1: y = x', font: {color: 'white'}},
+            paper_bgcolor: '#0b1220',
+            plot_bgcolor: '#0b1220',
+            margin: {t: 40, l: 40, r: 40, b: 40},
+            xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            showlegend: false
+        }, {responsive: true});
+        
+        // n=2: y = x^2 - 1 (two real roots at x=-1, x=1)
+        const y2 = xs.map(x => x*x - 1);
+        Plotly.newPlot('plot2', [
+            {x: xs, y: y2, mode: 'lines', line: {color: '#34d399', width: 3}},
+            {x: [-1, 1], y: [0, 0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Roots'}
+        ], {
+            title: {text: 'n=2: y = x² - 1', font: {color: 'white'}},
+            paper_bgcolor: '#0b1220',
+            plot_bgcolor: '#0b1220',
+            margin: {t: 40, l: 40, r: 40, b: 40},
+            xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            showlegend: false
+        }, {responsive: true});
+        
+        // n=3: y = x^3 - 4x (three real roots at x=-2, x=0, x=2)
+        const y3 = xs.map(x => x*x*x - 4*x);
+        Plotly.newPlot('plot3', [
+            {x: xs, y: y3, mode: 'lines', line: {color: '#f97316', width: 3}},
+            {x: [-2, 0, 2], y: [0, 0, 0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Roots'}
+        ], {
+            title: {text: 'n=3: y = x³ - 4x', font: {color: 'white'}},
+            paper_bgcolor: '#0b1220',
+            plot_bgcolor: '#0b1220',
+            margin: {t: 40, l: 40, r: 40, b: 40},
+            xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
+            showlegend: false
+        }, {responsive: true});
+    }
+    
+    // Start when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPlots);
+    } else {
+        initPlots();
+    }
+    </script>
 </body>
 </html>
