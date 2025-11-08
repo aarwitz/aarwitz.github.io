@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Analogy between Galois Theory and Covering Spaces - Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- MathJax 3 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        .analogy-box {
+            background: linear-gradient(135deg, #2a1e3f 0%, #1e3a5f 100%);
+            border-left: 4px solid #a78bfa;
+        }
+        .galois-side {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e2a4f 100%);
+            border-left: 4px solid #60a5fa;
+        }
+        .topology-side {
+            background: linear-gradient(135deg, #1e3a2f 0%, #1e2a1f 100%);
+            border-left: 4px solid #34d399;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <!-- Header -->
+        <div id="site-header"></div>
+
+        <article class="bg-[#161b22] rounded-lg shadow-lg pt-6 pb-8 px-4 sm:pt-8 sm:pb-12 sm:px-10 lg:pt-10 lg:pb-16 lg:px-16">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
+                The Analogy between Galois Theory and Covering Spaces
+            </h1>
+            <p class="text-gray-400 text-sm mb-6">A Geometric Perspective on Galois Theory</p>
+
+            <div class="prose max-w-none text-gray-300">
+                
+                <h2 class="text-2xl font-bold text-white mb-4">Introduction</h2>
+                
+                <p class="mb-4">
+                    If you find Galois theory abstract and difficult to visualize, you're not alone. The classical presentation—full of fields, polynomials, and group actions—can feel algebraically opaque. But there's a beautiful geometric way to understand it: through the analogy with <strong>covering spaces</strong> in algebraic topology.
+                </p>
+
+                <p class="mb-4">
+                    This connection isn't just a pedagogical trick—it's a deep mathematical relationship that underlies much of modern algebraic geometry and number theory. The analogy was formalized by Grothendieck in his theory of the <em>étale fundamental group</em>, which unifies Galois theory and topology under one conceptual umbrella.
+                </p>
+
+                <div class="analogy-box rounded-lg p-6 my-8">
+                    <h3 class="text-xl font-bold text-white mb-3">The Core Analogy</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-purple-300 font-semibold mb-2">Galois Theory</p>
+                            <ul class="space-y-2 text-gray-200">
+                                <li>• Field extension $L/K$</li>
+                                <li>• Galois group $G = \text{Aut}(L/K)$</li>
+                                <li>• Intermediate fields $K \subseteq M \subseteq L$</li>
+                                <li>• Fixed fields $L^H$ for subgroups $H \subseteq G$</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-purple-300 font-semibold mb-2">Covering Space Theory</p>
+                            <ul class="space-y-2 text-gray-200">
+                                <li>• Covering space $U \to X$</li>
+                                <li>• Fundamental group $G = \pi_1(X)$</li>
+                                <li>• Intermediate coverings $X \leftarrow Y \leftarrow U$</li>
+                                <li>• Quotient spaces $U/H$ for subgroups $H \subseteq G$</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">Covering Spaces: A Quick Primer</h2>
+
+                <p class="mb-4">
+                    Before diving into the analogy, let's recall what a <strong>covering space</strong> is.
+                </p>
+
+                <div class="topology-side rounded-lg p-6 my-6">
+                    <h4 class="text-lg font-semibold text-emerald-300 mb-3">Definition: Covering Space</h4>
+                    <p class="mb-3">
+                        A continuous map $p: U \to X$ is a <strong>covering space</strong> if every point $x \in X$ has a neighborhood $V$ such that $p^{-1}(V)$ is a disjoint union of open sets in $U$, each mapped homeomorphically onto $V$ by $p$.
+                    </p>
+                    <p class="text-sm text-gray-300 italic">
+                        Intuitively: $U$ "covers" $X$ by wrapping around it multiple times. Each point in $X$ has several preimages in $U$ that "look locally the same."
+                    </p>
+                </div>
+
+                <p class="mb-4">
+                    <strong>Classic Example:</strong> The real line $\mathbb{R}$ covering the circle $S^1$ via the exponential map $t \mapsto e^{2\pi it}$. The line wraps around the circle infinitely many times, and each point on the circle has infinitely many preimages spaced by integers.
+                </p>
+
+                <p class="mb-4">
+                    The <strong>fundamental group</strong> $\pi_1(X)$ of a space $X$ measures "loops" in $X$. If $U$ is the <strong>universal cover</strong> of $X$ (the "most unwrapped" version, which is simply connected), then $\pi_1(X)$ acts on $U$ by "deck transformations"—automorphisms of $U$ that preserve the covering structure.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">The Fundamental Correspondence</h2>
+
+                <p class="mb-4">
+                    Here's where the magic happens. In both settings, we have a <strong>correspondence</strong> between subgroups and intermediate objects:
+                </p>
+
+                <div class="overflow-x-auto my-6">
+                    <table class="min-w-full border border-gray-700 rounded-lg">
+                        <thead class="bg-[#1b2430]">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-300 border-b border-gray-700">Aspect</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-300 border-b border-gray-700">Galois Theory</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-emerald-300 border-b border-gray-700">Covering Spaces</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800 bg-[#0d1117]">
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">Main object</td>
+                                <td class="px-4 py-3 text-gray-300">Galois extension $L/K$</td>
+                                <td class="px-4 py-3 text-gray-300">Universal cover $U \to X$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">Symmetry group</td>
+                                <td class="px-4 py-3 text-gray-300">$G = \text{Gal}(L/K)$</td>
+                                <td class="px-4 py-3 text-gray-300">$G = \pi_1(X)$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">Subobjects</td>
+                                <td class="px-4 py-3 text-gray-300">Intermediate fields $M$ with $K \subseteq M \subseteq L$</td>
+                                <td class="px-4 py-3 text-gray-300">Covering spaces $Y$ with $X \leftarrow Y \leftarrow U$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">How to build them</td>
+                                <td class="px-4 py-3 text-gray-300">Take fixed field: $M = L^H$ for subgroup $H \subseteq G$</td>
+                                <td class="px-4 py-3 text-gray-300">Take quotient: $Y = U/H$ for subgroup $H \subseteq G$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">Index relationship</td>
+                                <td class="px-4 py-3 text-gray-300">$[L:M] = |H|$</td>
+                                <td class="px-4 py-3 text-gray-300">number of sheets of $U \to Y$ is $|H|$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold text-gray-200">Fundamental theorem</td>
+                                <td class="px-4 py-3 text-gray-300">Bijection: $\{\text{subgroups } H\} \leftrightarrow \{\text{intermediate fields}\}$</td>
+                                <td class="px-4 py-3 text-gray-300">Bijection: $\{\text{subgroups } H\} \leftrightarrow \{\text{covering spaces}\}$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">The Functorial Perspective</h2>
+
+                <p class="mb-4">
+                    The "baby version" of the analogy can be stated very precisely using category theory. Both correspondences are given by functors that are actually <strong>isomorphisms of categories</strong> (not just equivalences).
+                </p>
+
+                <div class="galois-side rounded-lg p-6 my-6">
+                    <h4 class="text-lg font-semibold text-blue-300 mb-3">Galois Theory (Functorial)</h4>
+                    <p class="mb-3">
+                        Let $L/K$ be a Galois extension with Galois group $G$. There is a functor:
+                        $$F: (G\text{-orbit category})^{\text{op}} \to \{\text{intermediate fields}\}$$
+                        sending $G/H \mapsto L^H$ (the fixed field of $H$).
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        The Fundamental Theorem of Galois Theory says this functor is an <strong>isomorphism</strong> of categories.
+                    </p>
+                </div>
+
+                <div class="topology-side rounded-lg p-6 my-6">
+                    <h4 class="text-lg font-semibold text-emerald-300 mb-3">Covering Space Theory (Functorial)</h4>
+                    <p class="mb-3">
+                        Let $U$ be the universal cover of $X$, with fundamental group $G = \pi_1(X)$. There is a functor:
+                        $$F: G\text{-orbit category} \to \{\text{coverings of } X\}$$
+                        sending $G/H \mapsto U/H$ (the quotient space).
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        The classification theorem for covering spaces says this functor is an <strong>isomorphism</strong> of categories.
+                    </p>
+                </div>
+
+                <p class="mb-4">
+                    <strong>Key observation:</strong> Notice the "op" (opposite) in the Galois version. In Galois theory, <em>larger</em> subgroups $H$ correspond to <em>smaller</em> fixed fields $L^H$. In covering space theory, larger subgroups correspond to larger quotients. This is why we need to reverse the arrows—the correspondence is <strong>contravariant</strong> in one case and <strong>covariant</strong> in the other.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">A Concrete Example: Comparing Both Worlds</h2>
+
+                <p class="mb-4">
+                    Let's see the analogy in action with a simple example on both sides.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 my-8">
+                    <div class="galois-side rounded-lg p-6">
+                        <h4 class="text-lg font-semibold text-blue-300 mb-3">Galois Side: $\mathbb{Q}(\sqrt{2})/\mathbb{Q}$</h4>
+                        <ul class="space-y-2 text-sm text-gray-200">
+                            <li>• <strong>Extension:</strong> $L = \mathbb{Q}(\sqrt{2})$ over $K = \mathbb{Q}$</li>
+                            <li>• <strong>Galois group:</strong> $G = \{id, \sigma\}$ where $\sigma(\sqrt{2}) = -\sqrt{2}$</li>
+                            <li>• <strong>Subgroups:</strong>
+                                <ul class="ml-4 mt-2 space-y-1">
+                                    <li>- $H_1 = \{id\}$ (trivial)</li>
+                                    <li>- $H_2 = G$ (whole group)</li>
+                                </ul>
+                            </li>
+                            <li>• <strong>Fixed fields:</strong>
+                                <ul class="ml-4 mt-2 space-y-1">
+                                    <li>- $L^{H_1} = \mathbb{Q}(\sqrt{2})$ (everything)</li>
+                                    <li>- $L^{H_2} = \mathbb{Q}$ (just rationals)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p class="text-xs text-gray-400 mt-3 italic">
+                            Smaller subgroup → larger field
+                        </p>
+                    </div>
+
+                    <div class="topology-side rounded-lg p-6">
+                        <h4 class="text-lg font-semibold text-emerald-300 mb-3">Topology Side: $\mathbb{R} \to S^1$</h4>
+                        <ul class="space-y-2 text-sm text-gray-200">
+                            <li>• <strong>Covering:</strong> $U = \mathbb{R}$ over $X = S^1$</li>
+                            <li>• <strong>Fundamental group:</strong> $G = \pi_1(S^1) = \mathbb{Z}$</li>
+                            <li>• <strong>Subgroups:</strong>
+                                <ul class="ml-4 mt-2 space-y-1">
+                                    <li>- $H_n = n\mathbb{Z}$ for any $n \geq 1$</li>
+                                    <li>- Example: $H_1 = \mathbb{Z}$, $H_2 = 2\mathbb{Z}$</li>
+                                </ul>
+                            </li>
+                            <li>• <strong>Quotient coverings:</strong>
+                                <ul class="ml-4 mt-2 space-y-1">
+                                    <li>- $U/H_1 = \mathbb{R}/\mathbb{Z} \cong S^1$ (1-sheeted, the base)</li>
+                                    <li>- $U/H_2 = \mathbb{R}/(2\mathbb{Z}) \cong S^1$ (2-sheeted covering)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p class="text-xs text-gray-400 mt-3 italic">
+                            Smaller subgroup → smaller quotient space
+                        </p>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">Why This Analogy Matters</h2>
+
+                <p class="mb-4">
+                    This isn't just a cute parallel—it has profound implications:
+                </p>
+
+                <ol class="space-y-3 mb-6">
+                    <li class="flex items-start">
+                        <span class="text-blue-400 font-bold mr-3">1.</span>
+                        <div>
+                            <strong class="text-white">Geometric intuition for Galois theory:</strong> If you understand covering spaces geometrically (loops, sheets, wrapping), you can transfer that intuition to field extensions. The Galois group "wraps" the larger field around the smaller one, just like a covering space wraps around the base.
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-400 font-bold mr-3">2.</span>
+                        <div>
+                            <strong class="text-white">Unification via étale fundamental group:</strong> Grothendieck formalized this analogy in algebraic geometry. For any scheme $X$, you can define an "étale fundamental group" $\pi_1^{\text{ét}}(X)$ that behaves like the topological fundamental group but captures arithmetic information. Finite étale covers of $X$ correspond to finite quotients of this group, generalizing both Galois extensions (for fields) and covering spaces (for nice topological spaces).
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-400 font-bold mr-3">3.</span>
+                        <div>
+                            <strong class="text-white">Historical importance:</strong> This analogy underlies much 19th and early 20th century progress in complex analysis (Riemann surfaces as covering spaces, monodromy), algebraic geometry, and number theory. It's not an exaggeration to say this viewpoint reshaped modern mathematics.
+                        </div>
+                    </li>
+                </ol>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">Further Reading</h2>
+
+                <p class="mb-4">
+                    To explore this analogy in depth, I highly recommend:
+                </p>
+
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <span class="text-purple-400 mr-3">📖</span>
+                        <div>
+                            <strong>Tamás Szamuely — <em>Galois Groups and Fundamental Groups</em></strong><br/>
+                            <span class="text-sm text-gray-400">The canonical reference for this analogy. Starts very gently and builds up to Grothendieck's étale fundamental group.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-400 mr-3">📖</span>
+                        <div>
+                            <strong>Allen Hatcher — <em>Algebraic Topology</em></strong><br/>
+                            <span class="text-sm text-gray-400">Chapter 1 covers covering spaces beautifully with lots of pictures and examples.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-400 mr-3">📖</span>
+                        <div>
+                            <strong>David Cox — <em>Galois Theory</em> (2nd ed.)</strong><br/>
+                            <span class="text-sm text-gray-400">Has a nice appendix discussing the analogy with covering spaces.</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="bg-[#1c2128] border-l-4 border-purple-500 rounded-lg p-6 my-8">
+                    <h3 class="text-lg font-bold text-white mb-3">The Big Picture</h3>
+                    <p class="text-gray-200 mb-3">
+                        Both Galois theory and covering space theory study how a "big symmetric object" (a Galois extension $L$, or a universal cover $U$) relates to a "smaller base object" ($K$ or $X$) via a group action. The intermediate objects—subfields or subcoverings—are completely determined by the subgroup structure of the acting group.
+                    </p>
+                    <p class="text-gray-200">
+                        This is the essence of the <strong>Galois correspondence</strong> and the <strong>classification of covering spaces</strong>. They are, in a precise categorical sense, the same mathematical phenomenon in different clothing.
+                    </p>
+                </div>
+
+            </div>
+        </article>
+
+        <div class="mt-8">
+            <a href="notes.html" class="text-blue-400 hover:underline">&larr; Back to Notes</a>
+        </div>
+    </div>
+
+    <script src="include_header.js"></script>
+</body>
+</html>

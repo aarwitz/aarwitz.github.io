@@ -55,6 +55,302 @@
 
                 <h2 class="text-2xl font-bold text-white mb-4 mt-8">Building Blocks: Key Definitions</h2>
 
+                    <!-- GROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Group?</h3>
+                        <p class="mb-3">
+                            A <strong>group</strong> is a set $G$ together with a binary operation $\circ$ that satisfies four properties:
+                        </p>
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li><strong>Closure:</strong> For any $a, b \in G$, we have $a \circ b \in G$</li>
+                            <li><strong>Associativity:</strong> $(a \circ b) \circ c = a \circ (b \circ c)$</li>
+                            <li><strong>Identity element:</strong> There exists $e \in G$ such that $e \circ a = a \circ e = a$ for all $a \in G$</li>
+                            <li><strong>Inverse element:</strong> For each $a \in G$, there exists $a^{-1} \in G$ such that $a \circ a^{-1} = a^{-1} \circ a = e$</li>
+                        </ol>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The integers under addition</h4>
+                        <p class="mb-2">$(\mathbb{Z}, +)$ is a group:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li><strong>Set:</strong> $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$</li>
+                            <li><strong>Operation:</strong> Addition $(+)$</li>
+                            <li><strong>Identity:</strong> $0$ (since $a + 0 = a$)</li>
+                            <li><strong>Inverse:</strong> For any integer $a$, its inverse is $-a$ (since $a + (-a) = 0$)</li>
+                        </ul>
+                    </div>
+
+                    <!-- SUBGROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Subgroup?</h3>
+                        <p class="mb-3">
+                            A <strong>subgroup</strong> $H$ of a group $G$ is a subset $H \subseteq G$ that is itself a group under the same operation.
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            Every subgroup must contain the identity and be closed under the group operation and inverses.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: Even integers</h4>
+                        <p class="mb-2">The even integers $2\mathbb{Z} = \{\ldots, -4, -2, 0, 2, 4, \ldots\}$ form a subgroup of $\mathbb{Z}$ under addition:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>Contains identity: $0 \in 2\mathbb{Z}$</li>
+                            <li>Closed: Even + Even = Even</li>
+                            <li>Inverses exist: $-2a$ is also even</li>
+                        </ul>
+                    </div>
+
+                    <!-- COSET -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Coset?</h3>
+                        <p class="mb-3">
+                            A <strong>coset</strong> is a "shifted copy" of a subgroup. Let $G$ be a group and $H \subseteq G$ a subgroup.
+                            For any $g \in G$:
+                        </p>
+                        <div class="my-3">
+                            <strong>Left coset:</strong>
+                            <div class="text-center mt-2">$$gH = \{gh : h \in H\}$$</div>
+                        </div>
+                        <div class="my-3">
+                            <strong>Right coset:</strong>
+                            <div class="text-center mt-2">$$Hg = \{hg : h \in H\}$$</div>
+                        </div>
+                        <p class="text-sm text-gray-300">
+                            Think of $gH$ as the subgroup $H$ translated so that its "identity" sits at $g$ instead of at the group identity. Cosets have the same size as $H$ and play a key role in counting and quotient constructions.
+                            The set of all left cosets of $H$ in $G$ is denoted $G/H$.
+                        </p>
+                    </div>
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: Integers mod 3</h4>
+                        <p class="mb-2">Let $G = \mathbb{Z}$ and $H = 3\mathbb{Z} = \{\ldots, -3, 0, 3, 6, \ldots\}$.</p>
+                        <p>The left cosets are:</p>
+                            <ul class="list-disc ml-6 space-y-1">
+                                <li>$0 + 3\mathbb{Z}$</li>
+                                <li>$1 + 3\mathbb{Z}$</li>
+                                <li>$2 + 3\mathbb{Z}$</li> 
+                            </ul>
+                        <p class="text-sm text-gray-300 mt-2">
+                            There are only three left (or right) cosets because we do not include duplicates. For example, $3 + 3\mathbb{Z} = 0 + 3\mathbb{Z}$.
+                            <br>
+                            For this reason, it is said that <strong>the left (or right) cosets of $G$ partition $G$ by the subgroup $H$</strong>.
+                            In other words, $G/H = \{gH : g\in G\}$ covers $G$ and the cosets contained are pairwise disjoint.
+                        </p>
+                    </div>
+
+                    <!-- NORMAL SUBGROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-blue-300 mb-3">What is a Normal Subgroup?</h4>
+                        <p class="mb-3">              
+                            A subgroup $H$ of $G$ is <strong>normal</strong> (written $H \triangleleft G$) if for all $g \in G$, $gHg^{-1} = H$.
+                            In other words, $H$ is a subgroup in which left and right cosets are equal. The notation used to say that $H$ is a normal subgroup of $G$ is $H\triangleleft G$.
+                        </p>
+                        <p class="mb-3">
+                            Normality matters because only then can you multiply cosets and get a well-defined product: $(gH)(hH)=(gh)H$ independent of representatives. 
+                        </p>
+                        <p class="mb-3 text-sm text-gray-300">
+                            When $H$ is normal the set of cosets $G/H$ is no longer just a set, but is a group (the quotient group).
+                        </p>
+                    </div>
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The subgroup $3\mathbb{Z}$ in $\mathbb{Z}$</h4>
+                        <p class="mb-2">$3\mathbb{Z}$ is normal in $\mathbb{Z}$ because addition is commutative:</p>
+                        <div class="text-center my-3">
+                            $$a + (3\mathbb{Z}) - a = 3\mathbb{Z}$$
+                        </div>
+                    </div>
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example 2: A non-normal subgroup in $S_3$</h4>
+                        <p class="mb-2">S3 is the symmetric group on three elements: the group of all permutations of a 3‑element set. 
+                            <br>Let $G=S_3=\{e,(12),(13),(23),(123),(132)\}$ and $H=\{e,(12)\}$.</p>
+                        <p class="mb-2">Left cosets:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>$H=eH=\{e,(12)\}$</li>
+                            <li>$(13)H=\{(13),(132)\}$</li>
+                            <li>$(23)H=\{(23),(123)\}$</li>
+                        </ul>
+                        <p class="mb-2">Right cosets:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>$H=He=\{e,(12)\}$</li>
+                            <li>$H(13)=\{(13),(123)\}$</li>
+                            <li>$H(23)=\{(23),(132)\}$</li>
+                        </ul>
+                        <p class="text-sm text-gray-300 mt-2">The left and right cosets differ here, so $H$ is not normal and you cannot form a quotient group $S_3/H$.</p>
+                    </div>
+
+                    <!-- QUOTIENT GROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Quotient Group?</h3>
+                        <p class="mb-3">
+                            A <strong>quotient group</strong> is a group whose set is the set of all left cosets ($G/H$) of a normal subgroup ($H \triangleleft G$) 
+                            and whose operation is coset multiplication.
+                            <br>
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            There is a proof showing that if $H$is a normal subgroup ($gH$ = $Hg$ for all $g \in G$), then the multiplication of cosets defined by $(gH)(hH) = (gh)H$ is well-defined.
+                            This means that the result does not depend on the choice of representatives from each coset.
+                            Thus, $G/H$ with this operation satisfies the group axioms and is indeed a group.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The quotient \(\mathbb{Z}/3\mathbb{Z}\)</h4>
+
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li>
+                                <strong>Define:</strong> Let \(H = 3\mathbb{Z}\), as we have done previously.
+                            </li>
+
+                            <li>
+                                <strong>List the cosets:</strong> There are exactly three distinct cosets. Write \([a]=a+H\). Then
+                                <div class="ml-6">
+                                    <p>\([0]=\{\ldots,-6,-3,0,3,6,\ldots\}\)</p>
+                                    <p>\([1]=\{\ldots,-5,-2,1,4,7,\ldots\}\)</p>
+                                    <p>\([2]=\{\ldots,-4,-1,2,5,8,\ldots\}\)</p>
+                                </div>
+                            </li>
+
+                            <li>
+                                <strong>Form the quotient set:</strong>
+                                <div class="text-center my-2">\[\mathbb{Z}/3\mathbb{Z}=\{[0],[1],[2]\}.\]</div>
+                            </li>
+
+                            <li>
+                                <strong>Addition of cosets:</strong> Define \([a]+[b]=[a+b]\). Example:
+                                <div class="text-center my-2">\([1]+[2]=[3]=[0]\).</div>
+                            </li>
+
+                            <li>
+                                <strong>Why well-defined?</strong> If \(a'=a+3m\) and \(b'=b+3n\) then
+                                <div class="text-center my-2">\[a'+b'=(a+b)+3(m+n)\in (a+b)+H,\]</div>
+                                so \([a']+[b']=[a+b]=[a]+[b].\)
+                            </li>
+
+                            <li>
+                                <strong>Group properties (brief):</strong> Identity is \([0]\), inverse of \([a]\) is \([-a]\), and associativity follows from integer addition. Thus \(\mathbb{Z}/3\mathbb{Z}\) is a group of order 3 (indeed cyclic, isomorphic to \(C_3\)).
+                            </li>
+                        </ol>
+
+                        <p class="mt-3 mb-2 text-sm text-gray-300">Remark: because \(\mathbb{Z}\) is abelian every subgroup (including \(3\mathbb{Z}\)) is normal, so the quotient above is a group. In non-abelian groups you must check normality before forming quotients.</p>
+                    </div>
+
+                    <!-- FIELD EXTENSION -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Field Extension?</h3>
+                        <p class="mb-3">
+                            A <strong>field extension</strong> is a larger field $K$ that contains a smaller field $F$ as a subset. We write this as $K/F$.
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            You can think of this as “adding new elements” (like roots) to $F$ to form $K$.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: Adding $\sqrt{2}$ to $\mathbb{Q}$</h4>
+                        <p class="mb-2">
+                            The field $\mathbb{Q}(\sqrt{2}) = \{ a + b\sqrt{2} \mid a,b \in \mathbb{Q} \}$ is an extension of $\mathbb{Q}$.
+                        </p>
+                    </div>
+
+                    <!-- SPLITTING FIELD -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Splitting Field?</h3>
+                        <p class="mb-3">
+                            For a polynomial $f(x)$ with coefficients in $F$, a <strong>splitting field</strong> is the smallest field extension $K/F$ in which $f(x)$ factors completely into linear terms.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: $f(x) = x^2 - 2$</h4>
+                        <p class="mb-2">
+                            Over $\mathbb{Q}$, it does not factor. But in $\mathbb{Q}(\sqrt{2})$, we have:
+                        </p>
+                        <div class="text-center my-3">
+                            $$x^2 - 2 = (x - \sqrt{2})(x + \sqrt{2})$$
+                        </div>
+                        <p class="text-sm text-gray-300">Thus $\mathbb{Q}(\sqrt{2})$ is the splitting field of $x^2 - 2$ over $\mathbb{Q}$.</p>
+                    </div>
+
+                    <!-- AUTOMORPHISM -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is an Automorphism?</h3>
+                        <p class="mb-3">
+                            An <strong>automorphism</strong> is a bijective map from a structure to itself that preserves its operations. For fields, it preserves addition and multiplication:
+                        </p>
+                        <div class="text-center my-3">
+                            $$\sigma(a + b) = \sigma(a) + \sigma(b), \quad \sigma(ab) = \sigma(a)\sigma(b)$$
+                        </div>
+                        <p class="text-sm text-gray-300">
+                            In a splitting field, automorphisms correspond to symmetries that <em>permute the roots</em> of the polynomial while leaving the coefficients (and thus the polynomial itself) unchanged.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: $\mathbb{Q}(\sqrt{2})$ over $\mathbb{Q}$</h4>
+                        <p class="mb-2">
+                            The two automorphisms are:
+                        </p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>$\text{id}$: $\sqrt{2} \mapsto \sqrt{2}$</li>
+                            <li>$\sigma$: $\sqrt{2} \mapsto -\sqrt{2}$</li>
+                        </ul>
+                        <p class="text-sm text-gray-300 mt-2">
+                            Both keep $\mathbb{Q}$ fixed (coefficients unchanged), but $\sigma$ swaps the roots.
+                        </p>
+                    </div>
+
+                    <!-- GALOIS GROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Galois Group?</h3>
+                        <p class="mb-3">
+                            The <strong>Galois group</strong> of a polynomial $f(x)$ over a field $F$ is the group of all automorphisms of its splitting field $K$ that fix $F$.
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            In other words: it’s the set of symmetries that permute the roots of $f(x)$ but leave the coefficients (and $F$) unchanged.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: $f(x) = x^2 - 2$</h4>
+                        <p class="mb-2">
+                            The Galois group $\text{Gal}(\mathbb{Q}(\sqrt{2}) / \mathbb{Q})$ has two elements:
+                        </p>
+                        <div class="text-center my-3">
+                            $$G = \{\text{id}, \sigma\}, \quad \sigma(\sqrt{2}) = -\sqrt{2}$$
+                        </div>
+                        <p class="text-sm text-gray-300">
+                            This group is isomorphic to $C_2$, the cyclic group of order 2.
+                        </p>
+                    </div>
+
+                    <!-- SOLVABLE GROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Solvable Group?</h3>
+                        <p class="mb-3">
+                            A group $G$ is <strong>solvable</strong> if it has a chain of subgroups
+                        </p>
+                        <div class="text-center my-3">
+                            $$\{e\} = G_0 \triangleleft G_1 \triangleleft \cdots \triangleleft G_n = G$$
+                        </div>
+                        <p class="mb-3">
+                            where each $G_i$ is normal in $G_{i+1}$ and each quotient $G_{i+1}/G_i$ is abelian (commutative).
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            In Galois theory, a polynomial is <strong>solvable by radicals</strong> if and only if its Galois group is solvable.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The group $\{ \text{id}, \sigma \}$</h4>
+                        <p class="mb-2">
+                            The only subgroups are $\{\text{id}\}$ and $G$ itself. The quotient $G / \{\text{id}\}$ is abelian, so $G$ is solvable.
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            Therefore, $x^2 - 2$ is solvable by radicals — as we see from its explicit roots $\pm\sqrt{2}$.
+                        </p>
+                    </div>
+
+
                 <div class="definition-box rounded-lg p-6 mb-6">
                     <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Group?</h3>
                     <p class="mb-3">
