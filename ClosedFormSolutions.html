@@ -18,6 +18,7 @@
             }
         };
     </script>
+    <script src="include_header.js"></script>
     <style>
         body {
             font-family: 'Optima';
@@ -45,7 +46,7 @@
             <div class="prose max-w-none text-gray-300">
                 <h3 class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
-                    We're all familiar with math problems of the form "solve for x". Well, it turns out that thisisn't always possible.
+                    We're all familiar with math problems of the form "solve for x". Well, it turns out that this isn't always possible.
                     In this essay, we will explore for a few problem types the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
                 </p>
                 
@@ -54,16 +55,15 @@
                     In the simplest case of minimizing portfolio variance for a given expected return, you can solve for the optimal per-stock weights by finding the point where the risk-return trade-off curve reaches its minimum.
                     This is what I do in my 
                     <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimization</a> 
-                    program. 
-                    But, once you introduce an inequality constraint such as disallowing short-selling (require weights ≥ 0%), no closed-form expression exists and it must be solved numerically.
+                    program using the Lagrange Multiplier method. 
+                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), now the function is a piecewise function. No closed-form expression exists and it must be solved numerically.
                 </p>
                 <div class="flex flex-col md:flex-row items-start gap-6 my-6">
                     <div class="md:flex-1 prose max-w-none text-gray-300">
                         <p class="tabbed-paragraph mb-0">
-                            The way I think about it is that, for "nice" problems (convex, differentiable, linear or quadratic, and no inequality constraints), there are methods that allow you to do something similar to "solving for x".
-                            For example, in the stock portfolio case, the sum of returns multiplied by weights is a linear function and the portfolio variance is a quadratic function; also, both are convex.
-                            So, I was able to use the Lagrange multiplier method to explicitly solve for the independent variables at which the gradient is zero.
-                            But, for more complex problems, such as those with inequality constraints, you must instead run an algorithm that iteratively searches the state space for the minimum.
+                            The way I think about it is that, for "nice" optimization problems (those with functions that are: convex, differentiable, and linear or quadratic), there are methods that allow you to do something similar to "solving for x".
+                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm that iteratively searches for the minimum.
+                            The algorithm evaluates many candidate solutions and runs either until the time runs out or an acceptable solution is converged upon.
                         </p>
                     </div>
                     <div class="md:w-80 lg:w-96 flex-shrink-0 md:pl-6">
@@ -72,15 +72,12 @@
                 </div>
                 
                 <p class="tabbed-paragraph mb-4">
-                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of human knowledge. What can be known for certain? How well can we estimate what cannot be known for certain?
+                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of human knowledge. What can be known for certain? And, how well can we estimate what cannot be known for certain?
                     A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
                     But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
                     It is instead searching a vast space of possibilities to find the most likely answer.
                 </p>
                 
-                <p class="tabbed-paragraph mb-4">
-                    TODO table of contents
-                </p>
                 <h3 class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
                 <p class="mb-4">
                     Consider the simple linear equation $2x + 3 = 7$.
@@ -125,11 +122,14 @@
                         <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
                             <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
-                                x^2 + 5x + 6 = 0
+                                $x^2 + 5x + 6 = 0$
                             </div>
                             <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
                             <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
-                                x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} = \frac{-5 \pm \sqrt{25 - 24}}{2} = \frac{-5 \pm 1}{2}
+                                \begin{aligned}
+                                x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} = \frac{-5 \pm \sqrt{25 - 24}}{2} \\
+                                  &= \frac{-5 \pm 1}{2}
+                                \end{aligned}
                             \]</div>
 
                             <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = -2, -3$</span></div>
@@ -146,6 +146,7 @@
                         </div>
                         
                         <div class="md:w-64 flex-shrink-0 md:pl-6">
+                            <br>
                             <div class="bg-gray-50 rounded-md p-2 shadow-sm border border-gray-200">
                                 <img src="Completing_the_square.png" alt="Completing the square diagram" class="w-full h-auto rounded-md" />
                                 <p class="mt-2">By <a href="//commons.wikimedia.org/wiki/User:Krishnavedala" title="User:Krishnavedala">Krishnavedala</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by-sa/3.0" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=37056917">Link</a></p>
@@ -155,8 +156,9 @@
                 </p>
                 <p class="mb-4">
                     This is because the actual structure of polynomial roots becomes too complex to be expressed using just the elementary operations and functions.
-                    Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials is, first of all, very tedious for high-degree polynomials.
-                    Instead of manipulating polynomials to solve for roots, mathematicians began to think of rearranging or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
+                    Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials becomes insufficient.
+                    After hundreds of years of trying to find general solutions to all polynomials, some began to investigate the structure of algebraic equations themselves.
+                    Instead of manipulating polynomials to solve for roots, mathematicians found ways to rearrange or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
                     This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from <em>abstract algebra</em>.
                     <blockquote class="mx-auto my-8 max-w-xl bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 text-center text-lg italic text-gray-200">
                         A <a href="https://en.wikipedia.org/wiki/Symmetry_in_mathematics" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
@@ -570,7 +572,6 @@
             <a href="index.html" class="text-blue-400 hover:underline">&larr; Back to Home</a>
         </div>
     </div>
-    <script src="include_header.js" defer></script>
     <script>
     // Wait for both DOM and Plotly to be ready
     function initPlots() {
