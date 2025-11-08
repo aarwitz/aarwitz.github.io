@@ -23,7 +23,7 @@
         body {
             font-family: 'Optima';
             font-weight: 400;
-            font-size: 17px;
+            font-size: 18px;
             line-height: 1.7;
             background-color: #0d1117;
             color: #c9d1d9;
@@ -55,15 +55,15 @@
                     In the simplest case of minimizing portfolio variance for a given expected return, you can solve for the optimal per-stock weights by finding the point where the risk-return trade-off curve reaches its minimum.
                     This is what I do in my 
                     <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimization</a> 
-                    program using the Lagrange Multiplier method. 
+                    program using the Lagrange Multiplier method.
                     But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), now the function is a piecewise function. No closed-form expression exists and it must be solved numerically.
                 </p>
                 <div class="flex flex-col md:flex-row items-start gap-6 my-6">
                     <div class="md:flex-1 prose max-w-none text-gray-300">
                         <p class="tabbed-paragraph mb-0">
                             The way I think about it is that, for "nice" optimization problems (those with functions that are: convex, differentiable, and linear or quadratic), there are methods that allow you to do something similar to "solving for x".
-                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm that iteratively searches for the minimum.
-                            The algorithm evaluates many candidate solutions and runs either until the time runs out or an acceptable solution is converged upon.
+                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm to search for the minimum.
+                            The algorithm evaluates candidate solutions and runs either until the time runs out or an acceptable solution is found.
                         </p>
                     </div>
                     <div class="md:w-80 lg:w-96 flex-shrink-0 md:pl-6">
@@ -72,7 +72,7 @@
                 </div>
                 
                 <p class="tabbed-paragraph mb-4">
-                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of human knowledge. What can be known for certain? And, how well can we estimate what cannot be known for certain?
+                    This is one of those topics in math that shows the limits of human knowledge. We can actually know what we don't know, as well as the error bars around our estimates.
                     A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
                     But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
                     It is instead searching a vast space of possibilities to find the most likely answer.
@@ -138,9 +138,9 @@
                                 The quadratic formula was discovered as early as 2000 BC by rearranging the terms into "a perfect square".
                                 This was figured out so long ago because you can actually visually 
                                 <a href="https://en.wikipedia.org/wiki/Completing_the_square" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
-                                    complete the square</a>, as is visualized in the diagram on the right.
-                                    There are generalized formulas for cubic and quartic (degree 3 and 4) equations as well.
-                                    But it turns out that some polynomials of degree 5 and higher can't be solved in closed-form at all and can only be approximated.
+                                    complete the square</a>.`
+                                    There are generalized formulas for polynomials of degrees 3 and 4 as well, but for polynomials of degree 5 and higher, no such formulas exist.
+                                    Additionally, some polynomials can't be solved in closed-form at all and can only be approximated.
                                 </p>
                             </p>
                         </div>
@@ -155,8 +155,7 @@
                     </div>
                 </p>
                 <p class="mb-4">
-                    This is because the actual structure of polynomial roots becomes too complex to be expressed using just the elementary operations and functions.
-                    Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials becomes insufficient.
+                    This is because factoring, taking roots, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials becomes insufficient.
                     After hundreds of years of trying to find general solutions to all polynomials, some began to investigate the structure of algebraic equations themselves.
                     Instead of manipulating polynomials to solve for roots, mathematicians found ways to rearrange or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
                     This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from <em>abstract algebra</em>.
