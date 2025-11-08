@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plotly Test</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+    <div id="test-plot" style="width:600px;height:400px;"></div>
+    <script>
+        const x = [1, 2, 3, 4];
+        const y = [1, 4, 9, 16];
+        Plotly.newPlot('test-plot', [{x: x, y: y, mode: 'lines+markers'}], {title: 'Test Plot'});
+    </script>
+</body>
+</html>
