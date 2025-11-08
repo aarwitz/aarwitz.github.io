@@ -32,45 +32,57 @@
     </style>
 </head>
 <body class="p-4">
-    <div class="max-w-5xl mx-auto p-6 lg:p-12">
+    <div class="max-w-6xl mx-auto p-6 lg:p-12">
         <!-- Header -->
         <div id="site-header"></div>
-        <!-- Essay Content -->
-        <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8">
+    <!-- Essay Content -->
+    <article class="bg-[#161b22] rounded-lg shadow-lg pt-4 pb-12 px-6 sm:pt-6 sm:pb-12 sm:px-12 lg:pt-8 lg:pb-16 lg:px-16">
             <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
                 Which Math Problems Have Closed-Form Solutions and Why?
             </h1>
             <p class="text-gray-400 text-sm mb-6">Published on October 10, 2025</p>
             
             <div class="prose max-w-none text-gray-300">
+                <h3 class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
-                    We're all familiar with math problems of the form "solve for x". Well, it turns out that doing this is not always possible.
-                    In this essay, we will explore a few different types of math problems and how to know whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
+                    We're all familiar with math problems of the form "solve for x". Well, it turns out this isn't always possible.
+                    In this essay, we will explore for a few problem types the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
                 </p>
                 
-                <p class="tabbed-paragraph mb-4">
-                    The first time I ran into a problem without a closed-form solution, I was creating a program in Python to trade stocks. Ideally, a stock portfolio should be constructed to optimize the risk-reward (variance-return) trade-off.
-                    And, as I do in my
-                    <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimization</a>
-                    program, you can explicitly solve for the optimal per-stock allocations by finding the precise point where the risk-return trade-off curve is flat (the minimum).
-                    This is a closed-form solution.
-                    But, as soon as you apply additional constraints, such as disallowing shorting assets (allocation less than 0%), there is no way to create such an expression.
+                <p class="mb-4">
+                    The first time I encountered a problem without a closed-form solution was while building a program in Python to select the holdings of a stock portfolio.
+                    In the simplest case of minimizing portfolio variance for a given expected return, you can solve for the optimal per-stock weights by finding the point where the risk-return trade-off curve reaches its minimum.
+                    This is what I do in my 
+                    <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimization</a> 
+                    program. 
+                    But, once you introduce an inequality constraint such as disallowing short-selling (require weights ≥ 0%), no closed-form expression exists and it must be solved numerically.
                 </p>
-
-                <p class="tabbed-paragraph mb-4">
-                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of our knowledge. What can be known for certain, and how well can we estimate what cannot be known for certain?
-                </p>
+                <div class="flex flex-col md:flex-row items-start gap-6 my-6">
+                    <div class="md:flex-1 prose max-w-none text-gray-300">
+                        <p class="tabbed-paragraph mb-0">
+                            The way I think about it is that, for "nice" problems (convex, differentiable, linear or quadratic, and no inequality constraints), there are methods that allow you to do something similar to "solving for x".
+                            For example, in the stock portfolio case, the sum of returns multiplied by weights is a linear function and the portfolio variance is a quadratic function; also, both are convex.
+                            So, I was able to use the Lagrange multiplier method to explicitly solve for the independent variables at which the gradient is zero.
+                            But, for more complex problems, such as those with inequality constraints, you must instead run an algorithm that iteratively searches the state space for the minimum.
+                        </p>
+                    </div>
+                    <div class="md:w-80 lg:w-96 flex-shrink-0 md:pl-6">
+                        <img src="ConvexVsNotConvex.png" alt="Convex vs Not Convex" class="w-full h-auto rounded-md shadow-sm object-contain" />
+                    </div>
+                </div>
                 
                 <p class="tabbed-paragraph mb-4">
+                    I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of human knowledge. What can be known for certain? How well can we estimate what cannot be known for certain?
                     A calculator can provide exact answers to questions that have closed-form solutions like "what is $2 + 2$?".
                     But, when you ask an LLM a question, it is approximating an answer using numerical methods, and so in some ways it is never exactly "solving" anything.
-                    Maybe humans are like an LLM that can invoke calculator-like subroutines? That is probably a stretch and we won't go into that here, but just some motivation for the math that lies ahead.
+                    It is instead searching a vast space of possibilities to find the most likely answer.
+                    Maybe humans are like an LLM that can invoke calculator-like subroutines? We won't try to answer that here, but just some motivation for the math that lies ahead.
                 </p>
                 
                 <p class="tabbed-paragraph mb-4">
                     TODO table of contents
                 </p>
-                <h3 class="text-lg font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
+                <h3 class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
                 <p class="mb-4">
                     Consider the simple linear equation $2x + 3 = 7$.
                     <div class="flex justify-center my-6">
@@ -94,7 +106,7 @@
                         Fundamental Theorem of Algebra</a> states that
                         every polynomial of degree n has exactly n complex roots.
                     </blockquote>
-                    It's easy to visualize this in the case of real roots (the three plots below). You can see that for a degree 1 polynomial (a line), there is always one root (where it crosses the x-axis), for degree 2 (a parabola) there are always two roots, and for degree 3 (a cubic curve) there are always three roots.
+                    It's easy to visualize for functions with real roots (the three plots below). You can see that for a degree 1 polynomial (a line), there is always one root (where it crosses the x-axis), for degree 2 (a parabola) there are always two roots, and for degree 3 (a cubic curve) there are always three roots.
                     <div class="my-6">
                         <div class="flex flex-col md:flex-row gap-4">
                             <div id="plot1" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
@@ -127,7 +139,7 @@
                                 The quadratic formula was discovered as early as 2000 BC by rearranging the terms into "a perfect square".
                                 This was figured out so long ago because you can actually visually 
                                 <a href="https://en.wikipedia.org/wiki/Completing_the_square" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
-                                    complete the square</a> as is done on the right.
+                                    complete the square</a>, as is visualized in the diagram on the right.
                                     There are generalized formulas for cubic and quartic (degree 3 and 4) equations as well, although they were discovered much later and involve more complex substitutions.
                                     But it turns out that that there is no such general closed-form solution for polynomials of degree 5 or higher. Some polynomials of degree 5 and higher can't be solved in closed-form at all and can only be approximated.
                                 </p>
@@ -144,8 +156,9 @@
                 </p>
                 <p class="mb-4">
                     This is because the actual structure of polynomial roots becomes too complex to be expressed using just the elementary operations and functions.
-                    Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials is described in a more abstract way, and can be thought of as "permuting" the roots of the polynomial while leaving its algebraic structure intact.
-                    In order to explain why this further, we must introduce some additional terms and theory from abstract algebra.
+                    Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials is, first of all, very tedious for high-degree polynomials.
+                    Instead of manipulating polynomials to solve for roots, mathematicians began to think of rearranging or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
+                    This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from abstract algebra.
                     You can think of the roots of a polynomial as moving parts that can be "permuted" or swap places when you manipulate the equation. Each way the roots can swap while still satisfying the polynomial is a "symmetry".
                     <blockquote class="mx-auto my-8 max-w-xl bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 text-center text-lg italic text-gray-200">
                         A <a href="https://en.wikipedia.org/wiki/Symmetry_in_mathematics" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
@@ -201,9 +214,10 @@
                             &\quad \omega = e^{2\pi i/3} = \cos\!\left(\tfrac{2\pi}{3}\right) + i\sin\!\left(\tfrac{2\pi}{3}\right). \\
                             &\quad\text{Numerically that's a point at }120^\circ\text{ on the unit circle.}\\[6pt]
                             &\text{Step 2 — why }2\pi/3\text{?}\\
+                            &\quad\text{A polynomial of degree 3 has 3 roots.}\\
+                            &\quad\text{These roots are equally spaced around the unit circle in the complex plane.}\\
                             &\quad\text{A full rotation is }2\pi.\\
-                            &\quad\text{A polynomial of degree 3 has 3 roots equally spaced around the unit circle in the complex plane.}\\
-                            &\quad\text{so the angle between consecutive points is } \tfrac{2\pi}{3}\ (120^\circ).\\[6pt]
+                            &\quad\text{So, the angle between consecutive roots is } \tfrac{2\pi}{3}\ (120^\circ).\\[6pt]
                             &\text{Step 3 — apply the substitution to the polynomial:}\\
                             &\quad f(\omega x) = (\omega x)^3 - 1 = \omega^3 x^3 - 1.\\
                             &\quad\text{But }\omega^3 = \big(e^{2\pi i/3}\big)^3 = e^{2\pi i} = 1.\\
