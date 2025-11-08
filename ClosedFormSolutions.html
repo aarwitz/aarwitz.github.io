@@ -45,7 +45,7 @@
             <div class="prose max-w-none text-gray-300">
                 <h3 class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
-                    We're all familiar with math problems of the form "solve for x". Well, it turns out this isn't always possible.
+                    We're all familiar with math problems of the form "solve for x". Well, it turns out that thisisn't always possible.
                     In this essay, we will explore for a few problem types the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
                 </p>
                 
@@ -73,10 +73,9 @@
                 
                 <p class="tabbed-paragraph mb-4">
                     I found myself wanting to dive deeper into this topic, because it almost feels like exploring the limits of human knowledge. What can be known for certain? How well can we estimate what cannot be known for certain?
-                    A calculator can provide exact answers to questions that have closed-form solutions like "what is $2 + 2$?".
-                    But, when you ask an LLM a question, it is approximating an answer using numerical methods, and so in some ways it is never exactly "solving" anything.
+                    A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
+                    But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
                     It is instead searching a vast space of possibilities to find the most likely answer.
-                    Maybe humans are like an LLM that can invoke calculator-like subroutines? We won't try to answer that here, but just some motivation for the math that lies ahead.
                 </p>
                 
                 <p class="tabbed-paragraph mb-4">
@@ -106,12 +105,12 @@
                         Fundamental Theorem of Algebra</a> states that
                         every polynomial of degree n has exactly n complex roots.
                     </blockquote>
-                    It's easy to visualize for functions with real roots (the three plots below). You can see that for a degree 1 polynomial (a line), there is always one root (where it crosses the x-axis), for degree 2 (a parabola) there are always two roots, and for degree 3 (a cubic curve) there are always three roots.
+                    It's easy to visualize the FTA for functions with real roots (the three plots below). You can see that for a degree 1 polynomial (a line), there is always one root (where it crosses the x-axis), for degree 2 (a parabola) there are always two roots, and for degree 3 (a cubic curve) there are always three roots.
                     <div class="my-6">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <div id="plot1" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
-                            <div id="plot2" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
-                            <div id="plot3" class="flex-1 bg-[#0b1220] p-3 rounded-md" style="height:320px;"></div>
+                        <div class="flex flex-col gap-3 sm:gap-4 md:flex-row">
+                            <div id="plot1" class="w-full md:flex-1 bg-[#0b1220] p-2 sm:p-3 rounded-md" style="height:280px; min-height:280px;"></div>
+                            <div id="plot2" class="w-full md:flex-1 bg-[#0b1220] p-2 sm:p-3 rounded-md" style="height:280px; min-height:280px;"></div>
+                            <div id="plot3" class="w-full md:flex-1 bg-[#0b1220] p-2 sm:p-3 rounded-md" style="height:280px; min-height:280px;"></div>
                         </div>
                     </div>
                     
@@ -158,8 +157,7 @@
                     This is because the actual structure of polynomial roots becomes too complex to be expressed using just the elementary operations and functions.
                     Factoring, simplifying, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials is, first of all, very tedious for high-degree polynomials.
                     Instead of manipulating polynomials to solve for roots, mathematicians began to think of rearranging or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
-                    This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from abstract algebra.
-                    You can think of the roots of a polynomial as moving parts that can be "permuted" or swap places when you manipulate the equation. Each way the roots can swap while still satisfying the polynomial is a "symmetry".
+                    This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from <em>abstract algebra</em>.
                     <blockquote class="mx-auto my-8 max-w-xl bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 text-center text-lg italic text-gray-200">
                         A <a href="https://en.wikipedia.org/wiki/Symmetry_in_mathematics" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
                             symmetry</a>
@@ -587,20 +585,25 @@
             xs.push(i);
         }
         
+        // Detect if mobile for margin adjustments
+        const isMobile = window.innerWidth < 640;
+        const margin = isMobile ? {t: 35, l: 35, r: 20, b: 35} : {t: 40, l: 40, r: 40, b: 40};
+        
         // n=1: y = x (one real root at x=0)
         const y1 = xs.map(x => x);
         Plotly.newPlot('plot1', [
             {x: xs, y: y1, mode: 'lines', line: {color: '#60a5fa', width: 3}},
             {x: [0], y: [0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Root'}
         ], {
-            title: {text: 'n=1: y = x', font: {color: 'white'}},
+            title: {text: 'n=1: y = x', font: {color: 'white', size: isMobile ? 14 : 16}},
             paper_bgcolor: '#0b1220',
             plot_bgcolor: '#0b1220',
-            margin: {t: 40, l: 40, r: 40, b: 40},
+            margin: margin,
             xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
             yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
-            showlegend: false
-        }, {responsive: true});
+            showlegend: false,
+            autosize: true
+        }, {responsive: true, displayModeBar: false});
         
         // n=2: y = x^2 - 1 (two real roots at x=-1, x=1)
         const y2 = xs.map(x => x*x - 1);
@@ -608,14 +611,15 @@
             {x: xs, y: y2, mode: 'lines', line: {color: '#34d399', width: 3}},
             {x: [-1, 1], y: [0, 0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Roots'}
         ], {
-            title: {text: 'n=2: y = x² - 1', font: {color: 'white'}},
+            title: {text: 'n=2: y = x² - 1', font: {color: 'white', size: isMobile ? 14 : 16}},
             paper_bgcolor: '#0b1220',
             plot_bgcolor: '#0b1220',
-            margin: {t: 40, l: 40, r: 40, b: 40},
+            margin: margin,
             xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
             yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
-            showlegend: false
-        }, {responsive: true});
+            showlegend: false,
+            autosize: true
+        }, {responsive: true, displayModeBar: false});
         
         // n=3: y = x^3 - 4x (three real roots at x=-2, x=0, x=2)
         const y3 = xs.map(x => x*x*x - 4*x);
@@ -623,14 +627,15 @@
             {x: xs, y: y3, mode: 'lines', line: {color: '#f97316', width: 3}},
             {x: [-2, 0, 2], y: [0, 0, 0], mode: 'markers', marker: {symbol: 'x', size: 12, color: '#ef4444'}, name: 'Roots'}
         ], {
-            title: {text: 'n=3: y = x³ - 4x', font: {color: 'white'}},
+            title: {text: 'n=3: y = x³ - 4x', font: {color: 'white', size: isMobile ? 14 : 16}},
             paper_bgcolor: '#0b1220',
             plot_bgcolor: '#0b1220',
-            margin: {t: 40, l: 40, r: 40, b: 40},
+            margin: margin,
             xaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
             yaxis: {zeroline: true, zerolinecolor: '#374151', gridcolor: '#374151', color: 'white'},
-            showlegend: false
-        }, {responsive: true});
+            showlegend: false,
+            autosize: true
+        }, {responsive: true, displayModeBar: false});
     }
     
     // Start when DOM is ready
