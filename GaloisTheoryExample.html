@@ -234,6 +234,86 @@
                         <p class="mt-3 mb-2 text-sm text-gray-300">Remark: because \(\mathbb{Z}\) is abelian every subgroup (including \(3\mathbb{Z}\)) is normal, so the quotient above is a group. In non-abelian groups you must check normality before forming quotients.</p>
                     </div>
 
+                    <!-- ABELIAN GROUP -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is an Abelian Group?</h3>
+                        <p class="mb-3">
+                            An <strong>abelian group</strong> (also called a <strong>commutative group</strong>) is a group where the operation is commutative. This means for all elements $a, b$ in the group:
+                        </p>
+                        <div class="text-center my-3">
+                            $$a \circ b = b \circ a$$
+                        </div>
+                        <p class="text-sm text-gray-300">
+                            In other words: the order in which you combine elements doesn't matter. This property makes abelian groups easier to work with than general groups.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The integers $\mathbb{Z}$ under addition</h4>
+                        <p class="mb-2">$(\mathbb{Z}, +)$ is abelian because addition is commutative:</p>
+                        <div class="text-center my-3">
+                            $$a + b = b + a \quad \text{for all } a, b \in \mathbb{Z}$$
+                        </div>
+                        <p class="mb-2">For instance: $3 + 5 = 5 + 3 = 8$.</p>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong>Non-example:</strong> The group of $3 \times 3$ invertible matrices under matrix multiplication is <em>not</em> abelian, since matrix multiplication is not commutative: in general $AB \neq BA$.
+                        </p>
+                    </div>
+
+                    <!-- FIELD -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Field?</h3>
+                        <p class="mb-3">
+                            A <strong>field</strong> is a set $F$ with two operations (addition and multiplication) that satisfy:
+                        </p>
+                        <ol class="list-decimal ml-6 space-y-2">
+                            <li>$(F, +)$ is an abelian group with identity $0$</li>
+                            <li>$(F \setminus \{0\}, \times)$ is an abelian group with identity $1$</li>
+                            <li>Multiplication distributes over addition: $a \times (b + c) = (a \times b) + (a \times c)$</li>
+                        </ol>
+                        <p class="text-sm text-gray-300 mt-3">
+                            In simpler terms: you can add, subtract, multiply, and divide (except by zero), and the familiar algebraic rules all hold.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: The rational numbers $\mathbb{Q}$</h4>
+                        <p class="mb-2">$\mathbb{Q} = \{a/b : a,b \in \mathbb{Z}, b \neq 0\}$ is a field:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li><strong>Addition:</strong> $\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$ (with identity $0 = \frac{0}{1}$)</li>
+                            <li><strong>Multiplication:</strong> $\frac{a}{b} \times \frac{c}{d} = \frac{ac}{bd}$ (with identity $1 = \frac{1}{1}$)</li>
+                            <li><strong>Inverses:</strong> Every nonzero $\frac{a}{b}$ has multiplicative inverse $\frac{b}{a}$</li>
+                        </ul>
+                        <p class="text-sm text-gray-300 mt-2">
+                            Other familiar examples: $\mathbb{R}$ (real numbers) and $\mathbb{C}$ (complex numbers).
+                        </p>
+                    </div>
+
+                    <!-- BASE FIELD -->
+                    <div class="definition-box rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Base Field?</h3>
+                        <p class="mb-3">
+                            A <strong>base field</strong> is the field we start with when building larger mathematical structures. When studying a polynomial like $x^2 - 2$, the base field is the field containing the polynomial's coefficients.
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            The base field determines what numbers we consider "known" versus what we need to "adjoin" (add) to solve the polynomial.
+                        </p>
+                    </div>
+
+                    <div class="example-box rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-green-300 mb-2">Example: $\mathbb{Q}$ as the base field for $x^2 - 2$</h4>
+                        <p class="mb-2">The polynomial $f(x) = x^2 - 2$ has coefficients $1$ and $-2$, which are both rational numbers.</p>
+                        <p class="mb-2">We say $\mathbb{Q}$ is the base field for this polynomial because:</p>
+                        <ul class="list-disc ml-6 space-y-1">
+                            <li>The coefficients ($1, -2$) are elements of $\mathbb{Q}$</li>
+                            <li>The roots $\pm\sqrt{2}$ are <em>not</em> in $\mathbb{Q}$ (cannot be written as fractions)</li>
+                            <li>To solve the polynomial, we must extend $\mathbb{Q}$ by adjoining $\sqrt{2}$</li>
+                        </ul>
+                        <p class="text-sm text-gray-300 mt-2">
+                            Choosing a different base field would give a different Galois group. For instance, if we chose $\mathbb{R}$ as the base field, the polynomial would already factor since $\sqrt{2} \in \mathbb{R}$.
+                        </p>
+                    </div>
+
                     <!-- FIELD EXTENSION -->
                     <div class="definition-box rounded-lg p-6 mb-6">
                         <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Field Extension?</h3>
@@ -349,87 +429,6 @@
                             Therefore, $x^2 - 2$ is solvable by radicals — as we see from its explicit roots $\pm\sqrt{2}$.
                         </p>
                     </div>
-
-
-                <div class="definition-box rounded-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Group?</h3>
-                    <p class="mb-3">
-                        A <strong>group</strong> is a set $G$ together with a binary operation $\circ$ that satisfies four properties:
-                    </p>
-                    <ol class="list-decimal ml-6 space-y-2">
-                        <li><strong>Closure:</strong> For any $a, b \in G$, we have $a \circ b \in G$</li>
-                        <li><strong>Associativity:</strong> $(a \circ b) \circ c = a \circ (b \circ c)$</li>
-                        <li><strong>Identity element:</strong> There exists $e \in G$ such that $e \circ a = a \circ e = a$ for all $a \in G$</li>
-                        <li><strong>Inverse element:</strong> For each $a \in G$, there exists $a^{-1} \in G$ such that $a \circ a^{-1} = a^{-1} \circ a = e$</li>
-                    </ol>
-                </div>
-
-                <div class="example-box rounded-lg p-6 mb-6">
-                    <h4 class="text-lg font-bold text-green-300 mb-2">Example: The integers under addition</h4>
-                    <p class="mb-2">$(\mathbb{Z}, +)$ is a group:</p>
-                    <ul class="list-disc ml-6 space-y-1">
-                        <li><strong>Set:</strong> $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$</li>
-                        <li><strong>Operation:</strong> Addition $(+)$</li>
-                        <li><strong>Identity:</strong> $0$ (since $a + 0 = a$)</li>
-                        <li><strong>Inverse:</strong> For any integer $a$, its inverse is $-a$ (since $a + (-a) = 0$)</li>
-                    </ul>
-                </div>
-
-                <div class="definition-box rounded-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Subgroup?</h3>
-                    <p class="mb-3">
-                        A <strong>subgroup</strong> $H$ of a group $G$ is a subset $H \subseteq G$ that is itself a group under the same operation.
-                    </p>
-                    <p class="text-sm text-gray-300">
-                        Key requirement: A subgroup must always contain the identity element of $G$.
-                    </p>
-                </div>
-
-                <div class="example-box rounded-lg p-6 mb-6">
-                    <h4 class="text-lg font-bold text-green-300 mb-2">Example: Even integers</h4>
-                    <p class="mb-2">The even integers $2\mathbb{Z} = \{\ldots, -4, -2, 0, 2, 4, \ldots\}$ form a subgroup of $\mathbb{Z}$ under addition:</p>
-                    <ul class="list-disc ml-6 space-y-1">
-                        <li>Contains identity: $0 \in 2\mathbb{Z}$</li>
-                        <li>Closed: Even + Even = Even</li>
-                        <li>Inverses exist: $-2a$ is also even</li>
-                    </ul>
-                </div>
-
-                <div class="definition-box rounded-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is an Automorphism?</h3>
-                    <p class="mb-3">
-                        An <strong>automorphism</strong> is a structure-preserving map from a mathematical object to itself. For fields, it's a bijective function that preserves addition and multiplication.
-                    </p>
-                    <p class="text-sm text-gray-300">
-                        In the context of polynomials, automorphisms permute the roots while keeping the polynomial's algebraic structure (coefficients and their relationships) unchanged.
-                    </p>
-                </div>
-
-                <div class="definition-box rounded-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Normal Subgroup?</h3>
-                    <p class="mb-3">
-                        A subgroup $N$ of $G$ is <strong>normal</strong> (written $N \triangleleft G$) if for every $g \in G$ and $n \in N$, we have $gng^{-1} \in N$.
-                    </p>
-                    <p class="text-sm text-gray-300">
-                        Intuitively: $N$ is "invariant under conjugation" by elements of $G$.
-                    </p>
-                </div>
-
-                <div class="definition-box rounded-lg p-6 mb-6">
-                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Solvable Group?</h3>
-                    <p class="mb-3">
-                        A group $G$ is <strong>solvable</strong> if it has a chain of subgroups
-                    </p>
-                    <div class="text-center my-3">
-                        $$\{e\} = G_0 \triangleleft G_1 \triangleleft G_2 \triangleleft \cdots \triangleleft G_n = G$$
-                    </div>
-                    <p class="mb-3">
-                        where each $G_i$ is a normal subgroup of $G_{i+1}$, and each quotient $G_{i+1}/G_i$ is <strong>abelian</strong> (commutative).
-                    </p>
-                    <p class="text-sm text-gray-300">
-                        Think of it as: "Can we break down $G$ into simpler, commutative pieces?"
-                    </p>
-                </div>
 
                 <h2 class="text-2xl font-bold text-white mb-4 mt-10">Working Through $f(x) = x^2 - 2$</h2>
 
