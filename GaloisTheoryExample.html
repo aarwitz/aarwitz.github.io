@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Galois Theory Through x² - 2 - Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- MathJax 3 -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        .definition-box {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2a1e3f 100%);
+            border-left: 4px solid #60a5fa;
+        }
+        .example-box {
+            background: linear-gradient(135deg, #1e3a2f 0%, #2a2e1e 100%);
+            border-left: 4px solid #34d399;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <!-- Header -->
+        <div id="site-header"></div>
+        <!-- Essay Content -->
+        <article class="bg-[#161b22] rounded-lg shadow-lg pt-6 pb-8 px-4 sm:pt-8 sm:pb-12 sm:px-10 lg:pt-10 lg:pb-16 lg:px-16">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
+                Understanding Galois Theory Through $x^2 - 2$
+            </h1>
+            <p class="text-gray-400 text-sm mb-6">A step-by-step walkthrough</p>
+            
+            <div class="prose max-w-none text-gray-300">
+                <p class="mb-6">
+                    Let's understand how Galois theory determines whether a polynomial has a closed-form solution by working through the example $f(x) = x^2 - 2$ from the ground up.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-8">Building Blocks: Key Definitions</h2>
+
+                <div class="definition-box rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Group?</h3>
+                    <p class="mb-3">
+                        A <strong>group</strong> is a set $G$ together with a binary operation $\circ$ that satisfies four properties:
+                    </p>
+                    <ol class="list-decimal ml-6 space-y-2">
+                        <li><strong>Closure:</strong> For any $a, b \in G$, we have $a \circ b \in G$</li>
+                        <li><strong>Associativity:</strong> $(a \circ b) \circ c = a \circ (b \circ c)$</li>
+                        <li><strong>Identity element:</strong> There exists $e \in G$ such that $e \circ a = a \circ e = a$ for all $a \in G$</li>
+                        <li><strong>Inverse element:</strong> For each $a \in G$, there exists $a^{-1} \in G$ such that $a \circ a^{-1} = a^{-1} \circ a = e$</li>
+                    </ol>
+                </div>
+
+                <div class="example-box rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-bold text-green-300 mb-2">Example: The integers under addition</h4>
+                    <p class="mb-2">$(\mathbb{Z}, +)$ is a group:</p>
+                    <ul class="list-disc ml-6 space-y-1">
+                        <li><strong>Set:</strong> $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$</li>
+                        <li><strong>Operation:</strong> Addition $(+)$</li>
+                        <li><strong>Identity:</strong> $0$ (since $a + 0 = a$)</li>
+                        <li><strong>Inverse:</strong> For any integer $a$, its inverse is $-a$ (since $a + (-a) = 0$)</li>
+                    </ul>
+                </div>
+
+                <div class="definition-box rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Subgroup?</h3>
+                    <p class="mb-3">
+                        A <strong>subgroup</strong> $H$ of a group $G$ is a subset $H \subseteq G$ that is itself a group under the same operation.
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        Key requirement: A subgroup must always contain the identity element of $G$.
+                    </p>
+                </div>
+
+                <div class="example-box rounded-lg p-6 mb-6">
+                    <h4 class="text-lg font-bold text-green-300 mb-2">Example: Even integers</h4>
+                    <p class="mb-2">The even integers $2\mathbb{Z} = \{\ldots, -4, -2, 0, 2, 4, \ldots\}$ form a subgroup of $\mathbb{Z}$ under addition:</p>
+                    <ul class="list-disc ml-6 space-y-1">
+                        <li>Contains identity: $0 \in 2\mathbb{Z}$</li>
+                        <li>Closed: Even + Even = Even</li>
+                        <li>Inverses exist: $-2a$ is also even</li>
+                    </ul>
+                </div>
+
+                <div class="definition-box rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is an Automorphism?</h3>
+                    <p class="mb-3">
+                        An <strong>automorphism</strong> is a structure-preserving map from a mathematical object to itself. For fields, it's a bijective function that preserves addition and multiplication.
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        In the context of polynomials, automorphisms permute the roots while keeping the polynomial's algebraic structure (coefficients and their relationships) unchanged.
+                    </p>
+                </div>
+
+                <div class="definition-box rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Normal Subgroup?</h3>
+                    <p class="mb-3">
+                        A subgroup $N$ of $G$ is <strong>normal</strong> (written $N \triangleleft G$) if for every $g \in G$ and $n \in N$, we have $gng^{-1} \in N$.
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        Intuitively: $N$ is "invariant under conjugation" by elements of $G$.
+                    </p>
+                </div>
+
+                <div class="definition-box rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">What is a Solvable Group?</h3>
+                    <p class="mb-3">
+                        A group $G$ is <strong>solvable</strong> if it has a chain of subgroups
+                    </p>
+                    <div class="text-center my-3">
+                        $$\{e\} = G_0 \triangleleft G_1 \triangleleft G_2 \triangleleft \cdots \triangleleft G_n = G$$
+                    </div>
+                    <p class="mb-3">
+                        where each $G_i$ is a normal subgroup of $G_{i+1}$, and each quotient $G_{i+1}/G_i$ is <strong>abelian</strong> (commutative).
+                    </p>
+                    <p class="text-sm text-gray-300">
+                        Think of it as: "Can we break down $G$ into simpler, commutative pieces?"
+                    </p>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-10">Working Through $f(x) = x^2 - 2$</h2>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 1: Find the Roots</h3>
+                    <p class="mb-3">The polynomial $f(x) = x^2 - 2$ has two roots:</p>
+                    <div class="text-center my-4">
+                        $$r_1 = \sqrt{2}, \quad r_2 = -\sqrt{2}$$
+                    </div>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 2: Identify the Automorphisms (Symmetries)</h3>
+                    <p class="mb-3">
+                        We need to find all permutations of the roots that leave the polynomial unchanged (automorphisms of the splitting field).
+                    </p>
+                    <p class="mb-3">There are exactly two such permutations:</p>
+                    
+                    <div class="bg-[#071018] rounded-md p-4 my-4">
+                        <p class="font-semibold text-blue-300 mb-2">1. Identity ($\text{id}$):</p>
+                        <div class="ml-4">
+                            $$\begin{aligned}
+                            \text{id}(\sqrt{2}) &= \sqrt{2} \\
+                            \text{id}(-\sqrt{2}) &= -\sqrt{2}
+                            \end{aligned}$$
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Leaves everything unchanged.</p>
+                    </div>
+
+                    <div class="bg-[#071018] rounded-md p-4 my-4">
+                        <p class="font-semibold text-green-300 mb-2">2. Swap ($\sigma$):</p>
+                        <div class="ml-4">
+                            $$\begin{aligned}
+                            \sigma(\sqrt{2}) &= -\sqrt{2} \\
+                            \sigma(-\sqrt{2}) &= \sqrt{2}
+                            \end{aligned}$$
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Swaps the two roots. Corresponds to the map $x \mapsto -x$.</p>
+                    </div>
+
+                    <p class="mt-4 text-sm bg-blue-900/30 rounded p-3 border-l-4 border-blue-400">
+                        <strong>Why does this preserve the polynomial?</strong><br>
+                        If we substitute $-x$ into $f(x) = x^2 - 2$, we get $f(-x) = (-x)^2 - 2 = x^2 - 2 = f(x)$. The polynomial is unchanged!
+                    </p>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 3: Form the Galois Group</h3>
+                    <p class="mb-3">
+                        The <strong>Galois group</strong> $G = \text{Gal}(f)$ is the set of all these automorphisms:
+                    </p>
+                    <div class="text-center my-4">
+                        $$G = \{\text{id}, \sigma\}$$
+                    </div>
+                    <p class="mb-3">This group has two elements. Let's verify it's actually a group:</p>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li><strong>Closure:</strong> Composing any two elements gives another element in $G$</li>
+                        <li><strong>Identity:</strong> $\text{id}$ is the identity</li>
+                        <li><strong>Inverses:</strong> $\sigma \circ \sigma = \text{id}$, so $\sigma$ is its own inverse</li>
+                        <li><strong>Associativity:</strong> Function composition is always associative</li>
+                    </ul>
+
+                    <div class="mt-4 bg-[#071018] rounded p-4">
+                        <p class="font-semibold mb-2">Composition table:</p>
+                        <table class="w-full text-center border-collapse">
+                            <tr class="border-b border-gray-600">
+                                <th class="p-2 border-r border-gray-600">$\circ$</th>
+                                <th class="p-2 border-r border-gray-600">$\text{id}$</th>
+                                <th class="p-2">$\sigma$</th>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <th class="p-2 border-r border-gray-600">$\text{id}$</th>
+                                <td class="p-2 border-r border-gray-700">$\text{id}$</td>
+                                <td class="p-2">$\sigma$</td>
+                            </tr>
+                            <tr>
+                                <th class="p-2 border-r border-gray-600">$\sigma$</th>
+                                <td class="p-2 border-r border-gray-700">$\sigma$</td>
+                                <td class="p-2">$\text{id}$</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <p class="mt-4 text-sm text-gray-400">
+                        Note: This group is isomorphic to $\mathbb{Z}_2$ (integers modulo 2) or $C_2$ (cyclic group of order 2).
+                    </p>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 4: Find All Subgroups</h3>
+                    <p class="mb-3">
+                        What are all possible subgroups of $G = \{\text{id}, \sigma\}$?
+                    </p>
+                    <p class="mb-3">Remember: A subgroup must:</p>
+                    <ul class="list-disc ml-6 mb-4 space-y-1">
+                        <li>Contain the identity element</li>
+                        <li>Be closed under the group operation</li>
+                        <li>Contain inverses of all its elements</li>
+                    </ul>
+
+                    <div class="bg-[#071018] rounded p-4 mb-3">
+                        <p class="font-semibold text-blue-300 mb-2">Subgroup 1: $H_0 = \{\text{id}\}$</p>
+                        <p class="text-sm text-gray-300">The trivial subgroup (just the identity).</p>
+                    </div>
+
+                    <div class="bg-[#071018] rounded p-4 mb-3">
+                        <p class="font-semibold text-green-300 mb-2">Subgroup 2: $H_1 = \{\text{id}, \sigma\} = G$</p>
+                        <p class="text-sm text-gray-300">The whole group.</p>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-red-900/20 border-l-4 border-red-400 rounded">
+                        <p class="font-semibold mb-2">Why isn't $\{\sigma\}$ a subgroup?</p>
+                        <p class="text-sm">
+                            Because it doesn't contain the identity! Also, $\sigma \circ \sigma = \text{id}$, which means composing elements in $\{\sigma\}$ gives us $\text{id}$, which is not in $\{\sigma\}$. So it's not closed under composition.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 5: Check if Subgroups are Normal</h3>
+                    <p class="mb-3">
+                        For each subgroup $H$, we need to check if $gHg^{-1} = H$ for all $g \in G$.
+                    </p>
+
+                    <div class="bg-[#071018] rounded p-4 mb-3">
+                        <p class="font-semibold mb-2">$H_0 = \{\text{id}\}$ is normal:</p>
+                        <p class="text-sm">For any $g \in G$: $g \cdot \text{id} \cdot g^{-1} = g \cdot g^{-1} = \text{id} \in H_0$ ✓</p>
+                    </div>
+
+                    <div class="bg-[#071018] rounded p-4 mb-3">
+                        <p class="font-semibold mb-2">$H_1 = G$ is normal:</p>
+                        <p class="text-sm">The whole group is always a normal subgroup of itself. ✓</p>
+                    </div>
+
+                    <p class="mt-4 text-sm bg-blue-900/30 rounded p-3 border-l-4 border-blue-400">
+                        <strong>Pro tip:</strong> In abelian groups (where all elements commute), <em>every</em> subgroup is automatically normal because $gHg^{-1} = gg^{-1}H = H$.
+                    </p>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 6: Build the Subnormal Series</h3>
+                    <p class="mb-3">
+                        Now we can construct a chain of normal subgroups:
+                    </p>
+                    <div class="text-center my-4 text-lg">
+                        $$\{\text{id}\} \triangleleft G$$
+                    </div>
+                    <p class="mb-3">
+                        This gives us one quotient group to check: $G / \{\text{id}\} \cong G$.
+                    </p>
+                </div>
+
+                <div class="bg-[#202731] rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Step 7: Check if Quotients are Abelian</h3>
+                    <p class="mb-3">
+                        For $G$ to be solvable, each quotient $G_{i+1}/G_i$ must be abelian.
+                    </p>
+                    <p class="mb-3">
+                        Our only quotient is $G/\{\text{id}\} \cong G = \{\text{id}, \sigma\}$.
+                    </p>
+                    <p class="mb-3">
+                        Is this abelian? Let's check if $\text{id} \circ \sigma = \sigma \circ \text{id}$:
+                    </p>
+                    <div class="bg-[#071018] rounded p-4">
+                        $$\begin{aligned}
+                        \text{id} \circ \sigma &= \sigma \\
+                        \sigma \circ \text{id} &= \sigma \\
+                        \therefore \text{id} \circ \sigma &= \sigma \circ \text{id} \quad \checkmark
+                        \end{aligned}$$
+                    </div>
+                    <p class="mt-3 text-green-300 font-semibold">
+                        Yes! The quotient is abelian.
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-900/40 to-blue-900/40 rounded-lg p-6 border-2 border-green-500/50 mb-6">
+                    <h3 class="text-2xl font-bold text-white mb-4">✓ Conclusion: The Group is Solvable!</h3>
+                    <p class="mb-4 text-lg">
+                        Since we found a chain of normal subgroups $\{\text{id}\} \triangleleft G$ where the quotient $G/\{\text{id}\}$ is abelian, the Galois group is <strong>solvable</strong>.
+                    </p>
+                    <div class="bg-black/30 rounded p-4 my-4">
+                        <p class="text-xl font-semibold text-blue-300 mb-2">By Galois Theory:</p>
+                        <p class="text-lg">
+                            The polynomial $x^2 - 2$ has a <strong>closed-form solution</strong> expressible using radicals.
+                        </p>
+                    </div>
+                    <p class="text-center text-xl mt-4">
+                        $$x = \pm\sqrt{2}$$
+                    </p>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-4 mt-10">Why This Matters</h2>
+
+                <div class="bg-[#22272e] border-l-4 border-purple-500 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-purple-300 mb-3">The Big Picture</h3>
+                    <p class="mb-3">
+                        Galois theory gives us a way to determine <em>a priori</em> (before actually solving) whether a polynomial equation has a closed-form solution.
+                    </p>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li><strong>Solvable Galois group</strong> → Closed-form solution exists using radicals ($+, -, \times, \div, \sqrt[n]{\cdot}$)</li>
+                        <li><strong>Non-solvable Galois group</strong> → No closed-form solution using radicals</li>
+                    </ul>
+                </div>
+
+                <div class="bg-[#22272e] border-l-4 border-yellow-500 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-yellow-300 mb-3">For Higher Degree Polynomials</h3>
+                    <p class="mb-3">
+                        The same process applies to polynomials of any degree:
+                    </p>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li><strong>Degree 2, 3, 4:</strong> Galois groups are always solvable → Quadratic, cubic, quartic formulas exist</li>
+                        <li><strong>Degree 5+:</strong> Galois groups can be non-solvable (e.g., $S_5$, the symmetric group) → No general formula exists</li>
+                    </ul>
+                </div>
+
+                <div class="bg-[#1c2128] rounded-lg p-6 mt-8">
+                    <h3 class="text-xl font-bold text-white mb-3">Key Takeaway</h3>
+                    <p class="text-lg">
+                        The <em>structure</em> of how roots can be permuted while preserving the polynomial (the Galois group) directly determines whether we can write down an explicit formula for those roots. This deep connection between symmetry and solvability is one of the most beautiful results in mathematics.
+                    </p>
+                </div>
+            </div>
+        </article>
+        <div class="mt-8">
+            <a href="index.html" class="text-blue-400 hover:underline">&larr; Back to Home</a>
+        </div>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

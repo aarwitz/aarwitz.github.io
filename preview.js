@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         "smbus-preview": { url: "SMBusProtocol.html", paragraphIndex: 0 },  // Extract the SMBus overview
         "uart-i2c-preview": { url: "UartVsI2c.html", paragraphIndex: 0 },  // Extract the serial communication overview
         "performance-engineering-preview": { url: "PerformanceEngineering.html", paragraphIndex: 0 },  // Extract the introduction paragraph
-        "camera-calibration-preview": { url: "CameraCalibration.html", paragraphIndex: 0 }  // Extract the introduction paragraph
+        "camera-calibration-preview": { url: "CameraCalibration.html", paragraphIndex: 0 },  // Extract the introduction paragraph
+        "galois-theory-preview": { url: "GaloisTheoryExample.html", paragraphIndex: 0 }  // Galois theory note preview
     };
 
     for (const [previewId, config] of Object.entries(previews)) {
