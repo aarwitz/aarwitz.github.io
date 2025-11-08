@@ -17,6 +17,57 @@
             background-color: #0d1117; /* GitHub-like dark background */
             color: #c9d1d9;
         }
+        
+        /* Filter button styles */
+        .filter-btn {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .filter-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+        }
+        
+        .filter-btn.active {
+            background: #1f6feb;
+            color: white;
+            border-color: #1f6feb;
+        }
+        
+        .filter-btn .count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+        
+        .filter-btn.active .count {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Essay item animation */
+        .essay-item {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.3s ease;
+        }
+        
+        .essay-item.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -24,9 +75,30 @@
         <!-- Header -->
         <div id="site-header"></div>
 
+        <!-- Category Filter -->
+        <div class="mb-8">
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button class="filter-btn active" data-category="all">
+                    All <span class="count">(4)</span>
+                </button>
+                <button class="filter-btn" data-category="mathematics">
+                    Mathematics <span class="count">(1)</span>
+                </button>
+                <button class="filter-btn" data-category="philosophy">
+                    Philosophy <span class="count">(1)</span>
+                </button>
+                <button class="filter-btn" data-category="book-review">
+                    Book Reviews <span class="count">(1)</span>
+                </button>
+                <button class="filter-btn" data-category="research">
+                    Research <span class="count">(1)</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Main Content Area for Posts -->
-        <main class="space-y-12">
-            <a href="ClosedFormSolutions.html" class="block group">
+        <main class="space-y-12" id="essays-container">
+            <a href="ClosedFormSolutions.html" class="essay-item block group" data-category="mathematics">
                 <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
                     <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
                         Which Math Problems Have Closed-Form Solutions and Why?
@@ -39,7 +111,7 @@
                 </article>
             </a>
 
-            <a href="Beliefs.html" class="block group">
+            <a href="Beliefs.html" class="essay-item block group" data-category="philosophy">
                 <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
                     <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
                         What I Believe (and why to have beliefs at all)
@@ -52,7 +124,7 @@
                 </article>
             </a>
 
-            <a href="FlyingCarReview.html" class="block group">
+            <a href="FlyingCarReview.html" class="essay-item block group" data-category="book-review">
                 <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
                     <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
                         <em>Where Is My Flying Car?</em> - J. Storrs Hall <br>[Book Review]
@@ -65,7 +137,7 @@
                 </article>
             </a>
 
-            <a href="SWIPT.html" class="block group">
+            <a href="SWIPT.html" class="essay-item block group" data-category="research">
                 <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
                     <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
                         Simultaneous Wireless Information and Power Transfer<br>[Research Paper]
@@ -85,5 +157,41 @@
     </div>
     <script src="preview.js" defer></script>
     <script src="include_header.js" defer></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const essayItems = document.querySelectorAll('.essay-item');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter essays with smooth animation
+                    essayItems.forEach(item => {
+                        const itemCategory = item.dataset.category;
+                        const shouldShow = category === 'all' || itemCategory === category;
+                        
+                        if (shouldShow) {
+                            item.classList.remove('hidden');
+                            item.style.display = 'block';
+                        } else {
+                            item.classList.add('hidden');
+                            // Hide after animation completes
+                            setTimeout(() => {
+                                if (item.classList.contains('hidden')) {
+                                    item.style.display = 'none';
+                                }
+                            }, 300);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>
