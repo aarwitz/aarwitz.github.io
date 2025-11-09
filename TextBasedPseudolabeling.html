@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Text-Based Pseudolabeling — Automated Object Detection & Annotation (Python + Docker)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #f59e0b;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Optima", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(245,158,11,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">Text-Based Pseudolabeling</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Automated object detection and annotation using natural language prompts. Combines Grounding DINO and Segment Anything (SAM) 
+                        to generate precise rotated bounding boxes and segmentation masks from text descriptions, with Docker deployment for scalable processing.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <a href="https://github.com/aarwitz/GroundingDINO_Autolabeling" target="_blank" rel="noopener" 
+                           class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-blue-600/20 border border-blue-500/30 text-blue-300 text-sm hover:bg-blue-600/30 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            Autolabeling Repo
+                        </a>
+                        <a href="https://github.com/aarwitz/Dockerized_GroundingSAM" target="_blank" rel="noopener" 
+                           class="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-blue-600/20 border border-blue-500/30 text-blue-300 text-sm hover:bg-blue-600/30 transition">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            Dockerized Repo
+                        </a>
+                        <span class="px-2 py-1 rounded text-xs bg-green-900/30 text-green-300 border border-green-700/30">Computer Vision</span>
+                        <span class="px-2 py-1 rounded text-xs bg-purple-900/30 text-purple-300 border border-purple-700/30">Machine Learning</span>
+                        <span class="px-2 py-1 rounded text-xs bg-blue-900/30 text-blue-300 border border-blue-700/30">Docker</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <h3 class="text-xs uppercase tracking-wide text-gray-400 mb-2">Interactive Demo</h3>
+                        <p class="text-2xl font-bold text-white">Upload & Label</p>
+                        <p class="text-xs text-gray-400 mt-1">Gradio web interface</p>
+                        <div class="mt-3 pt-3 border-t border-gray-700/50">
+                            <div class="text-xs text-gray-400">Processing:</div>
+                            <div class="text-sm font-medium">Real-time detection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Project overview</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        This system automates the generation of training data for object detection models by using natural language descriptions 
+                        to detect and segment objects in images. It combines Grounding DINO's zero-shot object detection with SAM's precise segmentation 
+                        capabilities, producing rotated bounding boxes and masks suitable for computer vision datasets.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Core Features</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+                        <li>Text-prompt based object detection using Grounding DINO</li>
+                        <li>High-precision segmentation masks with Segment Anything Model (SAM)</li>
+                        <li>Automatic generation of rotated bounding boxes (handles partial objects)</li>
+                        <li>Dual output formats: ImageNet XML and custom Cartel JSON</li>
+                        <li>Synthetic data generation through background overlay</li>
+                        <li>Dockerized deployment with CUDA GPU support</li>
+                        <li>Interactive Gradio web interface for real-time labeling</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium">Technical Implementation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The pipeline processes images through Grounding DINO for detection, passes bounding boxes to SAM for segmentation, 
+                        then generates rotated bounding boxes using a custom min_in_image_area_rect algorithm that handles objects extending 
+                        beyond image boundaries—critical for logistics and conveyor belt applications.
+                    </p>
+                </article>
+
+                <article id="visualizations" class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Visual Results</h2>
+                    <p class="text-gray-300 mb-4">Example outputs showing original images and pseudolabeled results with rotated bounding boxes.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="rounded-lg overflow-hidden border border-gray-700/50">
+                            <img src="images/text_pseudolabel_before.jpg" alt="Original Image" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/400x300/1a1f2e/60a5fa?text=Original+Image'">
+                            <div class="p-2 bg-gray-900/50 text-xs text-gray-400">Original warehouse image</div>
+                        </div>
+                        <div class="rounded-lg overflow-hidden border border-gray-700/50">
+                            <img src="images/text_pseudolabel_after.jpg" alt="Labeled Output" class="w-full h-auto" onerror="this.src='https://via.placeholder.com/400x300/1a1f2e/34d399?text=Pseudolabeled+Output'">
+                            <div class="p-2 bg-gray-900/50 text-xs text-gray-400">Detected objects with rotated bounding boxes</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-700/50">
+                        <h4 class="text-sm font-medium mb-2 text-blue-300">Example Detection Prompt</h4>
+                        <code class="text-sm text-gray-300">"parcel, package, box, envelope, plastic bag, tote"</code>
+                        <p class="text-xs text-gray-400 mt-2">The model automatically detects all mentioned object types with configurable confidence thresholds.</p>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Docker Deployment</h2>
+                    <p class="text-gray-300 mb-3">
+                        The system is fully containerized with NVIDIA GPU support for production deployment. Includes automated setup 
+                        for all dependencies, model weights, and CUDA libraries.
+                    </p>
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Build the Docker image
+docker build -t pseudolabel_app .
+
+# Run with GPU support
+nvidia-docker run -it --gpus all \
+    -v ~/tool_output:/workspace/tool_output \
+    pseudolabel_app
+
+# Run command-line inference
+python label_app.py \
+    --image_path '/workspace/images' \
+    --confidence_score 0.3 \
+    --prompt 'package, box, envelope' \
+    --background_path '/workspace/empty_conveyor.bmp' \
+    --max_iou 0.5
+
+# Launch Gradio web interface
+python gradio_demo/gradio_demo.py
+</code></pre>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Pipeline Architecture</h2>
+                    <div class="space-y-3 text-gray-300">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-300 text-sm font-bold">1</div>
+                            <div>
+                                <h4 class="font-medium text-white">Text Prompt Detection</h4>
+                                <p class="text-sm">Grounding DINO processes images with natural language prompts to identify objects matching the description</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-600/20 border border-green-500/30 flex items-center justify-center text-green-300 text-sm font-bold">2</div>
+                            <div>
+                                <h4 class="font-medium text-white">Precision Segmentation</h4>
+                                <p class="text-sm">SAM generates pixel-accurate masks for each detected object using the bounding box proposals</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-sm font-bold">3</div>
+                            <div>
+                                <h4 class="font-medium text-white">Rotated Bounding Boxes</h4>
+                                <p class="text-sm">Custom algorithm computes minimal rotated rectangles that handle edge cases and partial objects</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-300 text-sm font-bold">4</div>
+                            <div>
+                                <h4 class="font-medium text-white">Multi-Format Export</h4>
+                                <p class="text-sm">Annotations saved in ImageNet XML and Cartel JSON formats with visualization overlays</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Key Algorithms & Techniques</h2>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Zero-Shot Detection:</strong> Grounding DINO enables detection of arbitrary objects via text descriptions without retraining</li>
+                        <li><strong>IOU-Based Filtering:</strong> Removes duplicate detections using intersection-over-union thresholds</li>
+                        <li><strong>ROI Masking:</strong> Spatial filtering to focus detection on specific image regions</li>
+                        <li><strong>Area-Based Filtering:</strong> Min/max area constraints to eliminate noise and over-detections</li>
+                        <li><strong>Mask Compositing:</strong> Logical OR reduction for multi-object mask combination</li>
+                        <li><strong>Synthetic Data Generation:</strong> Foreground extraction and background overlay for dataset augmentation</li>
+                        <li><strong>Edge-Case Handling:</strong> Custom min_in_image_area_rect for objects extending beyond image boundaries</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">File Structure & Organization</h2>
+                    <div class="space-y-2 text-sm">
+                        <div class="font-mono bg-[#0d1117] p-2 rounded border border-gray-700/50">
+                            <div class="text-blue-300">label_app.py</div>
+                            <div class="text-gray-400 ml-4">→ Main pseudolabeling pipeline with CLI interface</div>
+                        </div>
+                        <div class="font-mono bg-[#0d1117] p-2 rounded border border-gray-700/50">
+                            <div class="text-blue-300">gradio_demo/</div>
+                            <div class="text-gray-400 ml-4">→ Interactive web interface for real-time labeling</div>
+                        </div>
+                        <div class="font-mono bg-[#0d1117] p-2 rounded border border-gray-700/50">
+                            <div class="text-blue-300">utilities/</div>
+                            <div class="text-gray-400 ml-4">→ Helper modules (filters, file management, format conversion)</div>
+                        </div>
+                        <div class="font-mono bg-[#0d1117] p-2 rounded border border-gray-700/50">
+                            <div class="text-blue-300">Dockerfile</div>
+                            <div class="text-gray-400 ml-4">→ CUDA 11.8 + cuDNN deployment configuration</div>
+                        </div>
+                        <div class="font-mono bg-[#0d1117] p-2 rounded border border-gray-700/50">
+                            <div class="text-blue-300">requirements.txt</div>
+                            <div class="text-gray-400 ml-4">→ Python dependencies (PyTorch, OpenCV, supervision)</div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Tech stack</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>• Python 3.x</div>
+                        <div>• PyTorch (CUDA 11.8)</div>
+                        <div>• Grounding DINO (zero-shot detection)</div>
+                        <div>• Segment Anything (SAM)</div>
+                        <div>• OpenCV (image processing)</div>
+                        <div>• Gradio (web interface)</div>
+                        <div>• Docker + NVIDIA Container Toolkit</div>
+                        <div>• NumPy & SciPy</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Output Formats</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><strong>ImageNet XML:</strong> Rotated bbox annotations</li>
+                        <li><strong>Cartel JSON:</strong> Custom format with angle data</li>
+                        <li><strong>Visualization:</strong> Labeled images with overlays</li>
+                        <li><strong>Segmentation Masks:</strong> Binary PNG masks</li>
+                        <li><strong>Synthetic Images:</strong> Background-replaced outputs</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Use Cases</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Warehouse & logistics automation</li>
+                        <li>Conveyor belt object tracking</li>
+                        <li>Rapid dataset generation for ML training</li>
+                        <li>Zero-shot object detection pipelines</li>
+                        <li>Synthetic training data creation</li>
+                        <li>Industrial quality control</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Model Weights</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div class="mb-2"><strong>Grounding DINO:</strong></div>
+                        <div class="text-xs mb-3">groundingdino_swint_ogc.pth (SwinT backbone)</div>
+                        <div class="mb-2"><strong>SAM:</strong></div>
+                        <div class="text-xs">sam_vit_h_4b8939.pth (ViT-H encoder)</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Configuration Options</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Confidence score thresholds (0-1)</li>
+                        <li>IOU filtering for duplicate removal</li>
+                        <li>ROI spatial constraints (x,y,w,h)</li>
+                        <li>Min/max detection area filtering</li>
+                        <li>Custom class prompts (comma-separated)</li>
+                        <li>Background image overlay path</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
+                    <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/GroundingDINO_Autolabeling" target="_blank" rel="noopener">Autolabeling Repository</a>
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/Dockerized_GroundingSAM" target="_blank" rel="noopener">Dockerized Repository</a>
+                        <a class="text-blue-300 hover:underline" href="#visualizations">Example Results</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer / Contact -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Built by <strong>Aaron Horowitz</strong>. Source on <a href="https://github.com/aarwitz/GroundingDINO_Autolabeling" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
+            </p>
+            <p class="mt-2">Automated pseudolabeling system combining state-of-the-art zero-shot detection with precise segmentation for scalable dataset generation.</p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
