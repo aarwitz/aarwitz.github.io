@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const previews = {
-        "closed-form-preview": { url: "ClosedFormSolutions.html", paragraphIndex: 0 },  // Extract the introduction paragraph
+        "closed-form-preview": { url: "ClosedFormSolutions.html", paragraphIndex: 1 },  // Extract the introduction paragraph
         "beliefs-preview": { url: "Beliefs.html", paragraphIndex: 0 },  // Extract the introduction paragraph
         "flying-car-preview": { url: "FlyingCarReview.html", paragraphIndex: 1 },
         "truss-preview": { url: "truss.html", paragraphIndex: 0 },

@@ -44,11 +44,22 @@
             <p class="text-gray-400 text-sm mb-6">Published on October 10, 2025</p>
             
             <div class="prose max-w-none text-gray-300">
-                <h3 class="text-2xl font-bold text-white mb-3">Introduction</h3>
+                <h3 id="introduction" class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
                     We're all familiar with math problems of the form "solve for x". Well, it turns out that doing this isn't always possible.
                     In this essay, we will explore the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
+                    There are different categories of math problems, so I broke this essay into sections based on the type of problem being considered.
                 </p>
+                <div class="bg-[#0b1220] rounded-lg p-6 border border-gray-700 mb-6">
+                    <h4 class="text-lg font-semibold text-white mb-3">Table of Contents</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#introduction" class="text-blue-400 hover:text-blue-300 transition">Introduction</a></li>
+                        <li><a href="#polynomial-equations" class="text-blue-400 hover:text-blue-300 transition">I. Polynomial/algebraic equations</a></li>
+                        <li><a href="#linear-systems" class="text-blue-400 hover:text-blue-300 transition">II. Systems of linear equations</a></li>
+                        <li><a href="#nonlinear-systems" class="text-blue-400 hover:text-blue-300 transition">III. Systems of non-linear equations</a></li>
+                        <li><a href="#numeric-example" class="text-blue-400 hover:text-blue-300 transition">IV. Numeric Solution Example</a></li>
+                    </ul>
+                </div>
                 
                 <p class="mb-4">
                     The first time I encountered a problem without a closed-form solution, I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
@@ -76,7 +87,7 @@
                     It's hard to say where humans would fall on this spectrum.
                 </p>
                 
-                <h3 class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
+                <h3 id="polynomial-equations" class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
                 <p class="mb-4">
                     Consider the simple linear equation $2x + 3 = 7$.
                     <div class="flex justify-center my-6">
@@ -237,66 +248,55 @@
                     So, we now know how to construct the Galois Group by collecting the symmetries of the polynomial. We can now analyze the structure of this group to determine whether it is a <a href="https://en.wikipedia.org/wiki/Solvable_group" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">solvable group</a>.
                     Whether the group is solvable tells us whether the polynomial has a closed-form solution or not.
                     <br><br>
-                    A solvable group is one whose symmetries can be broken down step-by-step until only the trivial symmetry (the identity) remains.
-                    So, in the case of polynomials, the identity symmetry can be represented as: $x \mapsto x$.
-                    Let's do a fully worked out example using $f(x) = x^2 - 2$ again to see how this works.
+                    A solvable group is one whose symmetries can be broken down step-by-step until only the trivial symmetry (in this case, the identity) remains.
+                    Just a reminder, the identity symmetry can be represented as: $x \mapsto x$.
+                    Let's do a fully worked-out example using $f(x) = x^2 - 2$ again to see how this works.
                     
-                    Let's start with the first example to explain how Galois used these symmetries to determine whether a polynomial has a closed-form solution.
-                    <br><br>
-                    <ul>
-                        <li class="mb-2">
-                            <strong>Step 1:</strong> Identify the symmetries of the polynomial that permute its roots while leaving the polynomial unchanged.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Step 2:</strong> Collect all these symmetries into a mathematical structure called a group, specifically the Galois group of the polynomial.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Step 3:</strong> Analyze the structure of this Galois group to determine if it is a solvable group.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Step 4:</strong> If the Galois group is solvable, then the polynomial has a closed-form solution using radicals; otherwise, it does not.
-                        </li>
-                    </ul>
-                    Let's return to our first example to see how this works in practice.
-                    <br><br>
-                    <ul>
-                        <li>
-                            - The example is x^2-2.
-                        </li>
-                        <li>
-                            - The Galois Group is the set of all permutations of those roots that keeps the polynomial the same, so in this case just sigma: x=>-x, which sends sqrt(2)=>sqrt(2) and then just the identity id: x=>x which sends sqrt(2)=>-sqrt(2).
-                        </li>
-                        <li>
-                            - So the Galois Group G = {id, sigma}. Because a subgroup must always contain the identity, the only two subgroups are {id} and G. That is because all groups (and subgroups) must be closed under composition. Sigma is not a group on its own because sigma composed with sigma would get you the identity, which is then not a part of sigma.
-                        </li>
-                        <li>
+                    <div class="flex justify-center my-6">
+                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-5/5">
+                            <div class="text-sm text-gray-400 mb-2">Problem</div>
+                            <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
+                                Determine whether $f(x) = x^2 - 2$ has a closed-form solution using Galois theory.
+                            </div>
                             
-                    </ul>
+                            <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
+                            <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
+                            \begin{aligned}
+                            &\textbf{Step 1: Identify the roots and symmetries}\\
+                            &\text{The polynomial } f(x) = x^2 - 2 \text{ has roots } \sqrt{2} \text{ and } -\sqrt{2}.\\
+                            &\text{We already showed that } x \mapsto -x \text{ is a symmetry (swaps the roots).}\\
+                            &\text{The identity } x \mapsto x \text{ is always a symmetry (leaves roots unchanged).}\\[8pt]
+                            &\textbf{Step 2: Form the Galois group}\\
+                            &\text{The Galois group } G = \{\text{id}, \sigma\} \text{ where:}\\
+                            &\quad \text{id}: x \mapsto x \text{ (identity)}\\
+                            &\quad \sigma: x \mapsto -x \text{ (swap)}\\[8pt]
+                            &\textbf{Step 3: Find all subgroups}\\
+                            &\text{A subgroup must contain the identity and be closed under composition.}\\
+                            &\text{Possible subgroups:}\\
+                            &\quad H_1 = \{\text{id}\} \quad \text{(trivial subgroup)}\\
+                            &\quad H_2 = \{\text{id}, \sigma\} = G \quad \text{(the whole group)}\\
+                            &\text{Note: } \{\sigma\} \text{ is NOT a subgroup because } \sigma \circ \sigma = \text{id} \notin \{\sigma\}.\\[8pt]
+                            &\textbf{Step 4: Check if } G \textbf{ is solvable}\\
+                            &\text{A group is solvable if we can build a chain of normal subgroups:}\\
+                            &\quad \{\text{id}\} \triangleleft G\\
+                            &\text{where each quotient is abelian (commutative).}\\
+                            &\text{Here, } G/\{\text{id}\} \cong G = \{\text{id}, \sigma\} \text{ is abelian because:}\\
+                            &\quad \text{id} \circ \sigma = \sigma = \sigma \circ \text{id}\\
+                            &\text{Therefore, } G \text{ is solvable!}
+                            \end{aligned}
+                            \]</div>
 
-
-                    The polynomial $f(x) = x^2 - 2$ has two roots, $\sqrt{2}$ and $-\sqrt{2}$.
-                    The only non-trivial symmetry of this polynomial is the substitution $x \mapsto -x$, which swaps the two roots.
-                    The set of all symmetries of this polynomial forms a group, called its Galois group, denoted $G$.
-                    In this case, $G$ has only two elements: the identity symmetry (which does nothing) and the symmetry $x \mapsto -x$.
-                    This group is isomorphic to the cyclic group of order 2, $C_2$.
-                    <br><br>
-                    Now, Galois theory tells us that if the Galois group of a polynomial is a <a href="https://en.wikipedia.org/wiki/Solvable_group" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">solvable group</a>, then the polynomial has a closed-form solution.
-                    A solvable group is one that can be broken down into a series of simpler groups through a process called a <a href="https://en.wikipedia.org/wiki/Group_extension" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">group extension</a>.
-                    In this case, the Galois group $G$ is indeed solvable, which aligns with our earlier finding that the polynomial $x^2 - 2$ has a closed-form solution: $x = \pm \sqrt{2}$.
-                    <br><br>
-                    The key insight from Galois theory is that the structure of the Galois group reflects the complexity of the polynomial's roots.
-
-                    For example, if the roots are all distinct and can be expressed using radicals, the Galois group will be a solvable group. However, if the roots exhibit more complicated behavior, such as being expressed in terms of elliptic functions or other transcendental functions, the Galois group may not be solvable, indicating that no simple closed-form solution exists.
-
-
-                    For lower-degree equations, these groups of symmetries are simple enough that they can be “unwound” using addition, subtraction, multiplication, division, and roots — that’s why we have the quadratic, cubic, and quartic formulas. But starting at degree 5, the possible symmetries are too complicated: they don’t break down into smaller, solvable pieces that correspond to these algebraic operations.
-                    The operations we know just aren’t powerful enough to express all possible root patterns in a neat, finite formula.
+                            <div class="text-sm text-gray-300 mt-3">
+                                <strong>Result:</strong> Since the Galois group is solvable, the polynomial $f(x) = x^2 - 2$ has a closed-form solution: $x = \pm\sqrt{2}$.
+                            </div>
+                        </div>
+                    </div>
                 </p>
 
-                
-                <h3 class="text-lg font-bold text-white mb-3">Linear systems</h3>
+                <h3 id="linear-systems" class="text-2xl font-bold text-white mb-3">II. Systems of linear equations</h3>
                 <p class="mb-4">
-                    And then consider a slightly more complex example, a system of two linear equations with two unknowns:
+                    We began by looking at single polynomial equations, but what about systems of equations?
+                    Let's look at a system of two linear equations with two unknowns:
                     <div class="flex justify-center my-6">
                         <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
@@ -322,8 +322,7 @@
                             <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = 1$, $y = 2$</span></div>
                         </div>
                     </div>
-                    <br>
-                    TODO Nothing surprising there, but how can we predict if an equation (or set of equations) will have a closed-form solution like the above examples?
+                    Nothing surprising there. But, like we did with single polynomials, can we find a general rule for when systems of linear equations have closed-form solutions?
                     <br><br>
                     Well there are two requirements that guarantee a closed-form solution for linear systems.
                     You can find other ways of stating these two requirements, but I find the most intuitive to be:
@@ -337,28 +336,12 @@
                     So if we consider the example above that has two equations<br>
                     <span class="text-green-400 mr-3">✔</span> It has two unknowns and two equations (it is <em>determined</em>)<br>
                     <span class="text-green-400 mr-3">✔</span> The equations are <em>linearly independent</em>, which you can show yourself by drawing their coefficient vectors $\mathbf{v_1} = \begin{pmatrix} 2 \\ 3 \end{pmatrix}$ and $\mathbf{v_2} = \begin{pmatrix} 4 \\ -1 \end{pmatrix}$ in 2D space and observing that they are not parallel.
-                    <br><br><h3 class="text-lg font-bold text-white mb-3">Non-linear systems</h3>
-                    We have up until now only looked at linear equations because they are the simplest case.
                     
-                    <h3 class="text-lg font-bold text-white mb-3">Which systems of equations have solutions?</h3>
-                    
-                    <br>
-                    <p>
-                        That’s what the Abel–Ruffini theorem means in practice. It doesn’t say quintic equations can’t be solved at all — only that there’s no universal recipe, no single expression using a finite sequence of arithmetic and root extractions that works for every fifth-degree polynomial. Some special quintics <em>do</em> have closed forms, but in general, the structure of their root symmetries is beyond algebraic reach.
-                    </p>
-                                                <p>
-                                But starting at degree 5, mathematicians proved that there is no single formula involving finite steps that can solve all equations. This result, known as the <strong>Abel–Ruffini theorem</strong>, marks a boundary in mathematics: beyond it, some equations simply cannot be solved exactly, only approximated numerically.
-                            </p>
-                            <br>
-                            <p>
-                                The study of why certain classes of equations have closed-form solutions and others do not led to the development of <a href="https://en.wikipedia.org/wiki/Galois_theory" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Galois theory</a>, which uses group theory to analyze the symmetries of the roots of polynomials.
-                                This is definitely beyond the scope of this little essay, but to understand why equations above degree 4 can’t always be solved by a formula, we have to think about what these formulas really do. Every time we solve for $x$, we’re trying to “undo” the polynomial, or express the roots using only basic arithmetic and root operations.
-                                For quadratics, cubics, and quartics, this can be done through some process of rearranging the terms, as we have done so far.
-                            </p>
-
+                    <h3 id="nonlinear-systems" class="text-2xl font-bold text-white mb-3">II. Systems of non-linear equations</h3>
+                   
                     
                 </div>
-                <h3 class="text-lg font-bold text-white mb-3">II. Numeric Solution Example</h3>
+                <h3 id="numeric-example" class="text-lg font-bold text-white mb-3">II. Numeric Solution Example</h3>
 
                 <p class="mb-4">
                     Now let's look at examples where there is no closed-form solution.
@@ -436,17 +419,6 @@
                 <p class="mb-4">
                     Understanding when you can expect a neat formula versus when you'll need computational power is crucial for both theoretical understanding and practical problem-solving. Let's explore the patterns that determine which mathematical problems yield to direct solution and which require numerical approximation.
                 </p>
-
-                <div class="bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 my-8">
-                    <h3 class="text-lg font-bold text-white mb-4">Practical Rule of Thumb</h3>
-                    <ul class="space-y-2 text-gray-200">
-                        <li><span class="text-green-400">Linear + Equality constraints</span> → Closed form</li>
-                        <li><span class="text-yellow-400">Quadratic + Convex</span> → Sometimes closed form</li>
-                        <li><span class="text-red-400">Nonlinear or inequality-constrained</span> → Numeric methods</li>
-                        <li><span class="text-blue-400">Convex</span> ⇒ Global solution exists (even if numeric)</li>
-                        <li><span class="text-orange-400">Nonconvex</span> ⇒ Only local minima guaranteed</li>
-                    </ul>
-                </div>
 
               
 
