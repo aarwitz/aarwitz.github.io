@@ -37,7 +37,7 @@
         <!-- Header -->
         <div id="site-header"></div>
     <!-- Essay Content -->
-    <article class="bg-[#161b22] rounded-lg shadow-lg pt-6 pb-8 px-4 sm:pt-8 sm:pb-12 sm:px-10 lg:pt-10 lg:pb-16 lg:px-16">
+    <article class="bg-[#161b22] rounded-lg shadow-lg pt-6 pb-8 px-5 sm:pt-8 sm:pb-12 sm:px-11 lg:pt-10 lg:pb-16 lg:px-18">
             <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
                 Which Math Problems Have Closed-Form Solutions and Why?
             </h1>
@@ -46,24 +46,21 @@
             <div class="prose max-w-none text-gray-300">
                 <h3 class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
-                    We're all familiar with math problems of the form "solve for x". Well, it turns out that this isn't always possible.
-                    In this essay, we will explore for a few problem types the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
+                    We're all familiar with math problems of the form "solve for x". Well, it turns out that doing this isn't always possible.
+                    In this essay, we will explore the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
                 </p>
                 
                 <p class="mb-4">
-                    The first time I encountered a problem without a closed-form solution was while building a program in Python to select the holdings of a stock portfolio.
-                    In the simplest case of minimizing portfolio variance for a given expected return, you can solve for the optimal per-stock weights by finding the point where the risk-return trade-off curve reaches its minimum.
-                    This is what I do in my 
-                    <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimization</a> 
-                    program using the Lagrange Multiplier method.
-                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), now the function is a piecewise function. No closed-form expression exists and it must be solved numerically.
+                    The first time I encountered a problem without a closed-form solution, I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
+                    In the simplest case of minimizing portfolio variance for a given expected return, the optimal weights can be solved for explictly.
+                    I used the Lagrange Multiplier method, which conceptually is just setting the gradient of the objective function to zero to find that minimum point.
+                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), the gradient becomes discontinuous and we can't explictly solve for the weights anymore.
                 </p>
                 <div class="flex flex-col md:flex-row items-start gap-6 my-6">
                     <div class="md:flex-1 prose max-w-none text-gray-300">
                         <p class="tabbed-paragraph mb-0">
                             The way I think about it is that, for "nice" optimization problems (those with functions that are: convex, differentiable, and linear or quadratic), there are methods that allow you to do something similar to "solving for x".
-                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm to search for the minimum.
-                            The algorithm evaluates candidate solutions and runs either until the time runs out or an acceptable solution is found.
+                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm to iteratively search for the minimum.
                         </p>
                     </div>
                     <div class="md:w-80 lg:w-96 flex-shrink-0 md:pl-6">
@@ -72,10 +69,11 @@
                 </div>
                 
                 <p class="tabbed-paragraph mb-4">
-                    This is one of those topics in math that shows the limits of human knowledge. We can actually know what we don't know, as well as the error bars around our estimates.
+                    This is one of those topics in math that shows the limits of human knowledge.
                     A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
                     But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
                     It is instead searching a vast space of possibilities to find the most likely answer.
+                    It's hard to say where humans would fall on this spectrum.
                 </p>
                 
                 <h3 class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
@@ -119,7 +117,7 @@
                             For example, quadratic equations (polynomials of degree 2) have a closed-form solution (the quadratic formula) that is taught in school.
                     By ordering the equation into standard form $ax^2 + bx + c = 0$, we can directly apply the quadratic formula to find the roots.
                     <div class="flex justify-center my-6">
-                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
+                        <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-5/5">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
                             <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
                                 $x^2 + 5x + 6 = 0$
@@ -127,20 +125,18 @@
                             <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
                             <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
                                 \begin{aligned}
-                                x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} = \frac{-5 \pm \sqrt{25 - 24}}{2} \\
-                                  &= \frac{-5 \pm 1}{2}
+                                x &= \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} = \frac{-5 \pm \sqrt{25 - 24}}{2} = \frac{-5 \pm 1}{2}
                                 \end{aligned}
                             \]</div>
 
                             <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = -2, -3$</span></div>
                         </div>
                     </div>
-                                The quadratic formula was discovered as early as 2000 BC by rearranging the terms into "a perfect square".
-                                This was figured out so long ago because you can actually visually 
+                                The quadratic formula was discovered thousands of years ago because you can actually visually 
                                 <a href="https://en.wikipedia.org/wiki/Completing_the_square" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
-                                    complete the square</a>.`
-                                    There are generalized formulas for polynomials of degrees 3 and 4 as well, but for polynomials of degree 5 and higher, no such formulas exist.
-                                    Additionally, some polynomials can't be solved in closed-form at all and can only be approximated.
+                                    complete the square</a>.
+                                    There are generalized formulas for polynomials of degrees 3 and 4 as well; but, for polynomials of degree 5 and higher, no such general formulas can possibly exist.
+                                    Some polynomials actually can't be solved in closed-form <em>at all</em> and can only be approximated using numerical methods.
                                 </p>
                             </p>
                         </div>
@@ -155,10 +151,9 @@
                     </div>
                 </p>
                 <p class="mb-4">
-                    This is because factoring, taking roots, and rearranging polynomials as we are familiar with for revealing the closed-form solutions of lower-degree polynomials becomes insufficient.
-                    After hundreds of years of trying to find general solutions to all polynomials, some began to investigate the structure of algebraic equations themselves.
-                    Instead of manipulating polynomials to solve for roots, mathematicians found ways to rearrange or "permuting" the polynomial's roots themselves in a way that left the polynomial's overall structure intact.
-                    This might sound pretty abstract at first, and unfortunately to explain this further, we must introduce some additional terms and theory from <em>abstract algebra</em>.
+                    This was discovered when some mathematicians, instead of rearranging terms of polynomials to solve for roots as we are used to, found ways to rearrange or "permute" the polynomial's roots themselves in a way that left the polynomial's coefficients unchanged.
+                    This might sound pretty abstract at first, but ultimately it is just a way of revealing the inherent structure of a polynomial by viewing it from different perspectives.
+                    To explain this further, we must introduce some additional terms and theory.
                     <blockquote class="mx-auto my-8 max-w-xl bg-[#22272e] border-l-4 border-blue-500 rounded-lg shadow-lg p-6 text-center text-lg italic text-gray-200">
                         A <a href="https://en.wikipedia.org/wiki/Symmetry_in_mathematics" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
                             symmetry</a>
@@ -169,7 +164,7 @@
                         <a href="https://en.wikipedia.org/wiki/Rotational_symmetry" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">rotational symmetry</a>
                         that leave its shape invariant.
                     </blockquote>
-                    Like a sphere, a polynomial can also have symmetries. The set of all symmetries that permute the polynomial's roots but leave the polynomial itself unchanged is called its
+                    Like a sphere, a polynomial can also have symmetries. The set of all symmetries that permute the polynomial's roots but leave the polynomial's coefficients unchanged is called its
                     <a href="https://en.wikipedia.org/wiki/Galois_group" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Galois group</a>, $G$.
                     Let's look at a simple example to see how this works in practice.
                     
@@ -228,7 +223,8 @@
                             &\qquad 1 \mapsto \omega,\\
                             &\qquad \omega \mapsto \omega^2,\\
                             &\qquad \omega^2 \mapsto \omega^3 = 1.\\
-                            &\quad\text{Thus }x\mapsto\omega x\text{ permutes the roots in a 3-cycle }(1\ \omega\ \omega^2).
+                            &\quad\text{Thus, without changing the coefficients, }x\mapsto\omega x\text{ permutes the roots}\\
+                                &\quad\text{in a 3-cycle }(1\ \omega\ \omega^2).
                             \end{aligned}
                             \]   
                     </div>
@@ -238,7 +234,14 @@
                         </div>
                     </div>
 
-                    It's ok if you don't understand that second example. We'll start with the first example to explain how Galois used these symmetries to determine whether a polynomial has a closed-form solution.
+                    So, we now know how to construct the Galois Group by collecting the symmetries of the polynomial. We can now analyze the structure of this group to determine whether it is a <a href="https://en.wikipedia.org/wiki/Solvable_group" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">solvable group</a>.
+                    Whether the group is solvable tells us whether the polynomial has a closed-form solution or not.
+                    <br><br>
+                    A solvable group is one whose symmetries can be broken down step-by-step until only the trivial symmetry (the identity) remains.
+                    So, in the case of polynomials, the identity symmetry can be represented as: $x \mapsto x$.
+                    Let's do a fully worked out example using $f(x) = x^2 - 2$ again to see how this works.
+                    
+                    Let's start with the first example to explain how Galois used these symmetries to determine whether a polynomial has a closed-form solution.
                     <br><br>
                     <ul>
                         <li class="mb-2">
