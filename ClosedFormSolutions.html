@@ -30,6 +30,44 @@
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
         }
+        
+        /* Make MathJax equations responsive on mobile */
+        @media (max-width: 640px) {
+            /* Allow math to scale down on small screens */
+            mjx-container {
+                overflow-x: auto;
+                overflow-y: hidden;
+                max-width: 100%;
+                display: block !important;
+            }
+            
+            /* Reduce font size for display math on mobile */
+            mjx-container[display="true"] {
+                font-size: 85%;
+            }
+            
+            /* Make problem/solution boxes scrollable if needed */
+            .bg-\[#202731\], .bg-\[#071018\], .bg-\[#061017\] {
+                overflow-x: auto;
+            }
+            
+            /* Reduce padding on mobile for math containers */
+            .prose p, .prose div {
+                overflow-x: auto;
+            }
+        }
+        
+        /* Additional mobile optimizations */
+        @media (max-width: 640px) {
+            body {
+                font-size: 16px;
+            }
+            
+            /* Make tables scrollable */
+            .overflow-x-auto {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
     </style>
 </head>
 <body class="p-2 sm:p-4">
