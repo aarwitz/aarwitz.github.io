@@ -85,7 +85,7 @@
                 <h3 id="introduction" class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
                     We're all familiar with math problems of the form "solve for x". Well, it turns out that doing this isn't always possible.
-                    In this essay, we will explore the criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
+                    I became curious about the exact criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
                     There are different categories of math problems, so I broke this essay into sections based on the type of problem being considered.
                 </p>
                 <div class="bg-[#0b1220] rounded-lg p-6 border border-gray-700 mb-6">
@@ -100,10 +100,10 @@
                 </div>
                 
                 <p class="mb-4">
-                    The first time I encountered a problem without a closed-form solution, I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
-                    In the simplest case of minimizing portfolio variance for a given expected return, the optimal weights can be solved for explictly.
+                    I tried to find a closed-form solution to a problem that did not have one for the first time when I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
+                    In the simplest case of minimizing portfolio variance for a given expected return, the optimal weights can be solved for analytically.
                     I used the Lagrange Multiplier method, which conceptually is just setting the gradient of the objective function to zero to find that minimum point.
-                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), the gradient becomes discontinuous and we can't explictly solve for the weights anymore.
+                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), the gradient becomes discontinuous and we can't express the weights explicitly anymore.
                 </p>
                 <div class="flex flex-col md:flex-row items-start gap-6 my-6">
                     <div class="md:flex-1 prose max-w-none text-gray-300">
