@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Link Preview Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="link_preview.css">
+    <script src="link_preview.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-white mb-6">External Link Preview Test</h1>
+        
+        <div class="bg-[#161b22] rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-white mb-4">Testing Archive.org Integration</h2>
+            <p class="text-gray-300 mb-4">
+                Click on the Wikipedia link below. The preview system will fetch an archived snapshot
+                from Archive.org's Wayback Machine and display it in a modal.
+            </p>
+            
+            <div class="space-y-3">
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700">
+                    <h3 class="text-lg font-medium text-blue-400 mb-2">Wikipedia Article</h3>
+                    <a href="https://en.wikipedia.org/wiki/Fundamental_theorem_of_algebra" 
+                       class="text-blue-400 underline hover:text-blue-300 transition">
+                        Fundamental Theorem of Algebra (Wikipedia)
+                    </a>
+                    <p class="text-sm text-gray-400 mt-2">
+                        First click: Shows Archive.org snapshot preview<br>
+                        Second click: Opens actual Wikipedia page
+                    </p>
+                </div>
+
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700">
+                    <h3 class="text-lg font-medium text-blue-400 mb-2">MathWorld Article</h3>
+                    <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" 
+                       class="text-blue-400 underline hover:text-blue-300 transition">
+                        Closed-Form Solution (MathWorld)
+                    </a>
+                    <p class="text-sm text-gray-400 mt-2">
+                        First click: Shows Archive.org snapshot preview<br>
+                        Second click: Opens actual MathWorld page
+                    </p>
+                </div>
+
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700">
+                    <h3 class="text-lg font-medium text-green-400 mb-2">Internal Link (Direct Fetch)</h3>
+                    <a href="PortfolioOptimizer.html" 
+                       class="text-blue-400 underline hover:text-blue-300 transition">
+                        Portfolio Optimizer
+                    </a>
+                    <p class="text-sm text-gray-400 mt-2">
+                        First click: Shows direct preview (no Archive.org)<br>
+                        Second click: Opens actual page
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#161b22] rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-white mb-4">How It Works</h2>
+            <ul class="space-y-2 text-gray-300">
+                <li class="flex items-start">
+                    <span class="text-blue-400 mr-3">1.</span>
+                    <span>When you click an external link, the system queries Archive.org's Wayback Machine API</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-400 mr-3">2.</span>
+                    <span>It finds the most recent archived snapshot of that URL</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-400 mr-3">3.</span>
+                    <span>The archived content is fetched and displayed in a modal preview</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-400 mr-3">4.</span>
+                    <span>A banner shows the archive date, so you know you're viewing a snapshot</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-400 mr-3">5.</span>
+                    <span>Click again (or the "Visit Full Page" button) to go to the live site</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mt-8">
+            <p class="text-gray-400 text-sm">
+                <strong>Note:</strong> Open your browser's console to see detailed logging of the Archive.org API calls.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
