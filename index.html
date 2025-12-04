@@ -33,19 +33,67 @@
         <!-- ...existing code... -->
         <p class="text-gray-400 mt-4 mb-8 text-lg">
             Hi, I'm Aaron 👋. I work as a full-stack software engineer developing computer vision solutions for industrial automation.
-            <br>
-            <br>
-            Currently, I integrate vision algorithms into C++ firmware and create C#/WPF desktop apps to expose functionality to customers.
-            I've also been involved in large-scale data-labeling efforts to pretrain models for tasks such as detecting packages on conveyor belts.
-            <br>
-            <br>
-            Aside from posting my engineering projects here, I also will be using this site to organize my thoughts into essays, usually related to math, physics, and philosophy of mind.
         </p>
+
+        <!-- Featured Project and Essay Section -->
+        <div class="my-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Featured Project -->
+                <div class="bg-[#161b22] rounded-lg shadow-lg p-6 border border-gray-700 hover:border-blue-500 transition">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                        <span class="text-xs font-semibold text-blue-400 uppercase tracking-wide">Featured Project</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Text-Based Pseudolabeling for Image Classification</h3>
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        A novel approach combining vision-language models with pseudolabeling techniques to improve image classification with limited labeled data. Leverages CLIP embeddings to generate high-confidence pseudo-labels for unlabeled images.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Python</span>
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">CLIP</span>
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">PyTorch</span>
+                    </div>
+                    <a href="projects.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition font-semibold">
+                        View Project
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Featured Essay -->
+                <div class="bg-[#161b22] rounded-lg shadow-lg p-6 border border-gray-700 hover:border-blue-500 transition">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        <span class="text-xs font-semibold text-blue-400 uppercase tracking-wide">Featured Essay</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Which Math Problems Have Closed-Form Solutions and Why?</h3>
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        An exploration of why some mathematical problems have elegant closed-form solutions while others don't. Examines the deep connection between algebraic structures, symmetries, and solvability across different domains of mathematics.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Mathematics</span>
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Algebra</span>
+                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Theory</span>
+                    </div>
+                    <a href="ClosedFormSolutions.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition font-semibold">
+                        Read Essay
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
 
         <!-- Experience Timeline Section -->
         <div class="my-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-10 text-center">Experience</h2>
-            
+            <!-- <h2 class="text-3xl sm:text-4xl font-bold text-white mb-10 text-center">Experience</h2>
+             -->
             <div class="relative">
                 <!-- Vertical Timeline Line (stops at last circle) -->
                 <div class="absolute left-4 sm:left-8 top-6 bottom-0 w-0.5 bg-gradient-to-b from-gray-600 via-blue-400 to-blue-500"></div>
@@ -62,8 +110,8 @@
                                     <div class="flex items-start justify-between mb-4">
                                         <div>
                                             <h3 class="text-xl sm:text-2xl font-bold text-white">Full-Stack Software Engineer</h3>
-                                            <p class="text-blue-400 font-semibold">Industrial Automation & Computer Vision</p>
-                                            <p class="text-gray-400 text-sm mt-1">2023 - Present</p>
+                                            <p class="text-blue-400 font-semibold">Cognex InSight</p>
+                                            <p class="text-gray-400 text-sm mt-1">2024 - Present</p>
                                         </div>
                                     </div>
                                     <ul class="space-y-3 text-gray-300">
@@ -115,9 +163,57 @@
                                 <div class="flex-1">
                                     <div class="flex items-start justify-between mb-4">
                                         <div>
-                                            <h3 class="text-xl sm:text-2xl font-bold text-white">Research & Development</h3>
-                                            <p class="text-blue-400 font-semibold">Academic & Personal Projects</p>
-                                            <p class="text-gray-400 text-sm mt-1">2020 - 2023</p>
+                                            <h3 class="text-xl sm:text-2xl font-bold text-white">AI Software Engineer</h3>
+                                            <p class="text-blue-400 font-semibold">Cognex Logistics</p>
+                                            <p class="text-gray-400 text-sm mt-1">2022 - 2024</p>
+                                        </div>
+                                    </div>
+                                    <ul class="space-y-3 text-gray-300">
+                                        <li class="flex items-start">
+                                            <span class="text-blue-400 mr-3 mt-1">▸</span>
+                                            <span>Researched SWIPT (Simultaneous Wireless Information and Power Transfer) systems for IoT applications</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-blue-400 mr-3 mt-1">▸</span>
+                                            <span>Built autonomous quadcopter with custom flight controller integrating IMU sensor fusion and PID control</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-blue-400 mr-3 mt-1">▸</span>
+                                            <span>Developed portfolio optimization engine applying mean-variance theory with Monte Carlo backtesting</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-blue-400 mr-3 mt-1">▸</span>
+                                            <span>Implemented camera calibration algorithms and 3D reconstruction pipelines for robotics applications</span>
+                                        </li>
+                                    </ul>
+                                    <div class="flex flex-wrap gap-2 mt-4">
+                                        <span class="px-3 py-1 rounded-full bg-gray-700/50 text-gray-300 text-xs font-semibold border border-gray-600/30">Python</span>
+                                        <span class="px-3 py-1 rounded-full bg-gray-700/50 text-gray-300 text-xs font-semibold border border-gray-600/30">Arduino</span>
+                                        <span class="px-3 py-1 rounded-full bg-gray-700/50 text-gray-300 text-xs font-semibold border border-gray-600/30">MATLAB</span>
+                                        <span class="px-3 py-1 rounded-full bg-gray-700/50 text-gray-300 text-xs font-semibold border border-gray-600/30">ROS</span>
+                                    </div>
+                                </div>
+                                <div class="lg:w-80 flex-shrink-0">
+                                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-700">
+                                        <img src="quad.gif" alt="Quadcopter demo" class="w-full rounded" loading="lazy">
+                                        <p class="text-gray-400 text-xs mt-2 text-center">Custom quadcopter flight controller</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative pl-12 sm:pl-20">
+                        <!-- Hollow Circle for Past Position -->
+                        <div class="absolute left-0 sm:left-4 top-6 w-8 h-8 rounded-full bg-[#0d1117] border-4 border-gray-600 z-10"></div>
+                        
+                        <div class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 border border-gray-700 hover:border-blue-500 transition opacity-90">
+                            <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div>
+                                            <h3 class="text-xl sm:text-2xl font-bold text-white">Graduate Research Assistant</h3>
+                                            <p class="text-blue-400 font-semibold">Boston University Robotics Lab</p>
+                                            <p class="text-gray-400 text-sm mt-1">2020 - 2022</p>
                                         </div>
                                     </div>
                                     <ul class="space-y-3 text-gray-300">
