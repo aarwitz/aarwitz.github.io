@@ -30,53 +30,39 @@
         <!-- Header -->
         <div id="site-header"></div>
 
-        <!-- Page Title -->
-        <div class="mb-12">
-            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Blog</h1>
-            <p class="text-gray-400 text-lg">Shorter thoughts, updates, and reflections</p>
-        </div>
-
-        <!-- Blog Posts -->
-        <main class="space-y-8">
-            <!-- Example Blog Post -->
-            <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 border border-gray-700 hover:border-blue-500 transition">
-                <div class="flex items-start justify-between mb-4">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white">
-                        Welcome to My Blog
+        <!-- Main Content Area for Blog Posts -->
+        <main class="space-y-12">
+            <!-- My Favorite Flavor is Blue -->
+            <a href="MyFavoriteFlavorIsBlue.html" class="block group">
+                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
+                        My Favorite Flavor is Blue
                     </h2>
-                    <span class="text-gray-400 text-sm whitespace-nowrap ml-4">Dec 3, 2025</span>
-                </div>
-                
-                <div class="prose max-w-none text-gray-300">
-                    <p class="mb-4">
-                        This is my blog where I'll share shorter updates, thoughts, and reflections that don't quite 
-                        fit the format of longer essays. Think of this as a more casual space for ideas in progress, 
-                        interesting links, and quick observations.
-                    </p>
-                    
-                    <p class="mb-4">
-                        Unlike the essays section which features more polished, in-depth pieces on mathematics, 
-                        philosophy, and technical topics, the blog will be more frequent and informal. You'll find 
-                        things like:
-                    </p>
-                    
-                    <ul class="list-disc list-inside space-y-2 mb-4 text-gray-300">
-                        <li>Quick technical notes and discoveries</li>
-                        <li>Links to interesting articles and papers</li>
-                        <li>Project updates and progress reports</li>
-                        <li>Random thoughts and observations</li>
-                    </ul>
-                    
-                    <p>
-                        Stay tuned for more posts coming soon!
-                    </p>
-                </div>
-                
-                <div class="mt-6 flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full border border-blue-500/30">Meta</span>
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full border border-blue-500/30">Announcement</span>
-                </div>
-            </article>
+                    <p class="text-gray-400 text-sm mb-4">Published on December 6, 2025</p>
+                    <div class="relative h-24 overflow-hidden">
+                        <div class="prose max-w-none text-gray-300">
+                            <p>Why do we think of blue as having a flavor? Exploring synesthesia, qualia, and the strange, messy mapping between our sensory experiences—from Andrés Gómez-Emilsson's work on consciousness to the cross-modal associations hiding in everyday perception.</p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#161b22] to-transparent pointer-events-none"></div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Old vs Classical Computer Vision -->
+            <a href="ClassicalvsModernComputerVision.html" class="block group">
+                <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
+                    <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">
+                        Classical vs Modern Computer Vision
+                    </h2>
+                    <p class="text-gray-400 text-sm mb-4">Published on December 5, 2025</p>
+                    <div class="relative h-24 overflow-hidden">
+                        <div class="prose max-w-none text-gray-300">
+                            <p>We stopped hand-engineering features and instead let neural networks learn the feature hierarchy directly from raw pixels. A look at how CNNs transformed computer vision from SIFT/HOG to end-to-end learned representations.</p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#161b22] to-transparent pointer-events-none"></div>
+                    </div>
+                </article>
+            </a>
         </main>
 
         <footer class="text-center mt-12 text-gray-500 text-sm">
