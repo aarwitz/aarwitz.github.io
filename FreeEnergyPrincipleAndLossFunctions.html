@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv='cache-control' content='no-cache'> 
+    <meta http-equiv='expires' content='0'> 
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Is Friston's Free Energy Principle Just Cross-Entropy Loss? — Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=svg" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <!-- Header -->
+        <div id="site-header"></div>
+
+        <!-- Article Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
+                Is Friston's Free Energy Principle Just Cross-Entropy Loss?
+            </h1>
+            <p class="text-gray-400 text-lg mb-2">On the surprising mathematical parallels between neuroscience and machine learning</p>
+            <p class="text-gray-500 text-sm">December 7, 2025</p>
+        </header>
+
+        <!-- Article Content -->
+        <article class="prose prose-invert max-w-none">
+            <p class="text-gray-300 mb-4">
+                Berekly, Descartes, Kant, Schopenhaeur, and so on over and over this isn't anything new. the map is not the territort. but what is it then that we are experiencing? 
+                what is our brain doing and why?
+                Karl Friston's <strong class="text-white">Free Energy Principle</strong> (FEP) has been called one of the most ambitious theories in neuroscience—a grand unified framework claiming that all adaptive systems, from single cells to entire brains, work by minimizing a single quantity called "free energy." When you first see the math, something looks strangely familiar. Wait a second... isn't this just cross-entropy loss? Or maybe KL divergence? Aren't neural networks doing the exact same thing?
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                The short answer: <em>kind of, yes</em>. The long answer is more interesting.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">What is the Free Energy Principle?</h2>
+
+            <p class="text-gray-300 mb-4">
+                Friston's Free Energy Principle states that biological systems maintain their existence by minimizing <strong class="text-white">variational free energy</strong>—a quantity borrowed from statistical physics and information theory. In the FEP framework, your brain builds an internal generative model of the world and constantly updates it to minimize surprise (or equivalently, prediction error).
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                The free energy $F$ is defined as:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$F = \mathbb{E}_{q(z)}[\log q(z) - \log p(x, z)]$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                where $q(z)$ is your brain's approximate posterior (its best guess about hidden causes $z$ given sensory data $x$), and $p(x,z)$ is the true joint distribution of observations and their causes.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                This can be rewritten as:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$F = D_{KL}(q(z) \| p(z|x)) - \log p(x)$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                The first term is the KL divergence between your approximate posterior and the true posterior (how wrong your beliefs are). The second term is the log evidence (how surprising the data is). Since $\log p(x)$ doesn't depend on $q$, minimizing $F$ with respect to $q$ is equivalent to minimizing the KL divergence—making your beliefs as accurate as possible.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">The ELBO Connection</h2>
+
+            <p class="text-gray-300 mb-4">
+                If you've studied variational inference or Variational Autoencoders (VAEs), this should look extremely familiar. The free energy $F$ is exactly the negative of the <strong class="text-white">Evidence Lower BOund (ELBO)</strong>:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$\text{ELBO} = -F = \mathbb{E}_{q(z)}[\log p(x|z)] - D_{KL}(q(z) \| p(z))$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                The ELBO decomposes into two terms:
+            </p>
+
+            <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-4">
+                <li><strong class="text-white">Accuracy/Reconstruction:</strong> $\mathbb{E}_{q(z)}[\log p(x|z)]$ — how well your model explains the data</li>
+                <li><strong class="text-white">Complexity/Regularization:</strong> $-D_{KL}(q(z) \| p(z))$ — how much your posterior deviates from the prior</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                Maximizing the ELBO (equivalently, minimizing free energy) means finding a balance between fitting the data well and not making your model too complex. This is <em>exactly</em> what VAEs do during training.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">Cross-Entropy Loss: A Special Case</h2>
+
+            <p class="text-gray-300 mb-4">
+                What about cross-entropy loss, the standard objective for classification neural networks? Cross-entropy minimizes:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$\mathcal{L}_{CE} = -\sum_{i} y_i \log \hat{y}_i$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                where $y_i$ is the true label distribution and $\hat{y}_i$ is the predicted distribution. This can be rewritten as:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$\mathcal{L}_{CE} = H(y, \hat{y}) = H(y) + D_{KL}(y \| \hat{y})$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Since the entropy $H(y)$ of the true labels is constant, minimizing cross-entropy is equivalent to minimizing the KL divergence between the true and predicted distributions. This is <em>structurally identical</em> to what the Free Energy Principle does—minimize the divergence between your beliefs and reality.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">MSE: Not Quite the Same</h2>
+
+            <p class="text-gray-300 mb-4">
+                What about Mean Squared Error (MSE)? At first glance, MSE seems different:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$\mathcal{L}_{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                But MSE is actually the negative log-likelihood under a Gaussian assumption. If you assume your prediction errors are Gaussian-distributed:
+            </p>
+
+            <p class="text-center text-lg my-4">
+                $$p(y|x) = \mathcal{N}(y; f(x), \sigma^2)$$
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Then minimizing MSE is equivalent to maximizing log-likelihood (or equivalently, minimizing negative log-likelihood). So MSE is a special case of variational free energy minimization when you assume Gaussian observation noise.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">Prediction Error and Predictive Coding</h2>
+
+            <p class="text-gray-300 mb-4">
+                Friston's framework goes beyond static inference—it includes <strong class="text-white">predictive coding</strong>, a theory of how the brain might implement free energy minimization hierarchically. In predictive coding, each layer of the brain predicts the activity of the layer below, and only <em>prediction errors</em> (mismatches between predictions and actual signals) propagate upward.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                This is remarkably similar to <strong class="text-white">backpropagation</strong> in neural networks, where gradients (which measure prediction error with respect to parameters) flow backward through layers. The difference is that in predictive coding, errors flow <em>in both directions</em>—upward to update beliefs about hidden causes, and downward to refine predictions.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">So Are They the Same Thing?</h2>
+
+            <p class="text-gray-300 mb-4">
+                Not quite. Here's what's similar and what's different:
+            </p>
+
+            <p class="text-blue-400 font-semibold mb-2 mt-6">Similarities:</p>
+            <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-4">
+                <li>Both minimize divergence between predictions and observations</li>
+                <li>Both use KL divergence or equivalent information-theoretic quantities</li>
+                <li>Both balance accuracy (fitting data) and complexity (regularization)</li>
+                <li>Both involve hierarchical inference (deep networks ↔ hierarchical predictive coding)</li>
+                <li>VAEs explicitly minimize the same ELBO / free energy objective</li>
+            </ul>
+
+            <p class="text-purple-400 font-semibold mb-2 mt-6">Differences:</p>
+            <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-4">
+                <li><strong class="text-white">Scope:</strong> FEP claims to be a universal principle for all life, not just learning systems</li>
+                <li><strong class="text-white">Dynamics:</strong> FEP includes active inference (taking actions to change sensory input), while standard supervised learning is passive</li>
+                <li><strong class="text-white">Biological plausibility:</strong> Predictive coding offers a more neurally plausible algorithm than backprop</li>
+                <li><strong class="text-white">Philosophy:</strong> FEP is framed as explaining <em>why</em> organisms exist and self-organize, not just how they learn</li>
+            </ul>
+
+            <h2 class="text-2xl font-bold text-white mb-4 mt-8">The Deeper Insight</h2>
+
+            <p class="text-gray-300 mb-4">
+                The fact that Friston's Free Energy Principle and modern machine learning loss functions converge on the same math is not a coincidence—it's a hint that we've discovered something fundamental about <em>inference itself</em>. Whether you're a brain trying to survive, a neural network trying to classify images, or a VAE trying to compress data, the core problem is the same: <strong class="text-white">build a good model of the world by minimizing the gap between predictions and reality</strong>.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Information theory gives us the natural measure of that gap: KL divergence, cross-entropy, mutual information—different names for closely related quantities. The Free Energy Principle tells us this isn't just a useful heuristic for training neural networks; it might be a deep principle governing all self-organizing systems.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                So is FEP "just" cross-entropy loss? In one sense, yes—the math is essentially the same. But in another sense, no—because FEP situates that math within a much grander story about life, perception, and existence itself. Whether that story holds up is still an open question. But the mathematical parallels are undeniable, and they suggest that deep learning and neuroscience might be converging on the same fundamental principles from different directions.
+            </p>
+
+            <p class="text-gray-300 mb-6">
+                And if that's true, then maybe the next breakthrough in AI won't come from better architectures or bigger datasets—it'll come from understanding what the brain was optimizing for all along.
+            </p>
+
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

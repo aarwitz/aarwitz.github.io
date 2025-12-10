@@ -1,8 +1,55 @@
+<!-- Futuristic site title styling: Orbitron font + neon/gradient text -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Lightweight, page-embedded styles so header.html stays self-contained when included */
+  .site-title {
+    font-family: 'Orbitron', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    display: inline-block;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(90deg, #60a5fa 0%, #7c3aed 45%, #fb7188 100%);
+    text-shadow: 0 0 6px rgba(124,58,237,0.18), 0 0 18px rgba(96,165,250,0.08);
+    transition: transform 180ms ease, filter 180ms ease;
+    padding-bottom: 0.25rem; /* ensure descenders (like 'g') aren't cut off */
+  }
+  .site-title:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.2) drop-shadow(0 8px 20px rgba(124,58,237,0.18));
+  }
+
+  /* accent pieces for bracket/slash to look like code */
+  .site-title span {
+    -webkit-text-fill-color: initial; /* override transparent to show gradient colors */
+  }
+  .site-title .dot {
+    margin-left: -0.05em;
+    margin-right: -0.05em;
+  }
+
+  /* Small screens: slightly reduce title size to fit */
+  @media (max-width: 640px) {
+    .site-title { font-size: 1.6rem; }
+  }
+  @media (min-width: 641px) {
+    .site-title { font-size: 1.9rem; }
+  }
+</style>
+
 <header class="pt-2 mb-2">
   <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
     <a href="index.html"
-       class="text-3xl sm:text-2xl font-bold text-white hover:text-slate-300 transition mb-4 sm:mb-0 text-center sm:text-left">
-      aarwitz.github.io
+       class="text-3xl sm:text-2xl font-bold hover:text-slate-300 transition mb-4 sm:mb-0 text-center sm:text-left site-title"
+       aria-label="Aaron Horowitz homepage">
+      <span class="bracket">&lt;</span>
+      <span class="name">aarwitz</span>
+      <span class="dot">.</span>
+      <span class="domain">github</span>
+      <span class="tld">.io</span>
+      <span class="slash">/&gt;</span>
     </a>
 
     <div class="flex flex-wrap justify-center sm:justify-end gap-2">

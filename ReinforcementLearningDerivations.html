@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv='cache-control' content='no-cache'> 
+    <meta http-equiv='expires' content='0'> 
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reinforcement Learning & PPO Derivations — Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <!-- Header -->
+        <div id="site-header"></div>
+
+        <!-- Article Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
+                Reinforcement Learning & PPO Derivations
+            </h1>
+            <p class="text-gray-400 text-lg mb-2">From Value Functions to Policy Optimization</p>
+            <p class="text-gray-500 text-sm">December 5, 2025</p>
+        </header>
+
+        <!-- Article Content -->
+        <article class="prose prose-invert max-w-none">
+            
+            <!-- Fundamentals of RL -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-4">1. RL Basics</h2>
+                
+                <h3 class="text-xl font-bold text-blue-400 mb-3">Policies</h3>
+                <p class="text-gray-300 mb-4">
+                    The purpose of RL is to create a function that maps states to actions. So, given a state, the policy will choose an action.
+                    We call this function a <strong class="text-white">"policy"</strong>.
+                    Worth mentioning that (usually) the policy doesn't actually create a deterministic mapping from states to actions,
+                    but rather a probability distribution over actions given a state.
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$\pi(a|s): S \to A$$
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Value Functions</h3>
+                <p class="text-gray-300 mb-4">
+                    We create a <strong class="text-white">Value function</strong> to try to quantify how good a policy is.
+                     We define this value $V$ of a policy $\pi$ to be the sum of its <strong class="text-white">discounted expected rewards</strong>
+                     starting from state $s$.
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$V^\pi(s) = \mathbb{E}_\pi\left[R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots \mid s_0 = s\right]$$
+                    </p>
+                    <p class="text-center text-lg my-4">
+                        $$= \mathbb{E}_\pi\left[\sum_{t=0}^{\infty} \gamma^t R(s_t) \mid s_0 = s\right]$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-3">
+                        where $\gamma \in [0,1]$ is the discount factor that determines how much we value future rewards relative to immediate rewards.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Bellman Equation</h3>
+                <p class="text-gray-300 mb-4">
+                    The <strong class="text-white">Bellman equation</strong> provides a recursive definition of the Value function using <strong class="text-white">transition probabilities</strong>. 
+                    The transition probability $P(s'|s,a)$ represents the probability of reaching state $s'$ when taking action $a$ from state $s$.
+                    Note this is different from the policy probability mentioned earlier ($\pi(a|s)$).
+                    In deterministic environments, the transition probability is either 0 or 1, indicating a certain next state, because the environment's dynamics are fully predictable and so taking action $a$ from state $s$ always leads to state $s'$.
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$V^\pi(s) = \sum_{a} \pi(a|s) \left[R(s,a) + \gamma \sum_{s'} P(s'|s,a) V^\pi(s')\right]$$
+                    </p>
+                    <p class="text-gray-300 mt-4 mb-2">In words:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4">
+                        <li>The value at state $s$ is the expected immediate reward</li>
+                        <li>Plus the discounted expectation over values of all possible next states</li>
+                        <li>Each next state weighted by its transition probability</li>
+                        <li>Averaged over all actions according to the policy $\pi$</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
+                    <p class="text-blue-300 font-bold mb-2">Key Insight:</p>
+                    <p class="text-gray-300">
+                        Because the Bellman equation is <strong class="text-white">recursive</strong>, defining the value of any state requires defining 
+                        the value of all states reachable from it. This recursion typically propagates through the entire state space, 
+                        giving us values for all states under policy $\pi$.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Optimal Policies -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-4">2. Optimal Policies and Value Functions</h2>
+                
+                <p class="text-gray-300 mb-4">
+                    The <strong class="text-white">optimal value function</strong> $V^*(s)$ is the maximum value achievable from state $s$ under any policy:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$V^*(s) = \max_\pi V^\pi(s)$$
+                    </p>
+                </div>
+
+                <p class="text-gray-300 mb-4">
+                    The <strong class="text-white">optimal policy</strong> $\pi^*$ is the policy that achieves this maximum value for all states:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$\pi^* = \arg\max_\pi V^\pi(s) \quad \forall s \in S$$
+                    </p>
+                </div>
+
+                <p class="text-gray-300 mb-4">
+                    The <strong class="text-white">Bellman Optimality Equation</strong> characterizes the optimal value function:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$V^*(s) = \max_a \left[R(s,a) + \gamma \sum_{s'} P(s'|s,a) V^*(s')\right]$$
+                    </p>
+                </div>
+            </div>
+
+            <!-- Advantage Function -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-4">3. Advantage Function</h2>
+                <!-- <h2 class="text-2xl font-bold text-white mb-4">3. Q-Functions and Advantage Functions</h2> -->
+                
+                <!-- <h3 class="text-xl font-bold text-blue-400 mb-3">Q-Function (Action-Value Function)</h3>
+                <p class="text-gray-300 mb-4">
+                    The <strong class="text-white">Q-function</strong> represents the expected return of taking action $a$ in state $s$ and then following policy $\pi$:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$Q^\pi(s,a) = R(s,a) + \gamma \sum_{s'} P(s'|s,a) V^\pi(s')$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-3 text-center">
+                        Immediate reward from taking action $a$ plus discounted expected future value
+                    </p>
+                </div> -->
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Advantage Function</h3>
+                <p class="text-gray-300 mb-4">
+                    As you might expect, the goal then is to find the optimal policy, so we begin by defining a way of comparing policies.
+                    The <strong class="text-white">Advantage Function</strong> measures how much better it is to take a specific action $a$ in state $s$,
+                    instead of what the policy would normally do, and then only afterwards following the policy,
+                    compared to just following exactly the policy $\pi$ from the start.
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$A^\pi(s,a) = R(s,a) + \gamma \sum_{s'} P(s'|s,a) V^\pi(s') - V^\pi(s)$$
+                    </p>
+                </div>
+
+                <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mt-6">
+                    <p class="text-green-300 font-bold mb-2">Interpretation:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4">
+                        <li>If $A^\pi(s,a) > 0$: Taking action $a$ is <strong class="text-white">better</strong> than the average action under $\pi$</li>
+                        <li>If $A^\pi(s,a) < 0$: Taking action $a$ is <strong class="text-white">worse</strong> than the average action under $\pi$</li>
+                        <li>If $A^\pi(s,a) = 0$: Taking action $a$ is <strong class="text-white">equivalent</strong> to following $\pi$</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
+                    <p class="text-blue-300 font-bold mb-2">Equation explained:</p>
+                    <p class="text-gray-300">
+                        <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4">
+                            <li>The Advantage Function's first term $r(s,a)$ represents the immediate reward for taking action $a$ in state $s$.</li>
+                            <li>The second term is the discounted expected future value of following policy $\pi$ after taking action $a$ in state $s$.</li>
+                            <li>The third term subtracts the baseline value $V^\pi(s)$, representing the expected value of following policy $\pi$ from the beginning, state $s$.</li>
+                        </ul>
+                    </p>
+                </div>
+                
+            </div>
+            <!-- Policy Parameterization -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-4">4. Policy Parameterization</h2>
+                
+                <p class="text-gray-300 mb-4">
+                    In practice, state and action spaces can be enormous (or even continuous). We cannot explicitly store a probability 
+                    $\pi(a|s)$ for every state-action pair.
+                </p>
+                
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-gray-300 mb-3">
+                        <strong class="text-white">Solution:</strong> We parameterize the policy with parameters $\theta$ (e.g., neural network weights):
+                    </p>
+                    <p class="text-center text-lg my-4">
+                        $$\pi_\theta(a|s)$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-3">
+                        Now instead of optimizing over all possible policies, we optimize over the parameter space $\theta$ to find the best policy.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Policy Gradient Objective</h3>
+                <p class="text-gray-300 mb-4">
+                    We want to maximize the expected return under the parameterized policy:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \gamma^t R(s_t, a_t)\right]$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-3 text-center">
+                        where $\tau = (s_0, a_0, s_1, a_1, \ldots)$ is a trajectory sampled from policy $\pi_\theta$
+                    </p>
+                </div>
+            </div>
+
+            <!-- PPO Introduction -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-gray-700">
+                <h2 class="text-2xl font-bold text-white mb-4">5. Proximal Policy Optimization (PPO)</h2>
+                
+                <p class="text-gray-300 mb-4">
+                    <strong class="text-white">Proximal Policy Optimization (PPO)</strong> is a policy gradient method that aims to improve the policy 
+                    while preventing overly large updates that could destabilize training.
+                </p>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">The Core Idea</h3>
+                <p class="text-gray-300 mb-4">
+                    PPO uses the Advantage function to determine which actions to reinforce. The key insight is:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <ul class="list-disc list-inside space-y-2 text-gray-300">
+                        <li>If $A^\pi(s,a) > 0$, we want to <strong class="text-white">increase</strong> the probability of taking action $a$ in state $s$</li>
+                        <li>If $A^\pi(s,a) < 0$, we want to <strong class="text-white">decrease</strong> the probability of taking action $a$ in state $s$</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Policy Ratio</h3>
+                <p class="text-gray-300 mb-4">
+                    PPO defines a probability ratio between the new policy $\pi_\theta$ and the old policy $\pi_{\theta_{\text{old}}}$:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$$
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">PPO Objective (Clipped)</h3>
+                <p class="text-gray-300 mb-4">
+                    The clipped PPO objective prevents the policy from changing too much in a single update:
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-4 mb-2">where:</p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-400 text-sm ml-4">
+                        <li>$A_t = A^{\pi_{\theta_{\text{old}}}}(s_t, a_t)$ is the advantage estimate</li>
+                        <li>$\epsilon$ is a hyperparameter (typically 0.1 or 0.2)</li>
+                        <li>$\text{clip}(x, a, b)$ clips $x$ to the range $[a, b]$</li>
+                    </ul>
+                </div>
+
+                <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mt-6">
+                    <p class="text-purple-300 font-bold mb-2">Why Clipping?</p>
+                    <p class="text-gray-300">
+                        The clipping mechanism ensures that the policy doesn't change too drastically in a single update. 
+                        If the ratio $r_t(\theta)$ deviates too far from 1 (meaning the new policy is very different from the old one), 
+                        the objective stops incentivizing further change. This creates a "trust region" that leads to more stable training.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 mb-8 border border-blue-500/50">
+                <h3 class="text-xl font-bold text-blue-400 mb-3">Summary: The Path to PPO</h3>
+                <div class="space-y-3">
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-800">
+                        <p class="text-gray-300">
+                            <strong class="text-white">1. Policy:</strong> $\pi_\theta(a|s)$ defines action probabilities for each state
+                        </p>
+                    </div>
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-800">
+                        <p class="text-gray-300">
+                            <strong class="text-white">2. Value Function:</strong> $V^\pi(s)$ measures expected discounted returns under policy $\pi$
+                        </p>
+                    </div>
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-800">
+                        <p class="text-gray-300">
+                            <strong class="text-white">3. Advantage Function:</strong> $A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ tells us how good action $a$ is relative to average
+                        </p>
+                    </div>
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-800">
+                        <p class="text-gray-300">
+                            <strong class="text-white">4. PPO:</strong> Uses advantages to update policy parameters $\theta$ while clipping prevents overly large updates
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
