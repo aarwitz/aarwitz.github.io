@@ -29,53 +29,161 @@
         <!-- Header -->
         <div id="site-header"></div>
 
-        <!-- Featured Project -->
+        <!-- Featured Projects -->
         <section class="mb-12">
-            <div class="flex items-center gap-2 mb-3">
+            <div class="flex items-center gap-2 mb-6">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                 </svg>
-                <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide">Featured Project</h2>
+                <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide">Featured Projects</h2>
             </div>
-            <a href="TextBasedPseudolabeling.html" class="block group">
-                <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 border border-gray-700 hover:border-blue-500 transition">
-                    <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition mb-3">
-                        Text-Based Pseudolabeling for Object Detection
-                    </h3>
-                    <p class="text-gray-300 mb-4 leading-relaxed">
-                        Automated annotation system combining Grounding DINO and SAM to generate training data from text prompts. 
-                        Dockerized pipeline for scalable pseudo-label generation with rotated bounding boxes and segmentation masks.
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Python</span>
-                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">PyTorch</span>
-                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Grounding DINO</span>
-                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">SAM</span>
-                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">Docker</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Text-Based Pseudolabeling -->
+                <a href="TextBasedPseudolabeling.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="ConvexVsNotConvex.png" alt="Text-Based Pseudolabeling" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Text-Based Pseudolabeling for Object Detection</h3>
+                                    <p class="text-gray-300 text-sm">Automated annotation system combining Grounding DINO and SAM to generate training data from text prompts.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Text-Based Pseudolabeling</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Python</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">PyTorch</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Docker</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+
+                <!-- Portfolio Optimizer -->
+                <a href="PortfolioOptimizer.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="Completing_the_square.png" alt="Portfolio Optimizer" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Portfolio Optimization Tool</h3>
+                                    <p class="text-gray-300 text-sm">Interactive web application for portfolio optimization using modern portfolio theory and efficient frontier analysis.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Portfolio Optimizer</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">JavaScript</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Plotly</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">HTML/CSS</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Camera Calibration -->
+                <a href="CameraCalibration.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="calibration-cameramodel-coords.png" alt="Camera Calibration" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Camera Calibration & 3D Reconstruction</h3>
+                                    <p class="text-gray-300 text-sm">Computer vision system for camera calibration, stereo vision, and 3D point cloud reconstruction from multiple viewpoints.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Camera Calibration</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Python</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">OpenCV</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">MATLAB</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </section>
 
-        <!-- Featured Essay -->
+        <!-- Featured Essays -->
         <section class="mb-12">
-            <div class="flex items-center gap-2 mb-3">
+            <div class="flex items-center gap-2 mb-6">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide">Featured Writing</h2>
+                <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide">Featured Essays</h2>
             </div>
-            <a href="ClosedFormSolutions.html" class="block group">
-                <div class="bg-[#161b22] rounded-lg p-6 sm:p-8 border border-gray-700 hover:border-blue-500 transition">
-                    <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition mb-3">
-                        Which Math Problems Have Closed-Form Solutions and Why?
-                    </h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        An exploration of why some mathematical problems admit elegant closed-form solutions while others don't. 
-                        Examines the deep connection between algebraic structures, symmetries, and solvability across different domains of mathematics.
-                    </p>
-                </div>
-            </a>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Closed-Form Solutions -->
+                <a href="ClosedFormSolutions.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="Completing_the_square.png" alt="Closed-Form Solutions" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Which Math Problems Have Closed-Form Solutions?</h3>
+                                    <p class="text-gray-300 text-sm">An exploration of why some mathematical problems admit elegant closed-form solutions while others don't.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Closed-Form Solutions</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-green-500/10 text-green-400 border border-green-500/20">Mathematics</span>
+                                <span class="px-2 py-1 rounded text-xs bg-green-500/10 text-green-400 border border-green-500/20">Algebra</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- SWIPT Research Paper -->
+                <a href="SWIPT.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="calibration-cameramodel-coords.png" alt="SWIPT Research" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Simultaneous Wireless Information and Power Transfer</h3>
+                                    <p class="text-gray-300 text-sm">Research paper on wireless power transfer systems for IoT sensor networks and autonomous devices.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">SWIPT Research</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">Research</span>
+                                <span class="px-2 py-1 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">Wireless Power</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Flying Car Review -->
+                <a href="FlyingCarReview.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                            <img src="ConvexVsNotConvex.png" alt="Flying Car Review" class="w-full h-48 object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">"Where Is My Flying Car?" - Book Review</h3>
+                                    <p class="text-gray-300 text-sm">Critical analysis of J. Storrs Hall's examination of technological stagnation and innovation challenges.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Flying Car Review</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20">Book Review</span>
+                                <span class="px-2 py-1 rounded text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20">Technology</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </section>
 
         <!-- Experience Timeline Section -->
