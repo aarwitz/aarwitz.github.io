@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CleaningRobot — 3D Object Detection & Autonomous Navigation</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #10b981;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Optima", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(16,185,129,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+        
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">CleaningRobot Vision System</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Robotic vision system combining YOLOv8 detection with RealSense depth for 3D object localization. Features real-time point cloud processing, floor plane estimation, and WebSocket-based 3D visualization for cleaning robot applications.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <a href="https://github.com/aarwitz/CleaningRobot" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+                            View repository
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
+                            </svg>
+                        </a>
+
+                        <span class="text-xs text-muted ml-3 text-gray-400">In Development • 2024-2025</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Role</div>
+                        <div class="mt-1 text-sm font-medium">Developer / Robotics Engineer</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Tech</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• ROS2 + Isaac ROS</div>
+                            <div>• YOLOv8 TensorRT</div>
+                            <div>• RealSense D455</div>
+                            <div>• Three.js</div>
+                            <div>• Python + OpenCV</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Overview</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        CleaningRobot is a robotic vision pipeline enabling autonomous object detection and navigation. The system detects objects (dirt, socks, debris) in 3D space using YOLOv8 on NVIDIA hardware, estimates accurate poses via depth sensing, and provides real-time visualization for navigation planning.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Core Capabilities</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+                        <li>Real-time YOLOv8 detection with TensorRT acceleration</li>
+                        <li>3D point cloud generation from RealSense stereo depth</li>
+                        <li>Global floor plane estimation with RANSAC</li>
+                        <li>Adaptive depth filtering for D455 stereo cameras</li>
+                        <li>WebSocket-based 3D visualization with Three.js</li>
+                        <li>Custom model training for domain-specific objects</li>
+                    </ul>
+
+                    <h3 class="mt-4 font-medium">Technical Innovation</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        The system uses a global floor plane estimation approach that fits one robust plane per frame using downsampled depth data, then applies it to all detected objects. This prevents over-fitting that could remove parts of target objects. An exponential moving average smooths plane parameters over time for stability.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Architecture</h2>
+                    <p class="text-gray-300 mb-4">Perception and navigation pipeline from camera to autonomous control:</p>
+
+                    <div class="bg-[#07101a] rounded-md p-6 font-mono text-xs text-gray-300">
+                        <pre>RealSense D455 → /depth, /color, /imu
+         ↓
+YOLOv8 TensorRT → Custom detection (socks, dirt)
+         ↓
+3D Detector → Point cloud + floor removal
+         ↓
+WebSocket Viewer → Real-time 3D visualization
+
+Planned Integration:
+isaac_ros_visual_slam → /odom and /pose
+         ↓
+isaac_ros_nvblox → 3D map + costmap
+         ↓
+isaac_ros_nav2 → Path planning
+         ↓
+Robot Controller → /cmd_vel</pre>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Workflow</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-medium text-white">1. Detection</h4>
+                            <p class="text-gray-300 text-sm">RealSense D455 streams 720p RGB + aligned depth at 30 FPS. YOLOv8 (TensorRT) detects objects with custom-trained models achieving 83%+ confidence.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-medium text-white">2. Point Cloud Generation</h4>
+                            <p class="text-gray-300 text-sm">For each detection, crop RGB + depth ROI. Apply D455-optimized filters (spatial, temporal, decimation, hole-filling). Project valid pixels to 3D using camera intrinsics.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-medium text-white">3. Floor Plane Removal</h4>
+                            <p class="text-gray-300 text-sm">Estimate robust floor plane from downsampled depth (4x, 2000+ inliers) using constrained RANSAC. Apply EMA smoothing (α=0.2) for stability. Gate object points above adaptive threshold.</p>
+                        </div>
+                        
+                        <div class="border-l-4 border-orange-500 pl-4">
+                            <h4 class="font-medium text-white">4. Pose Estimation & Visualization</h4>
+                            <p class="text-gray-300 text-sm">Compute object center from median point cloud coordinates. Publish PointCloud2 messages and stream to WebSocket server for real-time Three.js visualization.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Custom Model Training</h2>
+
+                    <p class="text-gray-300 mb-3">Tools for collecting training data and fine-tuning YOLOv8:</p>
+
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Data Collection:</strong> <code>collectData2DRGB.py</code> captures calibrated images at 1-second intervals</li>
+                        <li><strong>Annotation:</strong> Images labeled using Roboflow for bounding box annotation</li>
+                        <li><strong>Training:</strong> YOLOv8 models trained on domain-specific datasets (socks, dirt)</li>
+                        <li><strong>Optimization:</strong> Models converted to ONNX and compiled to TensorRT for ~10x speedup on Jetson</li>
+                        <li><strong>Deployment:</strong> Dynamic model loading via ROS2 launch parameters</li>
+                    </ul>
+
+                    <pre class="mt-4 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Launch with custom model
+ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
+  launch_fragments:=realsense_mono_rect_depth,yolov8 \
+  model_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.onnx \
+  engine_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.plan \
+  confidence_threshold:=0.83</code></pre>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">D455 Stereo Optimization</h2>
+                    
+                    <p class="text-gray-300 mb-3">
+                        The RealSense D455 stereo camera requires specialized filtering. Optimized depth processing includes:
+                    </p>
+
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Visual Preset:</strong> High Accuracy mode (preset 3) for better stereo matching</li>
+                        <li><strong>Spatial Filter:</strong> Edge-aware smoothing (magnitude=2, alpha=0.5, delta=20mm)</li>
+                        <li><strong>Temporal Filter:</strong> Multi-frame persistence (alpha=0.4, delta=20mm)</li>
+                        <li><strong>Hole Filling:</strong> Fill+edge-aware mode (level 2) preserves boundaries</li>
+                        <li><strong>Decimation:</strong> 2x filter reduces resolution while maintaining quality</li>
+                        <li><strong>IR Emitter:</strong> Enabled for improved matching in low-texture environments</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">3D Visualization</h2>
+
+                    <p class="text-gray-300 mb-3">
+                        Custom WebSocket-based viewer built with Three.js for real-time 3D visualization:
+                    </p>
+
+                    <h4 class="font-medium mt-4 mb-2">Features:</h4>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Dual-stream rendering: object-only clouds + full scene context</li>
+                        <li>Live 3D center point markers with wireframe spheres</li>
+                        <li>Adjustable point size (0.1-15px) via slider</li>
+                        <li>Orbit controls (rotate, zoom, pan) with dampening</li>
+                        <li>Coordinate axes and ground grid for reference</li>
+                        <li>RGB color preservation with sRGB conversion</li>
+                        <li>Debug logging panel for status and statistics</li>
+                    </ul>
+
+                    <h4 class="font-medium mt-4 mb-2">Architecture:</h4>
+                    <p class="text-gray-300 text-sm">
+                        <code>web_viewer_server_3d.py</code> subscribes to ROS2 topics and serves data via WebSocket endpoints (/3d, /center, /full_scene). The HTML viewer connects and renders using Three.js with efficient buffer geometry updates at 15+ FPS.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Repository Structure</h2>
+                    <ul class="list-inside list-disc text-gray-300 space-y-2">
+                        <li><code>yolov8_3d_detector.py</code> — Core 3D detection node with floor plane estimation</li>
+                        <li><code>web_viewer_server_3d.py</code> — WebSocket server for 3D streaming</li>
+                        <li><code>viewer.html</code> — Three.js interactive 3D viewer</li>
+                        <li><code>collectData2DRGB.py</code> — Training data collection utility</li>
+                        <li><code>yolov8_with_confidence.launch.py</code> — RealSense + YOLOv8 launch config</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>Robust Floor Removal:</strong> Global plane estimation prevents object corruption</li>
+                        <li><strong>Temporal Stability:</strong> EMA smoothing eliminates jitter across frames</li>
+                        <li><strong>Adaptive Performance:</strong> Frame-skipping reduces computation by 66%</li>
+                        <li><strong>Color Fidelity:</strong> sRGB-to-linear conversion preserves RGB accuracy</li>
+                        <li><strong>Fail-Safe Design:</strong> Keeps last good plane when estimation fails</li>
+                        <li><strong>Real-Time Performance:</strong> TensorRT + NumPy maintain 15+ FPS on Jetson AGX</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">How to Run</h2>
+
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># 1. Enter Isaac ROS Docker container
+cd ~/workspaces/isaac_ros-dev/src/isaac_ros_common
+./scripts/run_dev.sh -d ~/workspaces/isaac_ros-dev
+
+# 2. Source ROS2 workspace
+source /opt/ros/humble/setup.bash
+source /workspaces/isaac_ros-dev/install/setup.bash
+
+# 3. Launch RealSense + YOLOv8 with D455 optimization
+ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
+  launch_fragments:=realsense_mono_rect_depth,yolov8 \
+  model_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.onnx \
+  engine_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.plan \
+  confidence_threshold:=0.83
+
+# 4. Run 3D detector node (new terminal)
+docker exec -it isaac_ros_dev-aarch64-container bash -c \
+  "cd /workspaces/isaac_ros-dev && source install/setup.bash && \
+   python3 src/isaac_ros_object_detection/isaac_ros_yolov8/myscripts/yolov8_3d_detector.py"
+
+# 5. Run WebSocket visualization server (new terminal)
+docker exec -it isaac_ros_dev-aarch64-container bash -c \
+  "cd /workspaces/isaac_ros-dev && source install/setup.bash && \
+   python3 src/isaac_ros_object_detection/isaac_ros_yolov8/myscripts/web_viewer_server_3d.py"
+
+# 6. Open viewer.html in browser
+# Connect to ws://localhost:8765/3d (point cloud)
+#             ws://localhost:8765/center (3D centers)
+#             ws://localhost:8765/full_scene (full depth scene)
+</code></pre>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Tech Stack</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>• ROS2 Humble</div>
+                        <div>• Isaac ROS (NVIDIA)</div>
+                        <div>• YOLOv8 + TensorRT</div>
+                        <div>• Intel RealSense D455</div>
+                        <div>• Python 3.10</div>
+                        <div>• OpenCV + NumPy</div>
+                        <div>• Three.js (WebGL)</div>
+                        <div>• WebSockets</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Key Algorithms</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>YOLOv8 object detection</li>
+                        <li>RANSAC plane fitting</li>
+                        <li>Exponential moving average</li>
+                        <li>Pinhole camera projection</li>
+                        <li>Bilateral depth filtering</li>
+                        <li>Adaptive thresholding</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Hardware</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>NVIDIA Jetson AGX Orin</li>
+                        <li>Intel RealSense D455</li>
+                        <li>720p @ 30 FPS</li>
+                        <li>87° × 58° FOV</li>
+                        <li>0.3m - 3m depth range</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Performance</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Detection: ~15 FPS</li>
+                        <li>Points/object: 500-5000</li>
+                        <li>Full scene: 25k pts @ 15 FPS</li>
+                        <li>Floor plane: 2000+ inliers</li>
+                        <li>3D pose latency: &lt;100ms</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Trained Models</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li><code>socks.plan</code> — Socks on carpet (83%)</li>
+                        <li><code>fixed.plan</code> — Dirt on wood</li>
+                        <li>Custom datasets via Roboflow</li>
+                        <li>YOLOv8n architecture (nano)</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">ROS2 Topics</h4>
+                    <div class="mt-3 text-xs text-gray-300 font-mono">
+                        <div>📥 /detections_output</div>
+                        <div>📥 /aligned_depth_to_color</div>
+                        <div>📥 /image_rect</div>
+                        <div>📤 /detected_objects_pointcloud</div>
+                        <div>📤 /detected_objects_3d</div>
+                        <div>📤 /full_scene_pointcloud</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Future Work</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Visual SLAM integration</li>
+                        <li>nvblox 3D mapping</li>
+                        <li>Nav2 autonomous navigation</li>
+                        <li>Multi-object tracking</li>
+                        <li>Grasp pose estimation</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick Links</h4>
+                    <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/CleaningRobot" target="_blank">Repository</a>
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/isaac_ros_object_detection/compare/main...aarwitz:isaac_ros_object_detection:main" target="_blank">YOLOv8 Fork</a>
+                        <a class="text-blue-300 hover:underline" href="https://developer.nvidia.com/isaac-ros" target="_blank">Isaac ROS Docs</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Built by <strong>Aaron Horowitz</strong>. Part of the CleaningRobot project leveraging NVIDIA Isaac ROS and Intel RealSense.
+            </p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

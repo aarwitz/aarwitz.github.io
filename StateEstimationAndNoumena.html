@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Estimation and Kant's Noumenon — Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Optima', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        .content-block {
+            background-color: #161b22;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #e6edf3;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        code {
+            background-color: #0d1117;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .quote {
+            border-left: 4px solid #58a6ff;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #8b949e;
+        }
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-4xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+
+        <article class="content-block">
+            <h1>Control Theory and Kant's Noumenon</h1>
+            <p class="text-gray-400 text-sm mb-6">December 10, 2025</p>
+
+            <p>
+                I was reading about state estimation when I came across this line:
+            </p>
+
+            <div class="quote">
+                "There is a real physical state of an object: \(x_k\). You never know this exactly — you only estimate it."
+            </div>
+
+            <p>
+                This made me think of Kant's distinction between noumenon (the thing-in-itself) and phenomenon (the thing-as-it-appears-to-us), and the saying, "The map is not the territory".
+                Regardless of the sensor used, whether a depth sensor or human eyes, there is always noise contributing to a residual error.
+                Kant would say that we, or any sensing thing, has some structure with which it takes hold of the universe to observe it.
+                He posited, arguably incorrectly, that even space and time themselves were artifacts of our cognitive framework.
+                <br><br>
+                So, I think Kant would like our approach to state estimation.
+                In state estimation, we're developing algorithms by explicitly acknowledging they'll never access the true state \(x_k\).
+                In state estimation, \(x_k\) is the noumenon. It's the true position of the robot, the actual depth of an object, the real velocity of the car. It exists independent of our sensors. But we can never directly access it.
+
+                What we have instead is:
+            </p>
+
+            <ul class="list-disc list-inside ml-6 mb-4 space-y-2">
+                <li><strong>Measurements</strong> \(z_k\): noisy sensor readings (the phenomena)</li>
+                <li><strong>Estimates</strong> \(\hat{x}_k\): our best guess of the true state</li>
+                <li><strong>Uncertainty</strong> \(P_k\): how confident we are in our estimate</li>
+            </ul>
+
+            <p>
+                The Kalman filter doesn't try to "know" \(x_k\) with certainty. It maintains a probability distribution over possible states. It says: "Given what I've measured, here's what I believe the state is, and here's how uncertain I am."
+            </p>
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
