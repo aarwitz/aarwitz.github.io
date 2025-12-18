@@ -2,3 +2,7 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.webm filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
+
+# Keep these demo files as normal blobs for Pages
+robotprogress-picking.webm -filter -diff -merge -text
+robotprogress-pointcloud.webm -filter -diff -merge -text
