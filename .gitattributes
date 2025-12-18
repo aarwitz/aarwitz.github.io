@@ -8,4 +8,3 @@ robotprogress-picking.webm -filter -diff -merge -text
 robotprogress-pointcloud.webm -filter -diff -merge -text
 OpenPose.webm -filter -diff -merge -text
 OpenPose.mp4 -filter -diff -merge -text
-robot.gif -filter -diff -merge -text
