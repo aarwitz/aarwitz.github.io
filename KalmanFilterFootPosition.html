@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalman Filter for Foot Position Tracking — Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Optima', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        .content-block {
+            background-color: #161b22;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #e6edf3;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        code {
+            background-color: #0d1117;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .equation-block {
+            background-color: #0d1117;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        ul {
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-4xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+
+        <article class="content-block">
+            <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
+            <p class="text-gray-400 text-sm mb-6">Graduate Research — Boston University, 2020-2022</p>
+
+            <h2>Overview</h2>
+            <p>
+                I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration. 
+                Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
+                The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
+            </p>
+
+            <h2>Problem Setup</h2>
+            <p>
+                The state is position and velocity in one dimension:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{x}_k = \begin{bmatrix} x_k \\ v_k \end{bmatrix}$$
+            </div>
+
+            <p>During swing phase, only the predict step runs and uncertainty grows. During stance, the zero-velocity constraint corrects both velocity and position through the covariance structure.</p>
+
+            <h2>Process Model</h2>
+            <p>
+                The state evolves according to standard equations of motion. Given previous state \(\mathbf{x}_{k-1}\) and IMU acceleration \(a_k\):
+            </p>
+            <div class="equation-block">
+                $$\hat{\mathbf{x}}_k^- = \mathbf{F}\hat{\mathbf{x}}_{k-1} + \mathbf{G}a_k$$
+            </div>
+
+            <p>where</p>
+            <div class="equation-block">
+                $$\mathbf{F} = \begin{bmatrix} 1 & \Delta t \\ 0 & 1 \end{bmatrix}, \quad \mathbf{G} = \begin{bmatrix} \frac{1}{2}\Delta t^2 \\ \Delta t \end{bmatrix}$$
+            </div>
+
+            <p>
+                The state transition matrix \(\mathbf{F}\) propagates position and velocity forward in time. 
+                The input matrix \(\mathbf{G}\) applies the measured acceleration to update the state.
+            </p>
+
+            <h3>Covariance Prediction</h3>
+            <p>
+                Uncertainty grows with each prediction:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}$$
+            </div>
+            <p>
+                \(\mathbf{Q}\) is the process noise covariance representing IMU noise and model error. 
+                The term \(\mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T\) propagates existing uncertainty through the linear transformation (analogous to \(w\Sigma w^T\) in portfolio optimization).
+            </p>
+
+            <h2>Measurement Model</h2>
+            <p>
+                The measurement model extracts velocity from the state:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{H} = \begin{bmatrix} 0 & 1 \end{bmatrix}$$
+            </div>
+            <p>
+                Multiplying the state by \(\mathbf{H}\) gives the predicted velocity:
+            </p>
+            <div class="equation-block">
+                $$\hat{z}_k = \mathbf{H}\hat{\mathbf{x}}_k^- = v_k^-$$
+            </div>
+
+            <p>
+                During stance, the actual measurement is zero (ZUPT assumption: foot velocity = 0). The residual is:
+            </p>
+            <div class="equation-block">
+                $$y_k = 0 - \hat{z}_k = -v_k^-$$
+            </div>
+
+            <h2>Kalman Gain and Update</h2>
+            <p>
+                The Kalman gain determines how much the state should move in response to the measurement residual:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{K}_k = \mathbf{P}_k^- \mathbf{H}^T (\mathbf{H}\mathbf{P}_k^- \mathbf{H}^T + R)^{-1}$$
+            </div>
+            <p>
+                \(R\) is the measurement noise covariance (a scalar for ZUPT, typically \(R = 0.01\)). 
+                The Kalman gain represents the covariance between the state and measurement, scaled by measurement uncertainty. 
+                It tells each state component how much to adjust when the residual is applied.
+            </p>
+
+            <p>State update:</p>
+            <div class="equation-block">
+                $$\hat{\mathbf{x}}_k = \hat{\mathbf{x}}_k^- + \mathbf{K}_k y_k$$
+            </div>
+
+            <p>Covariance update:</p>
+            <div class="equation-block">
+                $$\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k \mathbf{H})\mathbf{P}_k^-$$
+            </div>
+
+            <h2>How It Works</h2>
+            <p>
+                The filter alternates between two phases:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Swing phase:</strong> Only the predict step runs. Position and velocity are updated via equations of motion, and \(\mathbf{P}_k\) grows as drift accumulates.</li>
+                <li><strong>Stance phase:</strong> The zero-velocity update triggers. The residual \(y_k = -v_k^-\) corrects both velocity directly and position indirectly through the cross-covariance in \(\mathbf{P}_k\).</li>
+            </ul>
+
+            <p>
+                After many gait cycles, \(\mathbf{P}_k\) converges to a repeating pattern reflecting typical uncertainty levels during each phase. 
+                The measurement noise \(R\) determines how much to trust the ZUPT (low \(R\) means strong trust). 
+                The process noise \(\mathbf{Q}\) controls how quickly uncertainty grows during swing.
+            </p>
+
+            <h2>Key Parameters</h2>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Process noise covariance \(\mathbf{Q}\):</strong> Accounts for IMU noise and integration drift</li>
+                <li><strong>Measurement noise covariance \(R\):</strong> Reflects confidence in zero-velocity assumption (typically 0.01)</li>
+                <li><strong>Initial state covariance \(\mathbf{P}_0\):</strong> Diagonal matrix with no assumed correlation between position and velocity errors</li>
+            </ul>
+
+            <p>
+                By tuning \(R\) to be small relative to \(\mathbf{Q}\), the filter trusts the stance-phase measurements heavily, which is appropriate since the foot truly has zero velocity during ground contact.
+            </p>
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
