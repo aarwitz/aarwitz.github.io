@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalman Filter for Foot Position Tracking — Aaron Horowitz</title>
+   
+    <!-- Performance optimizations: preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+   
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+   
+    <!-- MathJax for equations (async loading) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" async></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+   
     <style>
         body {
             font-family: 'Optima', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -76,12 +86,34 @@
         <div id="site-header"></div>
 
         <article class="content-block">
-            <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
-            <p class="text-gray-400 text-sm mb-6">Graduate Research — Boston University, 2020-2022</p>
+            <div class="flex flex-col md:flex-row gap-6 mb-8">
+                <div class="flex-1">
+                    <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
+                    <p class="text-gray-400 text-sm">Graduate Research — Boston University, 2020-2022</p>
+                </div>
+               
+                <div class="md:w-64 flex-shrink-0">
+                    <div class="bg-[#0d1117] border border-gray-700 rounded-lg p-4">
+                        <div class="text-xs text-gray-400 mb-2">📄 Published Paper</div>
+                        <a href="https://sites.bu.edu/nrl/files/2023/02/Koopman_pose_predictions_for_temporally_consistent_human_walking_estimations.pdf"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="text-blue-400 hover:text-blue-300 text-sm font-medium underline block mb-3">
+                            Koopman Pose Predictions for Temporally Consistent Human Walking Estimations
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                        <div class="text-xs text-gray-400">
+                            Conference paper describing the full pose estimation system incorporating ZUPT-based foot tracking
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <h2>Overview</h2>
             <p>
-                I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration. 
+                I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration.
                 Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
                 The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
             </p>
@@ -110,7 +142,7 @@
             </div>
 
             <p>
-                The state transition matrix \(\mathbf{F}\) propagates position and velocity forward in time. 
+                The state transition matrix \(\mathbf{F}\) propagates position and velocity forward in time.
                 The input matrix \(\mathbf{G}\) applies the measured acceleration to update the state.
             </p>
 
@@ -122,7 +154,7 @@
                 $$\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}$$
             </div>
             <p>
-                \(\mathbf{Q}\) is the process noise covariance representing IMU noise and model error. 
+                \(\mathbf{Q}\) is the process noise covariance representing IMU noise and model error.
                 The term \(\mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T\) propagates existing uncertainty through the linear transformation (analogous to \(w\Sigma w^T\) in portfolio optimization).
             </p>
 
@@ -155,8 +187,8 @@
                 $$\mathbf{K}_k = \mathbf{P}_k^- \mathbf{H}^T (\mathbf{H}\mathbf{P}_k^- \mathbf{H}^T + R)^{-1}$$
             </div>
             <p>
-                \(R\) is the measurement noise covariance (a scalar for ZUPT, typically \(R = 0.01\)). 
-                The Kalman gain represents the covariance between the state and measurement, scaled by measurement uncertainty. 
+                \(R\) is the measurement noise covariance (a scalar for ZUPT, typically \(R = 0.01\)).
+                The Kalman gain represents the covariance between the state and measurement, scaled by measurement uncertainty.
                 It tells each state component how much to adjust when the residual is applied.
             </p>
 
@@ -180,16 +212,113 @@
             </ul>
 
             <p>
-                After many gait cycles, \(\mathbf{P}_k\) converges to a repeating pattern reflecting typical uncertainty levels during each phase. 
-                The measurement noise \(R\) determines how much to trust the ZUPT (low \(R\) means strong trust). 
+                After many gait cycles, \(\mathbf{P}_k\) converges to a repeating pattern reflecting typical uncertainty levels during each phase.
+                The measurement noise \(R\) determines how much to trust the ZUPT (low \(R\) means strong trust).
                 The process noise \(\mathbf{Q}\) controls how quickly uncertainty grows during swing.
             </p>
+
+            <h2>Steady-State Covariance via Lyapunov Equation</h2>
+            <p>
+                The ZUPT measurement updates cause the covariance matrix \(\mathbf{P}_k\) to converge to a steady-state value.
+                Rather than simulating many gait cycles to observe convergence, we can solve for this steady state directly using the discrete-time algebraic Riccati equation (DARE), which is a form of Lyapunov equation.
+            </p>
+
+            <h3>Why Convergence Occurs</h3>
+            <p>
+                During each gait cycle, two competing processes act on the covariance:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Predict step:</strong> Uncertainty grows as \(\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}\)</li>
+                <li><strong>Update step (ZUPT):</strong> Uncertainty shrinks as \(\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k\mathbf{H})\mathbf{P}_k^-\)</li>
+            </ul>
+            <p>
+                After many cycles, these effects balance out and \(\mathbf{P}_k\) reaches a fixed point \(\bar{\mathbf{P}}\) where the growth during prediction equals the reduction during measurement update.
+                This steady-state covariance tells you the long-term accuracy of your position and velocity estimates.
+            </p>
+
+            <h3>The Discrete Algebraic Riccati Equation (DARE)</h3>
+            <p>
+                For a time-invariant Kalman filter (constant \(\mathbf{F}, \mathbf{G}, \mathbf{H}, \mathbf{Q}, R\)), the steady-state covariance \(\bar{\mathbf{P}}\) satisfies:
+            </p>
+            <div class="equation-block">
+                $$\bar{\mathbf{P}} = \mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T + \mathbf{Q} - \mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T$$
+            </div>
+
+            <p>
+                This is a quadratic matrix equation. It encodes the condition that after one full predict-update cycle, the covariance returns to itself.
+            </p>
+
+            <h3>Breaking Down the DARE</h3>
+            <p>Let's parse each term:</p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Propagates steady-state uncertainty through state transition</li>
+                <li><strong>\(\mathbf{Q}\):</strong> Adds process noise (IMU drift, model error)</li>
+                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Subtracts the information gain from the measurement update</li>
+            </ul>
+
+            <p>
+                The third term is the key: it quantifies how much uncertainty the ZUPT removes.
+                When \(R\) is small (you trust the zero-velocity measurement), this term is large and \(\bar{\mathbf{P}}\) is small (high accuracy).
+                When \(\mathbf{Q}\) is large (high process noise), \(\bar{\mathbf{P}}\) increases because drift accumulates faster than measurements can correct it.
+            </p>
+
+            <h3>Interpretation for ZUPT</h3>
+            <p>
+                In the ZUPT context, the measurement model is \(\mathbf{H} = [0 \quad 1]\), which observes velocity. The DARE tells us:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Velocity uncertainty \(\bar{P}_{22}\) converges to a value balancing process noise against measurement updates</li>
+                <li>Position uncertainty \(\bar{P}_{11}\) converges based on how well velocity corrections propagate through \(\mathbf{F}\)</li>
+                <li>Cross-covariance \(\bar{P}_{12}\) captures the correlation between position and velocity errors at steady state</li>
+            </ul>
+
+            <p>
+                The cross-covariance term is critical: even though we only measure velocity (via ZUPT), the off-diagonal element \(\bar{P}_{12}\) allows the Kalman gain \(\mathbf{K}_k\) to correct position errors whenever velocity is updated.
+                This is why ZUPT works—the position and velocity errors are coupled through the dynamics \(\mathbf{F}\).
+            </p>
+
+            <h3>Solving the DARE</h3>
+            <p>
+                For our 2×2 system, the DARE can be solved:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Analytically:</strong> Expand into scalar equations and solve the resulting polynomial (messy but exact)</li>
+                <li><strong>Numerically:</strong> Use iterative methods or built-in solvers (e.g., <code>scipy.linalg.solve_discrete_are</code> in Python)</li>
+                <li><strong>Simulation:</strong> Run the filter for many cycles until \(\mathbf{P}_k\) stops changing</li>
+            </ul>
+
+            <h3>Example Steady-State Result</h3>
+            <p>
+                Suppose \(\Delta t = 0.01\) s, \(\mathbf{Q} = \begin{bmatrix} 10^{-6} & 0 \\ 0 & 10^{-4} \end{bmatrix}\), and \(R = 0.01\).
+                After solving the DARE, you might find:
+            </p>
+            <div class="equation-block">
+                $$\bar{\mathbf{P}} \approx \begin{bmatrix} 2.3 \times 10^{-4} & 1.1 \times 10^{-3} \\ 1.1 \times 10^{-3} & 8.7 \times 10^{-3} \end{bmatrix}$$
+            </div>
+
+            <p>
+                This tells you:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Position uncertainty: \(\sigma_x = \sqrt{\bar{P}_{11}} \approx 1.5\) cm</li>
+                <li>Velocity uncertainty: \(\sigma_v = \sqrt{\bar{P}_{22}} \approx 9.3\) cm/s</li>
+                <li>Positive correlation between position and velocity errors (expected from \(\mathbf{F}\))</li>
+            </ul>
+
+            <p>
+                Knowing \(\bar{\mathbf{P}}\) ahead of time lets you:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Initialize \(\mathbf{P}_0 = \bar{\mathbf{P}}\) to skip the transient convergence phase</li>
+                <li>Tune \(\mathbf{Q}\) and \(R\) to achieve desired steady-state accuracy before running the filter</li>
+                <li>Compute the steady-state Kalman gain \(\bar{\mathbf{K}} = \bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\) and use a time-invariant filter for efficiency</li>
+            </ul>
 
             <h2>Key Parameters</h2>
             <ul class="list-disc list-inside ml-6 space-y-2">
                 <li><strong>Process noise covariance \(\mathbf{Q}\):</strong> Accounts for IMU noise and integration drift</li>
                 <li><strong>Measurement noise covariance \(R\):</strong> Reflects confidence in zero-velocity assumption (typically 0.01)</li>
-                <li><strong>Initial state covariance \(\mathbf{P}_0\):</strong> Diagonal matrix with no assumed correlation between position and velocity errors</li>
+                <li><strong>Initial state covariance \(\mathbf{P}_0\):</strong> Can be set to \(\bar{\mathbf{P}}\) from DARE solution to avoid transient</li>
             </ul>
 
             <p>
