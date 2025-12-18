@@ -6,3 +6,5 @@
 # Keep these demo files as normal blobs for Pages
 robotprogress-picking.webm -filter -diff -merge -text
 robotprogress-pointcloud.webm -filter -diff -merge -text
+OpenPose.webm -filter -diff -merge -text
+OpenPose.mp4 -filter -diff -merge -text
