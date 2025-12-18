@@ -30,7 +30,7 @@
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
         }
-        
+       
         /* Make MathJax equations responsive on mobile */
         @media (max-width: 640px) {
             /* Allow math to scale down on small screens */
@@ -40,29 +40,29 @@
                 max-width: 100%;
                 display: block !important;
             }
-            
+           
             /* Reduce font size for display math on mobile */
             mjx-container[display="true"] {
                 font-size: 85%;
             }
-            
+           
             /* Make problem/solution boxes scrollable if needed */
             .bg-\[#202731\], .bg-\[#071018\], .bg-\[#061017\] {
                 overflow-x: auto;
             }
-            
+           
             /* Reduce padding on mobile for math containers */
             .prose p, .prose div {
                 overflow-x: auto;
             }
         }
-        
+       
         /* Additional mobile optimizations */
         @media (max-width: 640px) {
             body {
                 font-size: 16px;
             }
-            
+           
             /* Make tables scrollable */
             .overflow-x-auto {
                 -webkit-overflow-scrolling: touch;
@@ -80,14 +80,29 @@
                 Which Math Problems Have Closed-Form Solutions and Why?
             </h1>
             <p class="text-gray-400 text-sm mb-6">Published on October 10, 2025</p>
-            
+           
             <div class="prose max-w-none text-gray-300">
-                <h3 id="introduction" class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="tabbed-paragraph mb-4">
-                    We're all familiar with math problems of the form "solve for x". Well, it turns out that doing this isn't always possible.
-                    I became curious about the exact criteria for determining whether a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a> exists.
-                    There are different categories of math problems, so I broke this essay into sections based on the type of problem being considered.
+                    We're all familiar with math problems of the form "solve for x". These types of problems are asking specifically for a <a href="https://mathworld.wolfram.com/Closed-FormSolution.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">closed-form solution</a>,
+                    meaning that the solution consists of an exact expression containing a finite number of standard operations (+, -, *, /, √, etc.).
+                    <br><br>
+
+                    But, it turns out that for many interesting problems, doing this is either very difficult or even impossible, and there simply does not exist a closed-form solution. For such problems, we must resort to numerical methods that approximate solutions.
+                    This might sound a little weird the first time you hear it, that in a way there really are questions we cannot answer exactly; but, you may also recall learning about irrational numbers and how a circle's circumference cannot be measured exactly, but only with increasing precision.
+                    <br><br>
+                    In fact, a lot of math is about recognizing the limits of what we can know. Like how Gödel showed that in any axiomatic system there are true
+                    statements that cannot be proven, Abel, Ruffini, Galois, etc. showed that there are polynomials that cannot be solved in closed-form. Even stranger, these limitations while they sound discouraging have led to incredible progress.
+                    Constructing function approximators led to arguyably the greatest ...
+
+                    The exact criteria for determining whether a closed-form solution exists differs across problem types, so I broke this essay into sections for a few common categories of math problems.
                 </p>
+                  <p class="tabbed-paragraph mb-4">
+                    A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
+                    But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
+                    It is instead searching a vast space of possibilities to find the most likely answer.
+                    It's hard to say where humans would fall on this spectrum.
+                </p>
+               
                 <div class="bg-[#0b1220] rounded-lg p-6 border border-gray-700 mb-6">
                     <h4 class="text-lg font-semibold text-white mb-3">Table of Contents</h4>
                     <ul class="space-y-2 text-gray-300">
@@ -98,33 +113,25 @@
                         <li><a href="#numeric-example" class="text-blue-400 hover:text-blue-300 transition">IV. Numeric Solution Example</a></li>
                     </ul>
                 </div>
-                
+               
+                <h3 id="introduction" class="text-2xl font-bold text-white mb-3">Introduction</h3>
                 <p class="mb-4">
-                    I tried to find a closed-form solution to a problem that did not have one for the first time when I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
-                    In the simplest case of minimizing portfolio variance for a given expected return, the optimal weights can be solved for analytically.
-                    I used the Lagrange Multiplier method, which conceptually is just setting the gradient of the objective function to zero to find that minimum point.
-                    But, once you complicate it by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), the gradient becomes discontinuous and we can't express the weights explicitly anymore.
+                    I first encountered a problem without a closed-form solution (outside of an academic setting) when I was building my <a href="PortfolioOptimizer.html" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Portfolio Optimizer</a> program.
+                    In the simplest case of minimizing portfolio variance for a given return, the optimal weights can be solved for analytically.
+                    I used the Lagrange Multiplier method, which conceptually is just setting the gradient of the objective function to zero to find its minimum point.
+                    But, once you complicate the problem by, for example, introducing an inequality constraint such as disallowing short-selling (requiring weights ≥ 0%), the gradient becomes discontinuous and we can't express the weights explicitly anymore.
                 </p>
                 <div class="flex flex-col md:flex-row items-start gap-6 my-6">
                     <div class="md:flex-1 prose max-w-none text-gray-300">
                         <p class="tabbed-paragraph mb-0">
                             The way I think about it is that, for "nice" optimization problems (those with functions that are: convex, differentiable, and linear or quadratic), there are methods that allow you to do something similar to "solving for x".
-                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm to iteratively search for the minimum.
+                            But, for more complex problems involving state-spaces that are more rugged, like those of non-convex functions, you must instead run an algorithm to iteratively search for the minimum. This process of iterative calculations is what we call a numerical method.
                         </p>
                     </div>
                     <div class="md:w-80 lg:w-96 flex-shrink-0 md:pl-6">
                         <img src="ConvexVsNotConvex.png" alt="Convex vs Not Convex" class="w-full h-auto rounded-md shadow-sm object-contain" />
                     </div>
                 </div>
-                
-                <p class="tabbed-paragraph mb-4">
-                    This is one of those topics in math that shows the limits of human knowledge.
-                    A calculator, through a deterministic process, provides exact answers to questions that have closed-form solutions, such as "what is $2 + 2$?".
-                    But, when an LLM is asked a question, its response is generated using numerical methods, and so in some ways it is never exactly "solving" anything.
-                    It is instead searching a vast space of possibilities to find the most likely answer.
-                    It's hard to say where humans would fall on this spectrum.
-                </p>
-                
                 <h3 id="polynomial-equations" class="text-2xl font-bold text-white mb-3">I. Polynomial/algebraic equations</h3>
                 <p class="mb-4">
                     Consider the simple linear equation $2x + 3 = 7$.
@@ -157,7 +164,7 @@
                             <div id="plot3" class="w-full md:flex-1 bg-[#0b1220] p-2 sm:p-3 rounded-md" style="height:280px; min-height:280px;"></div>
                         </div>
                     </div>
-                    
+                   
                     <div class="flex flex-col md:flex-row items-start gap-6 md:gap-8 my-6">
                         <div class="md:flex-1 prose max-w-none text-gray-300">
                             <br>
@@ -181,7 +188,7 @@
                             <div class="text-sm text-gray-300 mt-3">Result: <span class="text-gray-100">$x = -2, -3$</span></div>
                         </div>
                     </div>
-                                The quadratic formula was discovered thousands of years ago because you can actually visually 
+                                The quadratic formula was discovered thousands of years ago because you can actually visually
                                 <a href="https://en.wikipedia.org/wiki/Completing_the_square" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">
                                     complete the square</a>.
                                     There are generalized formulas for polynomials of degrees 3 and 4 as well; but, for polynomials of degree 5 and higher, no such general formulas can possibly exist.
@@ -189,7 +196,7 @@
                                 </p>
                             </p>
                         </div>
-                        
+                       
                         <div class="md:w-64 flex-shrink-0 md:pl-6">
                             <br>
                             <div class="bg-gray-50 rounded-md p-2 shadow-sm border border-gray-200">
@@ -216,14 +223,14 @@
                     Like a sphere, a polynomial can also have symmetries. The set of all symmetries that permute the polynomial's roots but leave the polynomial's coefficients unchanged is called its
                     <a href="https://en.wikipedia.org/wiki/Galois_group" target="_blank" rel="noopener noreferrer" class="text-blue-400 underline hover:text-blue-600 transition">Galois group</a>, $G$.
                     Let's look at a simple example to see how this works in practice.
-                    
+                   
                     <div class="flex justify-center my-6">
                         <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-3/4">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
                             <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
                                 Show that the substitution $x \mapsto -x$ is a symmetry of $f(x) = x^2 - 2$.
                             </div>
-                            
+                           
                             <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
                             <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
                             \begin{aligned}
@@ -275,7 +282,7 @@
                             &\quad\text{Thus, without changing the coefficients, }x\mapsto\omega x\text{ permutes the roots}\\
                                 &\quad\text{in a 3-cycle }(1\ \omega\ \omega^2).
                             \end{aligned}
-                            \]   
+                            \]  
                     </div>
                         <div class="text-sm text-gray-300 mt-3">
                             <strong>Result:</strong> Multiplication by \(\omega=e^{2\pi i/3}\) rotates points by \(120^\circ\), leaves the polynomial \(x^3-1\) unchanged (because \(\omega^3=1\)), and cyclically permutes the three roots. That rotation is the cyclic symmetry of the polynomial.
@@ -289,14 +296,14 @@
                     A solvable group is one whose symmetries can be broken down step-by-step until only the trivial symmetry (in this case, the identity) remains.
                     Just a reminder, the identity symmetry can be represented as: $x \mapsto x$.
                     Let's do a fully worked-out example using $f(x) = x^2 - 2$ again to see how this works.
-                    
+                   
                     <div class="flex justify-center my-6">
                         <div class="bg-[#202731] rounded-lg shadow-lg p-6 w-5/5">
                             <div class="text-sm text-gray-400 mb-2">Problem</div>
                             <div class="bg-[#071018] rounded-md p-3 text-gray-200 text-center">
                                 Determine whether $f(x) = x^2 - 2$ has a closed-form solution using Galois theory.
                             </div>
-                            
+                           
                             <div class="text-sm text-gray-400 mt-3 mb-2">Solution</div>
                             <div class="bg-[#061017] rounded-md p-3 border border-gray-700 text-gray-100">\[
                             \begin{aligned}
@@ -374,10 +381,10 @@
                     So if we consider the example above that has two equations<br>
                     <span class="text-green-400 mr-3">✔</span> It has two unknowns and two equations (it is <em>determined</em>)<br>
                     <span class="text-green-400 mr-3">✔</span> The equations are <em>linearly independent</em>, which you can show yourself by drawing their coefficient vectors $\mathbf{v_1} = \begin{pmatrix} 2 \\ 3 \end{pmatrix}$ and $\mathbf{v_2} = \begin{pmatrix} 4 \\ -1 \end{pmatrix}$ in 2D space and observing that they are not parallel.
-                    
+                   
                     <h3 id="nonlinear-systems" class="text-2xl font-bold text-white mb-3">II. Systems of non-linear equations</h3>
                    
-                    
+                   
                 </div>
                 <h3 id="numeric-example" class="text-lg font-bold text-white mb-3">II. Numeric Solution Example</h3>
 
@@ -460,7 +467,7 @@
                     Understanding when you can expect a neat formula versus when you'll need computational power is crucial for both theoretical understanding and practical problem-solving. Let's explore the patterns that determine which mathematical problems yield to direct solution and which require numerical approximation.
                 </p>
 
-              
+             
 
                 <p class="mb-4">
                     Linear regression provides a perfect example. The ordinary least squares problem minimizes $||Ax - b||^2$, which leads to the normal equation:
@@ -593,17 +600,17 @@
             setTimeout(initPlots, 100);
             return;
         }
-        
+       
         // Generate x values from -3 to 3
         const xs = [];
         for (let i = -3; i <= 3; i += 0.1) {
             xs.push(i);
         }
-        
+       
         // Detect if mobile for margin adjustments
         const isMobile = window.innerWidth < 640;
         const margin = isMobile ? {t: 35, l: 35, r: 20, b: 35} : {t: 40, l: 40, r: 40, b: 40};
-        
+       
         // n=1: y = x (one real root at x=0)
         const y1 = xs.map(x => x);
         Plotly.newPlot('plot1', [
@@ -619,7 +626,7 @@
             showlegend: false,
             autosize: true
         }, {responsive: true, displayModeBar: false});
-        
+       
         // n=2: y = x^2 - 1 (two real roots at x=-1, x=1)
         const y2 = xs.map(x => x*x - 1);
         Plotly.newPlot('plot2', [
@@ -635,7 +642,7 @@
             showlegend: false,
             autosize: true
         }, {responsive: true, displayModeBar: false});
-        
+       
         // n=3: y = x^3 - 4x (three real roots at x=-2, x=0, x=2)
         const y3 = xs.map(x => x*x*x - 4*x);
         Plotly.newPlot('plot3', [
@@ -652,7 +659,7 @@
             autosize: true
         }, {responsive: true, displayModeBar: false});
     }
-    
+   
     // Start when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initPlots);
