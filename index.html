@@ -29,7 +29,7 @@
         <!-- Header -->
         <div id="site-header"></div>
 
-        <!-- Featured Projects -->
+        <!-- Mobile Robot -->
         <section class="mb-12">
             <div class="flex items-center gap-2 mb-6">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,12 +38,38 @@
                 <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide">Featured Projects</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Mobile Manipulator -->
-                <a href="MobileManipulator.html" class="block group">
+                <!-- Robot -->
+                 <a href="MobileRobot.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
                         <div class="relative">
-                            <img src="ConvexVsNotConvex.png" alt="Text-Based Pseudolabeling" class="w-full h-48 object-cover">
-                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                    <img src="robot.gif" alt="Mobile Robot demo" class="w-full h-48 object-cover">
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
+                                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
+                                    <h3 class="text-lg font-bold text-white mb-2">Mobile Robot</h3>
+                                    <p class="text-gray-300 text-sm">Autonomous mobile robot platform for research and development in navigation and manipulation.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Mobile Robot</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">3D Segmentation</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">Three.js</span>
+                                <span class="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">ROS2</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Text-Based Pseudolabeling -->
+                <!-- <a href="TextBasedPseudolabeling.html" class="block group">
+                    <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
+                        <div class="relative">
+                                    <div class="flex flex-col sm:flex-row w-full h-48">
+                                        <img src="text_pseudolabel_before.jpg" alt="Pseudolabeling — before" class="w-full sm:w-1/2 h-1/2 sm:h-full object-cover">
+                                        <img src="text_pseudolabel_after.jpg" alt="Pseudolabeling — after" class="w-full sm:w-1/2 h-1/2 sm:h-full object-cover">
+                                    </div>
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
                                     <h3 class="text-lg font-bold text-white mb-2">Text-Based Pseudolabeling for Object Detection</h3>
                                     <p class="text-gray-300 text-sm">Automated annotation system combining Grounding DINO and SAM to generate training data from text prompts.</p>
@@ -59,7 +85,7 @@
                             </div>
                         </div>
                     </div>
-                </a>
+                </a> -->
 
                 <!-- Portfolio Optimizer -->
                 <a href="PortfolioOptimizer.html" class="block group">
@@ -69,7 +95,7 @@
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
                                     <h3 class="text-lg font-bold text-white mb-2">Portfolio Optimization Tool</h3>
-                                    <p class="text-gray-300 text-sm">Interactive web application for portfolio optimization using modern portfolio theory and efficient frontier analysis.</p>
+                                    <p class="text-gray-300 text-sm">Mean-variance portfolio optimizer with command-line interface for building efficient frontier using live market data.</p>
                                 </div>
                             </div>
                         </div>
@@ -166,7 +192,7 @@
                 <a href="FlyingCarReview.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
                         <div class="relative">
-                            <img src="ConvexVsNotConvex.png" alt="Flying Car Review" class="w-full h-48 object-cover">
+                            <img src="text_pseudolabel_after.jpg" alt="Flying Car Review" class="w-full h-48 object-cover">
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
                                     <h3 class="text-lg font-bold text-white mb-2">"Where Is My Flying Car?" - Book Review</h3>
@@ -242,12 +268,9 @@
                                 </div>
                                 <div class="lg:w-80 flex-shrink-0">
                                     <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-700">
-                                        <video class="w-full rounded" playsinline autoplay muted loop preload="metadata" style="object-fit:cover;">
-                                            <source src="robot.webm" type="video/webm">
-                                            <source src="robot.mp4" type="video/mp4">
-                                        </video>
-                                        <p class="text-gray-400 text-xs mt-2 text-center">Autonomous robotics & vision systems</p>
-                                    </div>
+                                            <img src="ISVS_pic.png" alt="Industrial vision system" class="w-full rounded h-48 object-cover" />
+                                            <p class="text-gray-400 text-xs mt-2 text-center">Autonomous robotics & vision systems</p>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -262,7 +285,7 @@
                             <div class="flex flex-col lg:flex-row lg:items-start gap-6">
                                 <div class="flex-1">
                                     <div class="mb-4">
-                                        <h3 class="text-xl font-bold text-white">AI Software Engineer</h3>
+                                        <h3 class="text-xl font-bold text-white">Associate Software Engineer</h3>
                                         <p class="text-blue-400 font-semibold">Cognex Logistics</p>
                                         <p class="text-gray-400 text-sm mt-1">2022 - 2024</p>
                                     </div>
@@ -288,13 +311,13 @@
                                     </div>
                                 </div>
                                 <div class="lg:w-80 flex-shrink-0">
-                                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-700">
-                                        <video class="w-full rounded" playsinline autoplay muted loop preload="metadata" style="object-fit:cover;">
-                                            <source src="OpenPose.webm" type="video/webm">
-                                            <source src="OpenPose.mp4" type="video/mp4">
-                                        </video>
-                                        <p class="text-gray-400 text-xs mt-2 text-center">Human pose estimation & tracking</p>
-                                    </div>
+                                    <a href="TextBasedPseudolabeling.html" class="block bg-[#0d1117] rounded-lg p-4 border border-gray-700 hover:border-blue-500 transition" aria-label="Text-Based Pseudolabeling project">
+                                        <div class="flex flex-col sm:flex-row w-full h-48">
+                                            <img src="text_pseudolabel_before.jpg" alt="Pseudolabeling — before" class="w-full sm:w-1/2 h-1/2 sm:h-full object-cover">
+                                            <img src="text_pseudolabel_after.jpg" alt="Pseudolabeling — after" class="w-full sm:w-1/2 h-1/2 sm:h-full object-cover">
+                                        </div>
+                                        <p class="text-gray-400 text-xs mt-2 text-center">Data annotation & pseudolabeling</p>
+                                    </a>
                                 </div>
                             </div>
                         </div>

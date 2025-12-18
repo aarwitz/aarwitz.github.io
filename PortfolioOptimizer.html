@@ -8,6 +8,10 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- MathJax for equations -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     :root {
@@ -81,30 +85,127 @@
             <!-- Main column -->
             <section class="lg:col-span-2 space-y-6">
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Project overview</h2>
+                    <h2 class="text-xl font-semibold mb-3">Overview</h2>
                     <p class="text-gray-300 leading-relaxed">
-                        <strong>PortfolioOptimizer</strong> is a comprehensive Python application that applies Modern Portfolio Theory 
-                        to construct mathematically optimal investment portfolios. It uses historical stock data to calculate the efficient 
-                        frontier and provides robust backtesting tools to validate model performance across different time periods.
+                        Python implementation of Markowitz mean-variance optimization with closed-form solutions. 
+                        Given historical returns, compute the efficient frontier analytically and backtest the portfolios 
+                        on different time periods.
                     </p>
 
-                    <h3 class="mt-4 font-medium">Core Features</h3>
+                    <h3 class="mt-4 font-medium">Features</h3>
                     <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
-                        <li>Mean-variance optimization using Markowitz portfolio theory</li>
-                        <li>Efficient frontier visualization with risk-return tradeoffs</li>
-                        <li>Real-world backtesting across different time periods</li>
-                        <li>Monte Carlo simulation for portfolio performance modeling</li>
-                        <li>Yahoo Finance API integration for live market data</li>
-                        <li>Interactive command-line interface with data validation</li>
+                        <li>Closed-form solution for minimum variance portfolios</li>
+                        <li>Efficient frontier visualization</li>
+                        <li>Backtesting on out-of-sample data</li>
+                        <li>Monte Carlo simulation</li>
+                        <li>Yahoo Finance data integration</li>
                     </ul>
-
-                    <h3 class="mt-4 font-medium">Mathematical Foundation</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        The program implements Lagrangian optimization to solve the constrained minimization problem for portfolio 
-                        variance. It calculates covariance matrices, constructs the global minimum variance portfolio, and generates 
-                        efficient portfolios for user-specified return levels.
-                    </p>
                 </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">The Math</h2>
+
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        We begin with the explicit, finite-asset formulation and then generalize.
+                        Consider three assets with weights \(w_A, w_B, w_C\), expected returns
+                        \(\mu_A, \mu_B, \mu_C\), and covariances \(\sigma_{ij}\).
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Portfolio Variance (Expanded Form)</h3>
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \sigma_p^2 =
+                        w_A^2\sigma_A^2 +
+                        w_B^2\sigma_B^2 +
+                        w_C^2\sigma_C^2 +
+                        2w_A w_B\sigma_{AB} +
+                        2w_A w_C\sigma_{AC} +
+                        2w_B w_C\sigma_{BC}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 text-sm mb-4">
+                        with the full-investment constraint:
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-6">
+                        \[
+                        w_A + w_B + w_C = 1
+                        \]
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Lagrangian Formulation</h3>
+                    <p class="text-gray-300 text-sm mb-2">
+                        We minimize variance subject to the budget constraint using a Lagrange multiplier:
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        L(w_A,w_B,w_C,\lambda)
+                        = \sigma_p^2 + \lambda(w_A+w_B+w_C-1)
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 text-sm mb-4">
+                        Taking partial derivatives yields a linear system in the portfolio weights and the multiplier.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Matrix (KKT) System</h3>
+                    <p class="text-center text-gray-200 mb-6">
+                        \[
+                        \begin{bmatrix}
+                        2\sigma_A^2 & 2\sigma_{AB} & 2\sigma_{AC} & 1 \\
+                        2\sigma_{AB} & 2\sigma_B^2 & 2\sigma_{BC} & 1 \\
+                        2\sigma_{AC} & 2\sigma_{BC} & 2\sigma_C^2 & 1 \\
+                        1 & 1 & 1 & 0
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        w_A \\ w_B \\ w_C \\ \lambda
+                        \end{bmatrix}
+                        =
+                        \begin{bmatrix}
+                        0 \\ 0 \\ 0 \\ 1
+                        \end{bmatrix}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        This system characterizes the <em>global minimum variance portfolio</em>.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">General Vector Form</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        For \(n\) assets, define weights \(w \in \mathbb{R}^n\),
+                        expected returns \(\mu \in \mathbb{R}^n\),
+                        and covariance matrix \(\Sigma \in \mathbb{R}^{n \times n}\).
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \sigma_p^2 = w^T \Sigma w
+                        \quad\quad
+                        \mu_p = w^T \mu
+                        \]
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Mean–Variance Optimization</h3>
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \min_w \quad w^T \Sigma w
+                        \quad \text{s.t.} \quad
+                        \begin{cases}
+                        w^T \mu = \mu_p^* \\
+                        w^T \mathbf{1} = 1
+                        \end{cases}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed">
+                        Solving the associated KKT system yields the closed-form efficient frontier
+                        and the global minimum variance portfolio as special cases.
+                    </p>
+                    </article>
+
 
                 <article class="glow rounded-lg p-6">
                     <h2 id="demo" class="text-xl font-semibold mb-3">Demo & Explainer</h2>
@@ -116,74 +217,81 @@
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Key Workflow</h2>
+                    <h2 class="text-xl font-semibold mb-3">Implementation</h2>
                     
                     <div class="space-y-4">
                         <div class="border-l-4 border-green-500 pl-4">
-                            <h4 class="font-medium text-white">1. Data Collection & Validation</h4>
-                            <p class="text-gray-300 text-sm">Enter stock tickers and time period. The system fetches historical data via Yahoo Finance API and handles missing data scenarios by allowing users to either skip periods or remove problematic tickers.</p>
+                            <h4 class="font-medium text-white">1. Compute Covariance Matrix</h4>
+                            <p class="text-gray-300 text-sm">Fetch historical prices from Yahoo Finance. Compute daily returns. Calculate the sample covariance matrix \(\Sigma\) and mean return vector \(\mu\).</p>
                         </div>
                         
                         <div class="border-l-4 border-blue-500 pl-4">
-                            <h4 class="font-medium text-white">2. Efficient Frontier Generation</h4>
-                            <p class="text-gray-300 text-sm">Calculate and visualize the efficient frontier showing optimal risk-return combinations. Display the global minimum variance portfolio and allow selection of target return levels.</p>
+                            <h4 class="font-medium text-white">2. Invert and Compute Constants</h4>
+                            <p class="text-gray-300 text-sm">Compute \(\Sigma^{-1}\). Calculate the scalar constants \(A, B, C, D\) using matrix multiplications: \(A = \mathbf{1}^T \Sigma^{-1} \mu\), etc. These appear in the closed-form solution.</p>
                         </div>
                         
                         <div class="border-l-4 border-purple-500 pl-4">
-                            <h4 class="font-medium text-white">3. Backtesting Options</h4>
-                            <p class="text-gray-300 text-sm">Choose between real-world backtesting (apply optimized weights to different time periods) or Monte Carlo simulation (generate synthetic performance scenarios).</p>
+                            <h4 class="font-medium text-white">3. Generate Efficient Frontier</h4>
+                            <p class="text-gray-300 text-sm">For a range of target returns \(\mu_p^*\), apply the closed-form formula to get \(w^*\). Compute \(\sigma_p = \sqrt{w^{*T} \Sigma w^*}\). Plot \((\sigma_p, \mu_p^*)\).</p>
+                        </div>
+
+                        <div class="border-l-4 border-orange-500 pl-4">
+                            <h4 class="font-medium text-white">4. Backtest on New Data</h4>
+                            <p class="text-gray-300 text-sm">Take the optimized weights \(w^*\) from the training period. Apply them to a different time period. Measure actual return \(w^{*T} \mu_{\text{test}}\) and variance \(w^{*T} \Sigma_{\text{test}} w^*\). Compare to predictions.</p>
                         </div>
                     </div>
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">How to run</h2>
+                    <h2 class="text-xl font-semibold mb-3">Interpretation</h2>
 
-                    <p class="text-gray-300">Setup and execution steps:</p>
-                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># 1. Clone the repository
-git clone https://github.com/aarwitz/PortfolioOptimizer.git
-cd PortfolioOptimizer
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        The closed-form solution tells you exactly how to weight your assets given their historical returns and covariances. 
+                        The constants \(A, B, C, D\) encode the geometry of the efficient frontier.
+                    </p>
 
-# 2. Install dependencies
-pip install pandas numpy matplotlib yfinance
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        <strong>Key insight:</strong> The optimal weights \(w^*\) are a linear combination of \(\Sigma^{-1} \mu\) and \(\Sigma^{-1} \mathbf{1}\). 
+                        The first term weights assets by risk-adjusted return. The second ensures full investment.
+                    </p>
 
-# 3. Run the main program
-python -c "from find_optimized_portfolio import main; main()"
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        <strong>Global minimum variance portfolio:</strong> This is where the efficient frontier turns. Below this point, you're taking on 
+                        risk without increasing expected return. The formula \(w_{gmv} = \frac{\Sigma^{-1} \mathbf{1}}{C}\) shows you just weight assets 
+                        inversely to their contribution to portfolio variance.
+                    </p>
 
-# Alternative: open Python REPL and run
-python
->>> from find_optimized_portfolio import main
->>> main()
-</code></pre>
-
-                    <p class="mt-3 text-gray-300">
-                        The program provides an interactive command-line interface that guides you through ticker selection, date ranges, 
-                        and analysis options. All visualizations display in separate matplotlib windows.
+                    <p class="text-gray-300 leading-relaxed">
+                        <strong>Backtesting reveals model failure:</strong> If the out-of-sample scatter plot shows actual returns far below predictions, 
+                        your covariance matrix was wrong (non-stationary), or the efficient frontier shifted. This is common in real markets.
                     </p>
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Architecture & Files</h2>
-                    <ul class="list-inside list-disc text-gray-300 space-y-2">
-                        <li><code>find_optimized_portfolio.py</code> — main entry point and workflow orchestration</li>
-                        <li><code>matrix_manip.py</code> — core mathematical operations, Lagrangian optimization</li>
-                        <li><code>DF_helper.py</code> — data fetching, processing, and Yahoo Finance integration</li>
-                        <li><code>RealTest.py</code> — real-world backtesting engine and performance validation</li>
-                        <li><code>MonteCarlo.py</code> — Monte Carlo simulation class for synthetic modeling</li>
-                        <li><code>plots.py</code> — efficient frontier and backtesting visualization</li>
-                        <li><code>user.py</code> — interactive CLI and user input handling</li>
-                        <li><code>prints.py</code> — formatted output and results display</li>
-                    </ul>
+                    <h2 class="text-xl font-semibold mb-3">How to Run</h2>
+
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Clone and install
+git clone https://github.com/aarwitz/PortfolioOptimizer.git
+cd PortfolioOptimizer
+pip install pandas numpy matplotlib yfinance
+
+# Run
+python -c "from find_optimized_portfolio import main; main()"
+</code></pre>
+
+                    <p class="mt-3 text-gray-300">
+                        Interactive CLI guides you through ticker selection, date ranges, and backtesting options.
+                    </p>
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
-                    <ul class="list-disc list-inside text-gray-300 space-y-2">
-                        <li><strong>Robust Data Handling:</strong> Manages missing historical data with user-configurable strategies</li>
-                        <li><strong>Mathematical Precision:</strong> Uses NumPy linear algebra for efficient covariance matrix operations</li>
-                        <li><strong>Interactive Backtesting:</strong> Color-coded scatter plots show where actual returns exceed/underperform predictions</li>
-                        <li><strong>Monte Carlo Engine:</strong> Customizable simulation parameters with statistical summary reporting</li>
-                        <li><strong>Modular Design:</strong> Separation of concerns with dedicated modules for math, data, visualization, and user interaction</li>
+                    <h2 class="text-xl font-semibold mb-3">Code Structure</h2>
+                    <ul class="list-inside list-disc text-gray-300 space-y-2">
+                        <li><code>matrix_manip.py</code> — Compute \(\Sigma^{-1}\), constants \(A, B, C, D\), and optimal weights \(w^*\)</li>
+                        <li><code>DF_helper.py</code> — Fetch data from Yahoo Finance, compute returns and covariance</li>
+                        <li><code>RealTest.py</code> — Apply weights to out-of-sample data, measure performance</li>
+                        <li><code>plots.py</code> — Efficient frontier and backtest scatter plots</li>
+                        <li><code>MonteCarlo.py</code> — Simulate portfolio paths using historical statistics</li>
                     </ul>
                 </article>
             </section>
@@ -202,23 +310,13 @@ python
                 </div>
 
                 <div class="glow rounded-lg p-4">
-                    <h4 class="text-sm font-medium text-gray-200">Key Algorithms</h4>
+                    <h4 class="text-sm font-medium text-gray-200">Key Operations</h4>
                     <ul class="mt-3 text-sm text-gray-300 space-y-2">
-                        <li>Markowitz mean-variance optimization</li>
-                        <li>Lagrangian constrained minimization</li>
-                        <li>Efficient frontier computation</li>
-                        <li>Monte Carlo simulation</li>
-                        <li>Portfolio performance attribution</li>
-                    </ul>
-                </div>
-
-                <div class="glow rounded-lg p-4">
-                    <h4 class="text-sm font-medium text-gray-200">Use Cases</h4>
-                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
-                        <li>Academic research in portfolio theory</li>
-                        <li>Investment strategy backtesting</li>
-                        <li>Risk-return analysis for asset allocation</li>
-                        <li>Educational tool for finance students</li>
+                        <li>Matrix inversion (\(\Sigma^{-1}\))</li>
+                        <li>Quadratic form computation (\(w^T \Sigma w\))</li>
+                        <li>Lagrangian optimization</li>
+                        <li>Efficient frontier generation</li>
+                        <li>Out-of-sample backtesting</li>
                     </ul>
                 </div>
 
@@ -243,18 +341,17 @@ python
                 </div>
 
                 <div class="glow rounded-lg p-4">
-                    <h4 class="text-sm font-medium text-gray-200">Educational Context</h4>
-                    <p class="mt-2 text-sm text-gray-300">Built to demonstrate practical application of Modern Portfolio Theory concepts including efficient frontiers, risk-return optimization, and quantitative backtesting methodologies.</p>
+                    <h4 class="text-sm font-medium text-gray-200">Limitations</h4>
+                    <p class="mt-2 text-sm text-gray-300">Assumes returns are normally distributed and stationary. Covariance matrix estimated from historical data may not predict future risk. No transaction costs or short-selling constraints.</p>
                 </div>
             </aside>
         </div>
 
-        <!-- Footer / Contact -->
+        <!-- Footer -->
         <footer class="mt-10 text-center text-sm text-gray-400">
             <p>
                 Built by <strong>Aaron Horowitz</strong>. Source on <a href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
             </p>
-            <p class="mt-2">Implements Markowitz portfolio theory with comprehensive backtesting — perfect for finance students and quantitative researchers.</p>
         </footer>
     </main>
     <script src="include_header.js" defer></script>
