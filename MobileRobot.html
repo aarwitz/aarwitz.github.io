@@ -84,21 +84,6 @@
                     <p class="text-gray-300 leading-relaxed">
                         CleaningRobot is a robotic vision pipeline enabling autonomous object detection and navigation. The system detects objects (dirt, socks, debris) in 3D space using YOLOv8 on NVIDIA hardware, estimates accurate poses via depth sensing, and provides real-time visualization for navigation planning.
                     </p>
-
-                    <h3 class="mt-4 font-medium">Core Capabilities</h3>
-                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
-                        <li>Real-time YOLOv8 detection with TensorRT acceleration</li>
-                        <li>3D point cloud generation from RealSense stereo depth</li>
-                        <li>Global floor plane estimation with RANSAC</li>
-                        <li>Adaptive depth filtering for D455 stereo cameras</li>
-                        <li>WebSocket-based 3D visualization with Three.js</li>
-                        <li>Custom model training for domain-specific objects</li>
-                    </ul>
-
-                    <h3 class="mt-4 font-medium">Technical Innovation</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        The system uses a global floor plane estimation approach that fits one robust plane per frame using downsampled depth data, then applies it to all detected objects. This prevents over-fitting that could remove parts of target objects. An exponential moving average smooths plane parameters over time for stability.
-                    </p>
                 </article>
 
                 <article class="glow rounded-lg p-6">
@@ -171,24 +156,6 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
   engine_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.plan \
   confidence_threshold:=0.83</code></pre>
                 </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">D455 Stereo Optimization</h2>
-                    
-                    <p class="text-gray-300 mb-3">
-                        The RealSense D455 stereo camera requires specialized filtering. Optimized depth processing includes:
-                    </p>
-
-                    <ul class="list-disc list-inside text-gray-300 space-y-2">
-                        <li><strong>Visual Preset:</strong> High Accuracy mode (preset 3) for better stereo matching</li>
-                        <li><strong>Spatial Filter:</strong> Edge-aware smoothing (magnitude=2, alpha=0.5, delta=20mm)</li>
-                        <li><strong>Temporal Filter:</strong> Multi-frame persistence (alpha=0.4, delta=20mm)</li>
-                        <li><strong>Hole Filling:</strong> Fill+edge-aware mode (level 2) preserves boundaries</li>
-                        <li><strong>Decimation:</strong> 2x filter reduces resolution while maintaining quality</li>
-                        <li><strong>IR Emitter:</strong> Enabled for improved matching in low-texture environments</li>
-                    </ul>
-                </article>
-
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">3D Visualization</h2>
 
@@ -214,70 +181,6 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">SLAM & Navigation (in progress)</h2>
-                    
-                    <p class="text-gray-300 mb-4">Planned integration path for SLAM and autonomous navigation; currently under active development.</p>
-
-                    <div class="relative pl-8 space-y-3">
-                        <!-- Vertical line -->
-                        <div class="absolute left-2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-500 via-blue-400 to-purple-500"></div>
-                        
-                        <!-- Pipeline steps -->
-                        <div class="relative">
-                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-green-500 border-2 border-[#0b1220]"></div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">RealSense D435i</span>
-                                <span class="text-gray-400 ml-2">→ RGB, Depth, IMU</span>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-blue-400 border-2 border-[#0b1220]"></div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">isaac_ros_visual_slam</span>
-                                <span class="text-gray-400 ml-2">→ /odom, /pose, TF</span>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-cyan-400 border-2 border-[#0b1220]"></div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">isaac_ros_nvblox</span>
-                                <span class="text-gray-400 ml-2">→ TSDF/ESDF, Nav2 costmap</span>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-indigo-400 border-2 border-[#0b1220]"></div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">Nav2</span>
-                                <span class="text-gray-400 ml-2">→ /cmd_vel</span>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-purple-500 border-2 border-[#0b1220]"></div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">Robot Base</span>
-                                <span class="text-gray-400 ml-2">→ Motor control</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 text-gray-300">
-                        <p class="mb-2">Planned integration path for SLAM and autonomous navigation; currently under active development.</p>
-                        <ul class="list-disc list-inside space-y-2 text-sm">
-                            <li><strong>RealSense D435i</strong> — RGB, aligned depth, and IMU streams (<code>/color</code>, <code>/depth</code>, <code>/imu</code>).</li>
-                            <li><strong>isaac_ros_visual_slam</strong> — fuses RGB+depth (IMU optional) to produce localization (<code>/odom</code>, <code>/pose</code>, TF).</li>
-                            <li><strong>isaac_ros_nvblox</strong> — builds TSDF/ESDF maps, projects to 2D and publishes a Nav2-compatible costmap layer.</li>
-                            <li><strong>Nav2</strong> — global and local planners and obstacle avoidance producing velocity commands (<code>/cmd_vel</code>).</li>
-                            <li><strong>Robot Base</strong> — velocity control and motor drivers subscribe to <code>/cmd_vel</code> for low-level actuation.</li>
-                        </ul>
-                        <p class="mt-3 text-xs text-gray-400">Status: <span class="text-yellow-300 font-semibold">In progress</span> — updates will be added as development continues.</p>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Demo Clips</h2>
                     <p class="text-gray-300 mb-4">Short captures demonstrating picking and point-cloud visualization during runtime.</p>
 
@@ -295,30 +198,6 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
                         </div>
                     </div>
                 </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Repository Structure</h2>
-                    <ul class="list-inside list-disc text-gray-300 space-y-2">
-                        <li><code>yolov8_3d_detector.py</code> — Core 3D detection node with floor plane estimation</li>
-                        <li><code>web_viewer_server_3d.py</code> — WebSocket server for 3D streaming</li>
-                        <li><code>viewer.html</code> — Three.js interactive 3D viewer</li>
-                        <li><code>collectData2DRGB.py</code> — Training data collection utility</li>
-                        <li><code>yolov8_with_confidence.launch.py</code> — RealSense + YOLOv8 launch config</li>
-                    </ul>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
-                    <ul class="list-disc list-inside text-gray-300 space-y-2">
-                        <li><strong>Robust Floor Removal:</strong> Global plane estimation prevents object corruption</li>
-                        <li><strong>Temporal Stability:</strong> EMA smoothing eliminates jitter across frames</li>
-                        <li><strong>Adaptive Performance:</strong> Frame-skipping reduces computation by 66%</li>
-                        <li><strong>Color Fidelity:</strong> sRGB-to-linear conversion preserves RGB accuracy</li>
-                        <li><strong>Fail-Safe Design:</strong> Keeps last good plane when estimation fails</li>
-                        <li><strong>Real-Time Performance:</strong> TensorRT + NumPy maintain 15+ FPS on Jetson AGX</li>
-                    </ul>
-                </article>
-
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">How to Run</h2>
 
