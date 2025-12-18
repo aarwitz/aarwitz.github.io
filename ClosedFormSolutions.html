@@ -669,3 +669,717 @@
     </script>
 </body>
 </html>
+
+From: Horowitz, Aaron <Aaron.Horowitz@cognex.com>
+Sent: Thursday, December 18, 2025 1:55 PM
+To: Aaron Horowitz <aaronhorowitz97@gmail.com>
+Subject: Re: more math notes
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalman Filter for Foot Position Tracking — Aaron Horowitz</title>
+   
+    <!-- Performance optimizations: preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+   
+    <!-- MathJax for equations (async loading) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" async></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+   
+    <style>
+        body {
+            font-family: 'Optima', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        .content-block {
+            background-color: #161b22;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #e6edf3;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        code {
+            background-color: #0d1117;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .equation-block {
+            background-color: #0d1117;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        ul {
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-4xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+
+        <article class="content-block">
+            <div class="flex flex-col md:flex-row gap-6 mb-8">
+                <div class="flex-1">
+                    <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
+                    <p class="text-gray-400 text-sm">Graduate Research — Boston University, 2020-2022</p>
+                </div>
+               
+                <div class="md:w-64 flex-shrink-0">
+                    <div class="bg-[#0d1117] border border-gray-700 rounded-lg p-4">
+                        <div class="text-xs text-gray-400 mb-2">📄 Published Paper</div>
+                        <a href="https://sites.bu.edu/nrl/files/2023/02/Koopman_pose_predictions_for_temporally_consistent_human_walking_estimations.pdf"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="text-blue-400 hover:text-blue-300 text-sm font-medium underline block mb-3">
+                            Koopman Pose Predictions for Temporally Consistent Human Walking Estimations
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                        <div class="text-xs text-gray-400">
+                            Conference paper describing the full pose estimation system incorporating ZUPT-based foot tracking
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Overview</h2>
+            <p>
+                I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration.
+                Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
+                The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
+            </p>
+
+            <h2>Problem Setup</h2>
+            <p>
+                The state is position and velocity in one dimension:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{x}_k = \begin{bmatrix} x_k \\ v_k \end{bmatrix}$$
+            </div>
+
+            <p>During swing phase, only the predict step runs and uncertainty grows. During stance, the zero-velocity constraint corrects both velocity and position through the covariance structure.</p>
+
+            <h2>Process Model</h2>
+            <p>
+                The state evolves according to standard equations of motion. Given previous state \(\mathbf{x}_{k-1}\) and IMU acceleration \(a_k\):
+            </p>
+            <div class="equation-block">
+                $$\hat{\mathbf{x}}_k^- = \mathbf{F}\hat{\mathbf{x}}_{k-1} + \mathbf{G}a_k$$
+            </div>
+
+            <p>where</p>
+            <div class="equation-block">
+                $$\mathbf{F} = \begin{bmatrix} 1 & \Delta t \\ 0 & 1 \end{bmatrix}, \quad \mathbf{G} = \begin{bmatrix} \frac{1}{2}\Delta t^2 \\ \Delta t \end{bmatrix}$$
+            </div>
+
+            <p>
+                The state transition matrix \(\mathbf{F}\) propagates position and velocity forward in time.
+                The input matrix \(\mathbf{G}\) applies the measured acceleration to update the state.
+            </p>
+
+            <h3>Covariance Prediction</h3>
+            <p>
+                Uncertainty grows with each prediction:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}$$
+            </div>
+            <p>
+                \(\mathbf{Q}\) is the process noise covariance representing IMU noise and model error.
+                The term \(\mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T\) propagates existing uncertainty through the linear transformation (analogous to \(w\Sigma w^T\) in portfolio optimization).
+            </p>
+
+            <h2>Measurement Model</h2>
+            <p>
+                The measurement model extracts velocity from the state:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{H} = \begin{bmatrix} 0 & 1 \end{bmatrix}$$
+            </div>
+            <p>
+                Multiplying the state by \(\mathbf{H}\) gives the predicted velocity:
+            </p>
+            <div class="equation-block">
+                $$\hat{z}_k = \mathbf{H}\hat{\mathbf{x}}_k^- = v_k^-$$
+            </div>
+
+            <p>
+                During stance, the actual measurement is zero (ZUPT assumption: foot velocity = 0). The residual is:
+            </p>
+            <div class="equation-block">
+                $$y_k = 0 - \hat{z}_k = -v_k^-$$
+            </div>
+
+            <h2>Kalman Gain and Update</h2>
+            <p>
+                The Kalman gain determines how much the state should move in response to the measurement residual:
+            </p>
+            <div class="equation-block">
+                $$\mathbf{K}_k = \mathbf{P}_k^- \mathbf{H}^T (\mathbf{H}\mathbf{P}_k^- \mathbf{H}^T + R)^{-1}$$
+            </div>
+            <p>
+                \(R\) is the measurement noise covariance (a scalar for ZUPT, typically \(R = 0.01\)).
+                The Kalman gain represents the covariance between the state and measurement, scaled by measurement uncertainty.
+                It tells each state component how much to adjust when the residual is applied.
+            </p>
+
+            <p>State update:</p>
+            <div class="equation-block">
+                $$\hat{\mathbf{x}}_k = \hat{\mathbf{x}}_k^- + \mathbf{K}_k y_k$$
+            </div>
+
+            <p>Covariance update:</p>
+            <div class="equation-block">
+                $$\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k \mathbf{H})\mathbf{P}_k^-$$
+            </div>
+
+            <h2>How It Works</h2>
+            <p>
+                The filter alternates between two phases:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Swing phase:</strong> Only the predict step runs. Position and velocity are updated via equations of motion, and \(\mathbf{P}_k\) grows as drift accumulates.</li>
+                <li><strong>Stance phase:</strong> The zero-velocity update triggers. The residual \(y_k = -v_k^-\) corrects both velocity directly and position indirectly through the cross-covariance in \(\mathbf{P}_k\).</li>
+            </ul>
+
+            <p>
+                After many gait cycles, \(\mathbf{P}_k\) converges to a repeating pattern reflecting typical uncertainty levels during each phase.
+                The measurement noise \(R\) determines how much to trust the ZUPT (low \(R\) means strong trust).
+                The process noise \(\mathbf{Q}\) controls how quickly uncertainty grows during swing.
+            </p>
+
+            <h2>Steady-State Covariance via Lyapunov Equation</h2>
+            <p>
+                The ZUPT measurement updates cause the covariance matrix \(\mathbf{P}_k\) to converge to a steady-state value.
+                Rather than simulating many gait cycles to observe convergence, we can solve for this steady state directly using the discrete-time algebraic Riccati equation (DARE), which is a form of Lyapunov equation.
+            </p>
+
+            <h3>Why Convergence Occurs</h3>
+            <p>
+                During each gait cycle, two competing processes act on the covariance:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Predict step:</strong> Uncertainty grows as \(\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}\)</li>
+                <li><strong>Update step (ZUPT):</strong> Uncertainty shrinks as \(\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k\mathbf{H})\mathbf{P}_k^-\)</li>
+            </ul>
+            <p>
+                After many cycles, these effects balance out and \(\mathbf{P}_k\) reaches a fixed point \(\bar{\mathbf{P}}\) where the growth during prediction equals the reduction during measurement update.
+                This steady-state covariance tells you the long-term accuracy of your position and velocity estimates.
+            </p>
+
+            <h3>The Discrete Algebraic Riccati Equation (DARE)</h3>
+            <p>
+                For a time-invariant Kalman filter (constant \(\mathbf{F}, \mathbf{G}, \mathbf{H}, \mathbf{Q}, R\)), the steady-state covariance \(\bar{\mathbf{P}}\) satisfies:
+            </p>
+            <div class="equation-block">
+                $$\bar{\mathbf{P}} = \mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T + \mathbf{Q} - \mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T$$
+            </div>
+
+            <p>
+                This is a quadratic matrix equation. It encodes the condition that after one full predict-update cycle, the covariance returns to itself.
+            </p>
+
+            <h3>Breaking Down the DARE</h3>
+            <p>Let's parse each term:</p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Propagates steady-state uncertainty through state transition</li>
+                <li><strong>\(\mathbf{Q}\):</strong> Adds process noise (IMU drift, model error)</li>
+                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Subtracts the information gain from the measurement update</li>
+            </ul>
+
+            <p>
+                The third term is the key: it quantifies how much uncertainty the ZUPT removes.
+                When \(R\) is small (you trust the zero-velocity measurement), this term is large and \(\bar{\mathbf{P}}\) is small (high accuracy).
+                When \(\mathbf{Q}\) is large (high process noise), \(\bar{\mathbf{P}}\) increases because drift accumulates faster than measurements can correct it.
+            </p>
+
+            <h3>Interpretation for ZUPT</h3>
+            <p>
+                In the ZUPT context, the measurement model is \(\mathbf{H} = [0 \quad 1]\), which observes velocity. The DARE tells us:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Velocity uncertainty \(\bar{P}_{22}\) converges to a value balancing process noise against measurement updates</li>
+                <li>Position uncertainty \(\bar{P}_{11}\) converges based on how well velocity corrections propagate through \(\mathbf{F}\)</li>
+                <li>Cross-covariance \(\bar{P}_{12}\) captures the correlation between position and velocity errors at steady state</li>
+            </ul>
+
+            <p>
+                The cross-covariance term is critical: even though we only measure velocity (via ZUPT), the off-diagonal element \(\bar{P}_{12}\) allows the Kalman gain \(\mathbf{K}_k\) to correct position errors whenever velocity is updated.
+                This is why ZUPT works—the position and velocity errors are coupled through the dynamics \(\mathbf{F}\).
+            </p>
+
+            <h3>Solving the DARE</h3>
+            <p>
+                For our 2×2 system, the DARE can be solved:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Analytically:</strong> Expand into scalar equations and solve the resulting polynomial (messy but exact)</li>
+                <li><strong>Numerically:</strong> Use iterative methods or built-in solvers (e.g., <code>scipy.linalg.solve_discrete_are</code> in Python)</li>
+                <li><strong>Simulation:</strong> Run the filter for many cycles until \(\mathbf{P}_k\) stops changing</li>
+            </ul>
+
+            <h3>Example Steady-State Result</h3>
+            <p>
+                Suppose \(\Delta t = 0.01\) s, \(\mathbf{Q} = \begin{bmatrix} 10^{-6} & 0 \\ 0 & 10^{-4} \end{bmatrix}\), and \(R = 0.01\).
+                After solving the DARE, you might find:
+            </p>
+            <div class="equation-block">
+                $$\bar{\mathbf{P}} \approx \begin{bmatrix} 2.3 \times 10^{-4} & 1.1 \times 10^{-3} \\ 1.1 \times 10^{-3} & 8.7 \times 10^{-3} \end{bmatrix}$$
+            </div>
+
+            <p>
+                This tells you:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Position uncertainty: \(\sigma_x = \sqrt{\bar{P}_{11}} \approx 1.5\) cm</li>
+                <li>Velocity uncertainty: \(\sigma_v = \sqrt{\bar{P}_{22}} \approx 9.3\) cm/s</li>
+                <li>Positive correlation between position and velocity errors (expected from \(\mathbf{F}\))</li>
+            </ul>
+
+            <p>
+                Knowing \(\bar{\mathbf{P}}\) ahead of time lets you:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Initialize \(\mathbf{P}_0 = \bar{\mathbf{P}}\) to skip the transient convergence phase</li>
+                <li>Tune \(\mathbf{Q}\) and \(R\) to achieve desired steady-state accuracy before running the filter</li>
+                <li>Compute the steady-state Kalman gain \(\bar{\mathbf{K}} = \bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\) and use a time-invariant filter for efficiency</li>
+            </ul>
+
+            <h2>Key Parameters</h2>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li><strong>Process noise covariance \(\mathbf{Q}\):</strong> Accounts for IMU noise and integration drift</li>
+                <li><strong>Measurement noise covariance \(R\):</strong> Reflects confidence in zero-velocity assumption (typically 0.01)</li>
+                <li><strong>Initial state covariance \(\mathbf{P}_0\):</strong> Can be set to \(\bar{\mathbf{P}}\) from DARE solution to avoid transient</li>
+            </ul>
+
+            <p>
+                By tuning \(R\) to be small relative to \(\mathbf{Q}\), the filter trusts the stance-phase measurements heavily, which is appropriate since the foot truly has zero velocity during ground contact.
+            </p>
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
+
+
+
+From: Horowitz, Aaron <Aaron.Horowitz@cognex.com>
+Sent: Thursday, December 18, 2025 1:55 PM
+To: Aaron Horowitz <aaronhorowitz97@gmail.com>
+Subject: more math notes
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PortfolioOptimizer — Mean-Variance Portfolio Theory & Backtesting (Python)</title>
+
+  <!-- Performance optimizations: preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+ 
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+ 
+  <!-- MathJax for equations (async loading) -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" async></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #10b981;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Optima", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(16,185,129,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+       
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">PortfolioOptimizer</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Python program implementing Mean-Variance Portfolio Theory to construct optimal portfolios with comprehensive backtesting capabilities. Features efficient frontier visualization, Monte Carlo simulation, and real-world performance validation.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <a href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+                            View repository
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
+                            </svg>
+                        </a>
+
+                        <a href="#demo" class="text-sm text-blue-300 hover:underline">Watch demo</a>
+                        <span class="text-xs text-muted ml-3 text-gray-400">Published November 8, 2021</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:block text-right">
+                    <div class="glow rounded-xl p-4 w-56">
+                        <div class="text-xs text-gray-300">Role</div>
+                        <div class="mt-1 text-sm font-medium">Author / Python developer</div>
+
+                        <div class="mt-4 text-xs text-gray-300">Tech</div>
+                        <div class="mt-1 space-y-1 text-sm text-gray-200">
+                            <div>• Python (NumPy, Pandas)</div>
+                            <div>• Matplotlib visualization</div>
+                            <div>• Yahoo Finance API</div>
+                            <div>• Monte Carlo simulation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main column -->
+            <section class="lg:col-span-2 space-y-6">
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Overview</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Python implementation of Markowitz mean-variance optimization with closed-form solutions.
+                        Given historical returns, compute the efficient frontier analytically and backtest the portfolios
+                        on different time periods.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Features</h3>
+                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
+                        <li>Closed-form solution for minimum variance portfolios</li>
+                        <li>Efficient frontier visualization</li>
+                        <li>Backtesting on out-of-sample data</li>
+                        <li>Monte Carlo simulation</li>
+                        <li>Yahoo Finance data integration</li>
+                    </ul>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">The Math</h2>
+
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        We begin with the explicit, finite-asset formulation and then generalize.
+                        Consider three assets with weights \(w_A, w_B, w_C\), expected returns
+                        \(\mu_A, \mu_B, \mu_C\), and covariances \(\sigma_{ij}\).
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Portfolio Variance (Expanded Form)</h3>
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \sigma_p^2 =
+                        w_A^2\sigma_A^2 +
+                        w_B^2\sigma_B^2 +
+                        w_C^2\sigma_C^2 +
+                        2w_A w_B\sigma_{AB} +
+                        2w_A w_C\sigma_{AC} +
+                        2w_B w_C\sigma_{BC}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 text-sm mb-4">
+                        with the full-investment constraint:
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-6">
+                        \[
+                        w_A + w_B + w_C = 1
+                        \]
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Lagrangian Formulation</h3>
+                    <p class="text-gray-300 text-sm mb-2">
+                        We minimize variance subject to the constraint using a Lagrange multiplier:
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        L(w_A,w_B,w_C,\lambda)
+                        = \sigma_p^2 + \lambda(w_A+w_B+w_C-1)
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 text-sm mb-4">
+                        Taking partial derivatives yields a linear system in the portfolio weights and the multiplier.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Matrix (KKT) System</h3>
+                    <p class="text-center text-gray-200 mb-6">
+                        \[
+                        \begin{bmatrix}
+                        2\sigma_A^2 & 2\sigma_{AB} & 2\sigma_{AC} & 1 \\
+                        2\sigma_{AB} & 2\sigma_B^2 & 2\sigma_{BC} & 1 \\
+                        2\sigma_{AC} & 2\sigma_{BC} & 2\sigma_C^2 & 1 \\
+                        1 & 1 & 1 & 0
+                        \end{bmatrix}
+                        \begin{bmatrix}
+                        w_A \\ w_B \\ w_C \\ \lambda
+                        \end{bmatrix}
+                        =
+                        \begin{bmatrix}
+                        0 \\ 0 \\ 0 \\ 1
+                        \end{bmatrix}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        This system characterizes the <em>global minimum variance portfolio</em>.
+                    </p>
+
+                    <h3 class="mt-4 font-medium">General Vector Form</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        For \(n\) assets, define weights \(w \in \mathbb{R}^n\),
+                        expected returns \(\mu \in \mathbb{R}^n\),
+                        and covariance matrix \(\Sigma \in \mathbb{R}^{n \times n}\).
+                    </p>
+
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \sigma_p^2 = w^T \Sigma w
+                        \quad\quad
+                        \mu_p = w^T \mu
+                        \]
+                    </p>
+
+                    <h3 class="mt-4 font-medium">Mean–Variance Optimization</h3>
+                    <p class="text-center text-gray-200 mb-4">
+                        \[
+                        \min_w \quad w^T \Sigma w
+                        \quad \text{s.t.} \quad
+                        \begin{cases}
+                        w^T \mu = \mu_p^* \\
+                        w^T \mathbf{1} = 1
+                        \end{cases}
+                        \]
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed">
+                        Solving the associated KKT system yields the closed-form efficient frontier
+                        and the global minimum variance portfolio as special cases.
+                    </p>
+                    </article>
+
+
+                <article class="glow rounded-lg p-6">
+                    <h2 id="demo" class="text-xl font-semibold mb-3">Demo & Explainer</h2>
+                    <p class="text-gray-300 mb-4">Complete walkthrough demonstrating portfolio construction, efficient frontier analysis, and backtesting workflows.</p>
+
+                    <div class="aspect-video rounded-md overflow-hidden border border-white/5">
+                        <iframe class="w-full h-full" loading="lazy" src="https://www.youtube.com/embed/videoseries?list=PLcJs7myZYvBBMXHgucfNKxhTqoHopfnmA" title="PortfolioOptimizer Demo Playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Implementation</h2>
+                   
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-medium text-white">1. Compute Covariance Matrix</h4>
+                            <p class="text-gray-300 text-sm">Fetch historical prices from Yahoo Finance. Compute daily returns. Calculate the sample covariance matrix \(\Sigma\) and mean return vector \(\mu\).</p>
+                        </div>
+                       
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-medium text-white">2. Invert and Compute Constants</h4>
+                            <p class="text-gray-300 text-sm">Compute \(\Sigma^{-1}\). Calculate the scalar constants \(A, B, C, D\) using matrix multiplications: \(A = \mathbf{1}^T \Sigma^{-1} \mu\), etc. These appear in the closed-form solution.</p>
+                        </div>
+                       
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-medium text-white">3. Generate Efficient Frontier</h4>
+                            <p class="text-gray-300 text-sm">For a range of target returns \(\mu_p^*\), apply the closed-form formula to get \(w^*\). Compute \(\sigma_p = \sqrt{w^{*T} \Sigma w^*}\). Plot \((\sigma_p, \mu_p^*)\).</p>
+                        </div>
+
+                        <div class="border-l-4 border-orange-500 pl-4">
+                            <h4 class="font-medium text-white">4. Backtest on New Data</h4>
+                            <p class="text-gray-300 text-sm">Take the optimized weights \(w^*\) from the training period. Apply them to a different time period. Measure actual return \(w^{*T} \mu_{\text{test}}\) and variance \(w^{*T} \Sigma_{\text{test}} w^*\). Compare to predictions.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Interpretation</h2>
+
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        The closed-form solution tells you exactly how to weight your assets given their historical returns and covariances.
+                        The constants \(A, B, C, D\) encode the geometry of the efficient frontier.
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        <strong>Key insight:</strong> The optimal weights \(w^*\) are a linear combination of \(\Sigma^{-1} \mu\) and \(\Sigma^{-1} \mathbf{1}\).
+                        The first term weights assets by risk-adjusted return. The second ensures full investment.
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        <strong>Global minimum variance portfolio:</strong> This is where the efficient frontier turns. Below this point, you're taking on
+                        risk without increasing expected return. The formula \(w_{gmv} = \frac{\Sigma^{-1} \mathbf{1}}{C}\) shows you just weight assets
+                        inversely to their contribution to portfolio variance.
+                    </p>
+
+                    <p class="text-gray-300 leading-relaxed">
+                        <strong>Backtesting reveals model failure:</strong> If the out-of-sample scatter plot shows actual returns far below predictions,
+                        your covariance matrix was wrong (non-stationary), or the efficient frontier shifted. This is common in real markets.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">How to Run</h2>
+
+                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Clone and install
+git clone https://github.com/aarwitz/PortfolioOptimizer.git
+cd PortfolioOptimizer
+pip install pandas numpy matplotlib yfinance
+
+# Run
+python -c "from find_optimized_portfolio import main; main()"
+</code></pre>
+
+                    <p class="mt-3 text-gray-300">
+                        Interactive CLI guides you through ticker selection, date ranges, and backtesting options.
+                    </p>
+                </article>
+
+                <article class="glow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-3">Code Structure</h2>
+                    <ul class="list-inside list-disc text-gray-300 space-y-2">
+                        <li><code>matrix_manip.py</code> — Compute \(\Sigma^{-1}\), constants \(A, B, C, D\), and optimal weights \(w^*\)</li>
+                        <li><code>DF_helper.py</code> — Fetch data from Yahoo Finance, compute returns and covariance</li>
+                        <li><code>RealTest.py</code> — Apply weights to out-of-sample data, measure performance</li>
+                        <li><code>plots.py</code> — Efficient frontier and backtest scatter plots</li>
+                        <li><code>MonteCarlo.py</code> — Simulate portfolio paths using historical statistics</li>
+                    </ul>
+                </article>
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="space-y-6">
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Tech stack</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>• Python 3.x</div>
+                        <div>• NumPy (matrix operations)</div>
+                        <div>• Pandas (data processing)</div>
+                        <div>• Matplotlib (visualization)</div>
+                        <div>• yfinance (market data)</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Key Operations</h4>
+                    <ul class="mt-3 text-sm text-gray-300 space-y-2">
+                        <li>Matrix inversion (\(\Sigma^{-1}\))</li>
+                        <li>Quadratic form computation (\(w^T \Sigma w\))</li>
+                        <li>Lagrangian optimization</li>
+                        <li>Efficient frontier generation</li>
+                        <li>Out-of-sample backtesting</li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
+                    <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" rel="noopener">Repository</a>
+                        <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/PortfolioOptimizer/blob/main/README.md" target="_blank" rel="noopener">README</a>
+                        <a class="text-blue-300 hover:underline" href="#demo">Demo playlist</a>
+                        <a class="text-blue-300 hover:underline" href="https://www.youtube.com/watch?v=2too70WLJUo" target="_blank" rel="noopener">Main explainer video</a>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Project Stats</h4>
+                    <div class="mt-3 text-sm text-gray-300">
+                        <div>⭐ 8 GitHub stars</div>
+                        <div>🍴 4 forks</div>
+                        <div>👁 2 watchers</div>
+                        <div>📝 100% Python</div>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-200">Limitations</h4>
+                    <p class="mt-2 text-sm text-gray-300">Assumes returns are normally distributed and stationary. Covariance matrix estimated from historical data may not predict future risk. No transaction costs or short-selling constraints.</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-10 text-center text-sm text-gray-400">
+            <p>
+                Built by <strong>Aaron Horowitz</strong>. Source on <a href="https://github.com/aarwitz/PortfolioOptimizer" target="_blank" class="text-blue-300 hover:underline">GitHub</a>.
+            </p>
+        </footer>
+    </main>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
