@@ -5,12 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PortfolioOptimizer — Mean-Variance Portfolio Theory & Backtesting (Python)</title>
 
+  <!-- Performance optimizations: preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+ 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  
-  <!-- MathJax for equations -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+ 
+  <!-- MathJax for equations (async loading) -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" async></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
@@ -40,7 +46,7 @@
 <body class="min-h-screen antialiased">
     <main class="max-w-5xl mx-auto sm:p-4 lg:p-8">
         <div id="site-header"></div>
-        
+       
         <!-- Header / Hero -->
         <header class="mb-8">
             <div class="flex items-start justify-between gap-6">
@@ -87,8 +93,8 @@
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Overview</h2>
                     <p class="text-gray-300 leading-relaxed">
-                        Python implementation of Markowitz mean-variance optimization with closed-form solutions. 
-                        Given historical returns, compute the efficient frontier analytically and backtest the portfolios 
+                        Python implementation of Markowitz mean-variance optimization with closed-form solutions.
+                        Given historical returns, compute the efficient frontier analytically and backtest the portfolios
                         on different time periods.
                     </p>
 
@@ -136,7 +142,7 @@
 
                     <h3 class="mt-4 font-medium">Lagrangian Formulation</h3>
                     <p class="text-gray-300 text-sm mb-2">
-                        We minimize variance subject to the budget constraint using a Lagrange multiplier:
+                        We minimize variance subject to the constraint using a Lagrange multiplier:
                     </p>
 
                     <p class="text-center text-gray-200 mb-4">
@@ -212,24 +218,24 @@
                     <p class="text-gray-300 mb-4">Complete walkthrough demonstrating portfolio construction, efficient frontier analysis, and backtesting workflows.</p>
 
                     <div class="aspect-video rounded-md overflow-hidden border border-white/5">
-                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/videoseries?list=PLcJs7myZYvBBMXHgucfNKxhTqoHopfnmA" title="PortfolioOptimizer Demo Playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <iframe class="w-full h-full" loading="lazy" src="https://www.youtube.com/embed/videoseries?list=PLcJs7myZYvBBMXHgucfNKxhTqoHopfnmA" title="PortfolioOptimizer Demo Playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     </div>
                 </article>
 
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Implementation</h2>
-                    
+                   
                     <div class="space-y-4">
                         <div class="border-l-4 border-green-500 pl-4">
                             <h4 class="font-medium text-white">1. Compute Covariance Matrix</h4>
                             <p class="text-gray-300 text-sm">Fetch historical prices from Yahoo Finance. Compute daily returns. Calculate the sample covariance matrix \(\Sigma\) and mean return vector \(\mu\).</p>
                         </div>
-                        
+                       
                         <div class="border-l-4 border-blue-500 pl-4">
                             <h4 class="font-medium text-white">2. Invert and Compute Constants</h4>
                             <p class="text-gray-300 text-sm">Compute \(\Sigma^{-1}\). Calculate the scalar constants \(A, B, C, D\) using matrix multiplications: \(A = \mathbf{1}^T \Sigma^{-1} \mu\), etc. These appear in the closed-form solution.</p>
                         </div>
-                        
+                       
                         <div class="border-l-4 border-purple-500 pl-4">
                             <h4 class="font-medium text-white">3. Generate Efficient Frontier</h4>
                             <p class="text-gray-300 text-sm">For a range of target returns \(\mu_p^*\), apply the closed-form formula to get \(w^*\). Compute \(\sigma_p = \sqrt{w^{*T} \Sigma w^*}\). Plot \((\sigma_p, \mu_p^*)\).</p>
@@ -246,23 +252,23 @@
                     <h2 class="text-xl font-semibold mb-3">Interpretation</h2>
 
                     <p class="text-gray-300 leading-relaxed mb-3">
-                        The closed-form solution tells you exactly how to weight your assets given their historical returns and covariances. 
+                        The closed-form solution tells you exactly how to weight your assets given their historical returns and covariances.
                         The constants \(A, B, C, D\) encode the geometry of the efficient frontier.
                     </p>
 
                     <p class="text-gray-300 leading-relaxed mb-3">
-                        <strong>Key insight:</strong> The optimal weights \(w^*\) are a linear combination of \(\Sigma^{-1} \mu\) and \(\Sigma^{-1} \mathbf{1}\). 
+                        <strong>Key insight:</strong> The optimal weights \(w^*\) are a linear combination of \(\Sigma^{-1} \mu\) and \(\Sigma^{-1} \mathbf{1}\).
                         The first term weights assets by risk-adjusted return. The second ensures full investment.
                     </p>
 
                     <p class="text-gray-300 leading-relaxed mb-3">
-                        <strong>Global minimum variance portfolio:</strong> This is where the efficient frontier turns. Below this point, you're taking on 
-                        risk without increasing expected return. The formula \(w_{gmv} = \frac{\Sigma^{-1} \mathbf{1}}{C}\) shows you just weight assets 
+                        <strong>Global minimum variance portfolio:</strong> This is where the efficient frontier turns. Below this point, you're taking on
+                        risk without increasing expected return. The formula \(w_{gmv} = \frac{\Sigma^{-1} \mathbf{1}}{C}\) shows you just weight assets
                         inversely to their contribution to portfolio variance.
                     </p>
 
                     <p class="text-gray-300 leading-relaxed">
-                        <strong>Backtesting reveals model failure:</strong> If the out-of-sample scatter plot shows actual returns far below predictions, 
+                        <strong>Backtesting reveals model failure:</strong> If the out-of-sample scatter plot shows actual returns far below predictions,
                         your covariance matrix was wrong (non-stationary), or the efficient frontier shifted. This is common in real markets.
                     </p>
                 </article>
