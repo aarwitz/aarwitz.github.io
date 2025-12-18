@@ -215,142 +215,52 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
 
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">SLAM & Navigation (in progress)</h2>
+                    
+                    <p class="text-gray-300 mb-4">Planned integration path for SLAM and autonomous navigation; currently under active development.</p>
 
-                    <!-- Horizontal pipeline for md+ -->
-                    <div role="img" aria-label="SLAM and Navigation pipeline" class="hidden md:block">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm w-64">
-                                <div class="font-medium mb-1">RealSense D435i</div>
-                                <ul class="text-gray-300 text-sm list-disc list-inside">
-                                    <li>RGB images</li>
-                                    <li>Depth images</li>
-                                    <li>IMU (gyro &amp; accel)</li>
-                                </ul>
-                                <div class="text-xs text-gray-400 mt-2">/color • /depth • /imu</div>
-                            </div>
-
-                            <div class="flex-shrink-0 text-gray-400">
-                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M5 12h14" />
-                                    <path d="M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-
-                            <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm w-64">
-                                <div class="font-medium mb-1">isaac_ros_visual_slam</div>
-                                <ul class="text-gray-300 text-sm list-disc list-inside">
-                                    <li>Fuses RGB + Depth</li>
-                                    <li>Uses IMU (optional)</li>
-                                    <li>Produces localization</li>
-                                </ul>
-                                <div class="text-xs text-gray-400 mt-2">/odom • /pose • TF</div>
-                            </div>
-
-                            <div class="flex-shrink-0 text-gray-400">
-                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M5 12h14" />
-                                    <path d="M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-
-                            <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm w-64">
-                                <div class="font-medium mb-1">isaac_ros_nvblox</div>
-                                <ul class="text-gray-300 text-sm list-disc list-inside">
-                                    <li>Builds 3D TSDF / ESDF</li>
-                                    <li>Projects to 2D</li>
-                                    <li>Publishes Nav2 costmap layer</li>
-                                </ul>
-                                <div class="text-xs text-gray-400 mt-2">Nav2 costmap</div>
-                            </div>
-
-                            <div class="flex-shrink-0 text-gray-400">
-                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M5 12h14" />
-                                    <path d="M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-
-                            <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm w-64">
-                                <div class="font-medium mb-1">Nav2 (ROS 2 Navigation)</div>
-                                <ul class="text-gray-300 text-sm list-disc list-inside">
-                                    <li>Global planner</li>
-                                    <li>Local planner</li>
-                                    <li>Obstacle avoidance</li>
-                                </ul>
-                                <div class="text-xs text-gray-400 mt-2">/cmd_vel</div>
-                            </div>
-
-                            <div class="flex-shrink-0 text-gray-400">
-                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M5 12h14" />
-                                    <path d="M12 5l7 7-7 7" />
-                                </svg>
-                            </div>
-
-                            <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm w-64">
-                                <div class="font-medium mb-1">Robot Base</div>
-                                <ul class="text-gray-300 text-sm list-disc list-inside">
-                                    <li>Velocity control</li>
-                                    <li>Motor drivers</li>
-                                </ul>
-                                <div class="text-xs text-gray-400 mt-2">subscribes to /cmd_vel</div>
+                    <div class="relative pl-8 space-y-3">
+                        <!-- Vertical line -->
+                        <div class="absolute left-2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-500 via-blue-400 to-purple-500"></div>
+                        
+                        <!-- Pipeline steps -->
+                        <div class="relative">
+                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-green-500 border-2 border-[#0b1220]"></div>
+                            <div class="text-sm">
+                                <span class="font-medium text-white">RealSense D435i</span>
+                                <span class="text-gray-400 ml-2">→ RGB, Depth, IMU</span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Vertical stacked pipeline for small screens -->
-                    <div class="md:hidden space-y-4">
-                        <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm">
-                            <div class="font-medium mb-1">RealSense D435i</div>
-                            <div class="text-gray-300 text-sm">RGB / Depth / IMU (<code>/color</code>, <code>/depth</code>, <code>/imu</code>)</div>
+                        <div class="relative">
+                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-blue-400 border-2 border-[#0b1220]"></div>
+                            <div class="text-sm">
+                                <span class="font-medium text-white">isaac_ros_visual_slam</span>
+                                <span class="text-gray-400 ml-2">→ /odom, /pose, TF</span>
+                            </div>
                         </div>
 
-                        <div class="flex justify-center text-gray-400">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 5v14" />
-                                <path d="M5 12l7 7 7-7" />
-                            </svg>
+                        <div class="relative">
+                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-cyan-400 border-2 border-[#0b1220]"></div>
+                            <div class="text-sm">
+                                <span class="font-medium text-white">isaac_ros_nvblox</span>
+                                <span class="text-gray-400 ml-2">→ TSDF/ESDF, Nav2 costmap</span>
+                            </div>
                         </div>
 
-                        <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm">
-                            <div class="font-medium mb-1">isaac_ros_visual_slam</div>
-                            <div class="text-gray-300 text-sm">Fuses RGB+Depth, optional IMU — outputs <code>/odom</code>, <code>/pose</code>, TF</div>
+                        <div class="relative">
+                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-indigo-400 border-2 border-[#0b1220]"></div>
+                            <div class="text-sm">
+                                <span class="font-medium text-white">Nav2</span>
+                                <span class="text-gray-400 ml-2">→ /cmd_vel</span>
+                            </div>
                         </div>
 
-                        <div class="flex justify-center text-gray-400">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 5v14" />
-                                <path d="M5 12l7 7 7-7" />
-                            </svg>
-                        </div>
-
-                        <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm">
-                            <div class="font-medium mb-1">isaac_ros_nvblox</div>
-                            <div class="text-gray-300 text-sm">Builds TSDF/ESDF, projects to 2D, publishes Nav2 costmap layer</div>
-                        </div>
-
-                        <div class="flex justify-center text-gray-400">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 5v14" />
-                                <path d="M5 12l7 7 7-7" />
-                            </svg>
-                        </div>
-
-                        <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm">
-                            <div class="font-medium mb-1">Nav2 (ROS 2 Navigation)</div>
-                            <div class="text-gray-300 text-sm">Global/local planners and obstacle avoidance — outputs <code>/cmd_vel</code></div>
-                        </div>
-
-                        <div class="flex justify-center text-gray-400">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 5v14" />
-                                <path d="M5 12l7 7 7-7" />
-                            </svg>
-                        </div>
-
-                        <div class="bg-[#07101a] border border-gray-700 rounded-md p-4 text-sm">
-                            <div class="font-medium mb-1">Robot Base</div>
-                            <div class="text-gray-300 text-sm">Velocity control &amp; motor drivers (subscribe to <code>/cmd_vel</code>)</div>
+                        <div class="relative">
+                            <div class="absolute left-[-1.75rem] top-2 w-4 h-4 rounded-full bg-purple-500 border-2 border-[#0b1220]"></div>
+                            <div class="text-sm">
+                                <span class="font-medium text-white">Robot Base</span>
+                                <span class="text-gray-400 ml-2">→ Motor control</span>
+                            </div>
                         </div>
                     </div>
 
@@ -373,19 +283,13 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <video class="w-full rounded" playsinline autoplay muted loop preload="metadata" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Picking demo video">
-                                <source src="robotprogress-picking.webm" type="video/webm">
-                                <!-- Fallback text -->
-                                Your browser does not support the video tag.
+                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Picking demo video" data-src-webm="robotprogress-picking.webm" data-autoplay="true">
                             </video>
                             <p class="text-gray-400 text-xs mt-2 text-center">Picking demo</p>
                         </div>
 
                         <div>
-                            <video class="w-full rounded" playsinline autoplay muted loop preload="metadata" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Point cloud demo video">
-                                <source src="robotprogress-pointcloud.webm" type="video/webm">
-                                <!-- Fallback text -->
-                                Your browser does not support the video tag.
+                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Point cloud demo video" data-src-webm="robotprogress-pointcloud.webm" data-autoplay="true">
                             </video>
                             <p class="text-gray-400 text-xs mt-2 text-center">Point cloud demo</p>
                         </div>
@@ -553,5 +457,46 @@ docker exec -it isaac_ros_dev-aarch64-container bash -c \
         </footer>
     </main>
     <script src="include_header.js" defer></script>
+    <script>
+        // Lazy-load videos when they scroll into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyVideos = document.querySelectorAll('video.lazy-video');
+            
+            const videoObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const video = entry.target;
+                        const webmSrc = video.getAttribute('data-src-webm');
+                        const mp4Src = video.getAttribute('data-src-mp4');
+                        const shouldAutoplay = video.getAttribute('data-autoplay') === 'true';
+                        
+                        if (webmSrc) {
+                            const sourceWebm = document.createElement('source');
+                            sourceWebm.src = webmSrc;
+                            sourceWebm.type = 'video/webm';
+                            video.appendChild(sourceWebm);
+                        }
+                        if (mp4Src) {
+                            const sourceMp4 = document.createElement('source');
+                            sourceMp4.src = mp4Src;
+                            sourceMp4.type = 'video/mp4';
+                            video.appendChild(sourceMp4);
+                        }
+                        
+                        video.load();
+                        if (shouldAutoplay) {
+                            video.play().catch(() => {});
+                        }
+                        video.removeAttribute('data-src-webm');
+                        video.removeAttribute('data-src-mp4');
+                        video.removeAttribute('data-autoplay');
+                        observer.unobserve(video);
+                    }
+                });
+            }, { rootMargin: '200px' });
+            
+            lazyVideos.forEach(video => videoObserver.observe(video));
+        });
+    </script>
 </body>
 </html>
