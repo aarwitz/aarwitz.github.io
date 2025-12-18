@@ -42,7 +42,9 @@
                  <a href="MobileRobot.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
                         <div class="relative">
-                                    <img src="robot.gif" alt="Mobile Robot demo" class="w-full h-48 object-cover">
+                                    <video autoplay loop muted playsinline class="w-full h-48 object-cover">
+                                        <source src="robot.webm" type="video/webm">
+                                    </video>
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 text-center">
                                     <h3 class="text-lg font-bold text-white mb-2">Mobile Robot</h3>
@@ -231,7 +233,6 @@
                         <!-- Filled Circle for Current Position -->
                         <div class="absolute left-0 top-2 w-8 h-8 rounded-full bg-blue-500 border-4 border-[#0d1117] shadow-lg shadow-blue-500/50 z-10"></div>
                         <a href="https://www.cognex.com/videos/vision-software/in-sight-vision-suite-251-bead-inspect" class="block bg-[#161b22] rounded-lg p-6 border border-gray-700 opacity-90 hover:border-blue-500 transition" aria-label="Full-Stack Software Engineer - Cognex InSight">
-                        <div class="bg-[#161b22] rounded-lg p-6 border border-gray-700">
                             <div class="flex flex-col lg:flex-row lg:items-start gap-6">
                                 <div class="flex-1">
                                     <div class="mb-4">
@@ -273,7 +274,7 @@
                                         </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <!-- Previous Experience -->
@@ -359,7 +360,9 @@
                                 </div>
                                 <div class="lg:w-80 flex-shrink-0">
                                     <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-700">
-                                        <video class="w-full rounded lazy-video" playsinline muted loop preload="none" controls style="object-fit:cover;" data-src-webm="OpenPose.webm" data-src-mp4="OpenPose.mp4">
+                                        <video class="w-full rounded" playsinline muted loop autoplay preload="auto" style="object-fit:cover;" tabindex="-1" role="img" disablepictureinpicture>
+                                            <source src="OpenPose.webm" type="video/webm">
+                                            <source src="OpenPose.mp4" type="video/mp4">
                                         </video>
                                         <p class="text-gray-400 text-xs mt-2 text-center">Human pose estimation & tracking</p>
                                     </div>
