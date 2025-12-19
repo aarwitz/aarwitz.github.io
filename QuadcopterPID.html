@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quadcopter PID Flight Controller & Digital Twin — Aaron Horowitz</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1720;
+      --muted: #98a0ab;
+      --accent: #06b6d4;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body { height:100%; }
+    body {
+      font-family: "Optima", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #07101a 100%);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; }
+    .glow {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 30px rgba(6,182,212,0.05);
+      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+        
+        <!-- Header / Hero -->
+        <header class="mb-8">
+            <div class="flex items-start justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-semibold">Quadcopter PID Flight Controller & Digital Twin</h1>
+                    <p class="mt-2 text-sm text-gray-300 max-w-2xl">
+                        Custom quadcopter flight controller with PID stabilization and real-time digital twin visualization. 
+                        Features Arduino-based attitude control, BNO055 IMU integration, and Gazebo physics simulation with 
+                        hardware-in-the-loop testing capabilities.
+                    </p>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Arduino</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">C++</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">Gazebo</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">Robotics</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">Control Systems</span>
+                        
+                        <div class="flex gap-3 ml-auto">
+                            <a href="https://github.com/aarwitz/Quadcopter-PID-Controller" 
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-gray-700/50 hover:bg-gray-700 text-gray-300 border border-gray-600 transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                                </svg>
+                                Flight Controller
+                            </a>
+                            <a href="https://github.com/aarwitz/Gazebo-Digital-Twin-Plugin" 
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-gray-700/50 hover:bg-gray-700 text-gray-300 border border-gray-600 transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                                </svg>
+                                Digital Twin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Demo Videos Section -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">System Demonstration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Gazebo Simulation -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">Digital Twin Simulation</h3>
+                    <div class="bg-[#0d1117] rounded border border-gray-700 overflow-hidden">
+                        <img src="quad.gif" alt="Gazebo quadcopter simulation" class="w-full h-auto object-contain">
+                    </div>
+                    <p class="mt-3 text-sm text-gray-400">
+                        Real-time Gazebo visualization of quadcopter attitude driven by physical IMU sensor data via TCP/IP streaming.
+                    </p>
+                </div>
+
+                <!-- Test Stand -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">Hardware Test Stand</h3>
+                    <div class="bg-[#0d1117] rounded border border-gray-700 overflow-hidden flex items-center justify-center" style="min-height: 300px;">
+                        <p class="text-gray-500 text-sm">Test stand image placeholder</p>
+                    </div>
+                    <p class="mt-3 text-sm text-gray-400">
+                        Custom quadcopter frame with Arduino flight controller, BNO055 IMU, and brushless motor configuration for controlled testing.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overview -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-4">Overview</h2>
+            <div class="glow rounded-lg p-6 space-y-4 text-gray-300">
+                <p>
+                    This project implements a custom flight controller for a quadcopter platform with integrated digital twin capabilities. 
+                    The system consists of two main components: an Arduino-based PID controller for attitude stabilization, and a Gazebo 
+                    physics simulation that mirrors the physical hardware's orientation in real-time.
+                </p>
+                <p>
+                    The flight controller uses an Adafruit BNO055 9-axis IMU to measure roll, pitch, and yaw angles, then applies 
+                    PID control to maintain stable flight. A complementary digital twin plugin streams IMU data to Gazebo via TCP/IP 
+                    sockets, enabling hardware-in-the-loop testing and visualization without risking the physical hardware.
+                </p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">System Architecture</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Flight Controller -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                        Flight Controller Components
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Arduino Microcontroller:</strong> Main processing unit running control loop at 100ms intervals</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Adafruit BNO055 IMU:</strong> 9-axis sensor (accelerometer, gyroscope, magnetometer) with external crystal for precision</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Brushless Motors:</strong> Four ESC-controlled motors with PWM signals (1000-1850μs)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Safety Timers:</strong> Automatic motor shutoff after 15 seconds of operation</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Digital Twin -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Digital Twin Pipeline
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Serial Communication:</strong> Arduino streams roll/pitch/yaw data at 19200 baud over USB</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Middleware Bridge:</strong> C++ application reads serial data and forwards to TCP/IP socket (port 12345)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Gazebo Plugin:</strong> Custom ModelPlugin receives orientation data and updates simulation pose</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400 mt-1">•</span>
+                            <span><strong class="text-white">Real-Time Sync:</strong> 50ms update rate maintains visual fidelity with physical hardware</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Data Flow Diagram -->
+            <div class="glow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Data Flow Architecture</h3>
+                <div class="flex items-center justify-center gap-4 flex-wrap text-sm">
+                    <div class="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded text-cyan-400 font-mono">
+                        BNO055 IMU
+                    </div>
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                    <div class="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded text-blue-400 font-mono">
+                        Arduino FC
+                    </div>
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                    <div class="px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded text-purple-400 font-mono">
+                        Serial (USB)
+                    </div>
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                    <div class="px-4 py-2 bg-green-500/10 border border-green-500/30 rounded text-green-400 font-mono">
+                        TCP/IP Bridge
+                    </div>
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                    <div class="px-4 py-2 bg-orange-500/10 border border-orange-500/30 rounded text-orange-400 font-mono">
+                        Gazebo Plugin
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PID Control Implementation -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">PID Control System</h2>
+            
+            <div class="glow rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">Control Loop Architecture</h3>
+                <p class="text-gray-300 mb-4">
+                    The flight controller implements a classic PID (Proportional-Integral-Derivative) control algorithm 
+                    for each axis (roll, pitch, yaw). The control loop executes at 10Hz with complementary filtering 
+                    to reduce noise in the derivative term.
+                </p>
+                
+                <div class="bg-[#0d1117] rounded border border-gray-700 p-4 mb-4">
+                    <pre class="text-xs text-gray-300 overflow-x-auto"><code>// Calculate error for each axis
+error_current[ROLL] = orientation_current[ROLL] - orientation_setpoint[ROLL];
+error_current[PITCH] = orientation_current[PITCH] - orientation_setpoint[PITCH];
+error_current[YAW] = orientation_current[YAW] - orientation_setpoint[YAW];
+
+// Proportional term
+pid_p[ROLL] = gain_p[ROLL] * error_current[ROLL];
+
+// Derivative term with complementary filter (0.9 weight)
+pid_d_new[ROLL] = gain_d[ROLL] * (error_current[ROLL] - error_prev[ROLL]) / time_elapsed;
+pid_d[ROLL] = filter * pid_d[ROLL] + (1 - filter) * pid_d_new[ROLL];
+
+// Combined PID output
+pid_current[ROLL] = pid_p[ROLL] + pid_i[ROLL] + pid_d[ROLL];</code></pre>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- PID Tuning -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">PID Gains</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Proportional (K<sub>p</sub>):</span>
+                            <span class="font-mono text-cyan-400">3.5</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Integral (K<sub>i</sub>):</span>
+                            <span class="font-mono text-cyan-400">0.0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Derivative (K<sub>d</sub>):</span>
+                            <span class="font-mono text-cyan-400">0.05</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-gray-700 pt-3">
+                            <span class="text-gray-400">Complementary Filter:</span>
+                            <span class="font-mono text-cyan-400">0.9</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motor Mixing -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Motor Mixing Algorithm</h3>
+                    <p class="text-sm text-gray-300 mb-3">
+                        PID outputs are combined with base thrust to generate individual motor commands:
+                    </p>
+                    <div class="bg-[#0d1117] rounded border border-gray-700 p-3">
+                        <pre class="text-xs text-gray-300"><code>motor1 = thrust + roll + pitch + yaw  // FR
+motor2 = thrust - roll + pitch - yaw  // FL
+motor3 = thrust + roll - pitch - yaw  // BR
+motor4 = thrust - roll - pitch + yaw  // BL</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="glow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">Flight Controller Features</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>Automatic IMU calibration on startup</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>ESC calibration sequence for motor sync</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>PWM thrust clamping (1000-1850μs range)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>Complementary filter for noise reduction</span>
+                        </li>
+                    </ul>
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>Safety timer with automatic shutoff</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>Serial debugging output for tuning</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>Zero-setpoint hovering mode</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                            </svg>
+                            <span>External crystal timing for precision</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Twin Implementation -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">Digital Twin & Simulation</h2>
+            
+            <div class="glow rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">Gazebo Plugin Architecture</h3>
+                <p class="text-gray-300 mb-4">
+                    The digital twin leverages a custom Gazebo ModelPlugin that connects to the hardware bridge via TCP/IP sockets. 
+                    On each simulation update cycle, the plugin receives orientation data as a comma-separated string, parses the 
+                    roll/pitch/yaw values, and updates the quadcopter model's pose in the virtual environment.
+                </p>
+                
+                <div class="bg-[#0d1117] rounded border border-gray-700 p-4">
+                    <pre class="text-xs text-gray-300 overflow-x-auto"><code>class ArduinoIMU : public ModelPlugin {
+    Socket::Ptr m_client = std::make_shared&lt;Socket&gt;("127.0.0.1", 12345);
+
+    void OnUpdate() {
+        // Receive orientation string from TCP socket
+        std::string output = m_client->socket_receive();
+        
+        // Parse roll, pitch, yaw from comma-separated values
+        std::stringstream ss(output);
+        std::vector&lt;std::string&gt; v;
+        while (ss.good()) {
+            std::string substr;
+            std::getline(ss, substr, ',');
+            v.push_back(substr);
+        }
+        
+        // Convert to degrees and update Gazebo model pose
+        double roll_w = std::stod(v[0]) * 0.01745;  // deg to rad
+        double pitch_w = std::stod(v[1]) * 0.01745;
+        double yaw_w = std::stod(v[2]) * 0.01745;
+        
+        ignition::math::Pose3d pose(0.0, 0.0, 5.0, roll_w, pitch_w, yaw_w);
+        this->model->SetWorldPose(pose);
+    }
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Hardware Bridge -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Serial-to-TCP Bridge</h3>
+                    <p class="text-sm text-gray-300 mb-3">
+                        A multi-threaded C++ application handles the interface between Arduino serial communication 
+                        and network sockets:
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">•</span>
+                            <span><strong class="text-white">Thread 1:</strong> Reads IMU data from /dev/ttyACM1 at 19200 baud</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">•</span>
+                            <span><strong class="text-white">Thread 2:</strong> Forwards orientation strings to TCP socket at 50ms rate</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">•</span>
+                            <span><strong class="text-white">String Formatting:</strong> Ensures 6-character padding for consistent parsing</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Build System -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Build & Dependencies</h3>
+                    <div class="space-y-3 text-sm text-gray-300">
+                        <div>
+                            <p class="font-semibold text-white mb-1">Gazebo Plugin:</p>
+                            <ul class="space-y-1 ml-4">
+                                <li>• Gazebo 11+ (physics, common, headers)</li>
+                                <li>• Ignition Math library</li>
+                                <li>• Custom socket client wrapper</li>
+                                <li>• C++17 standard with -fPIC</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white mb-1">Serial Bridge:</p>
+                            <ul class="space-y-1 ml-4">
+                                <li>• Third-party serial library</li>
+                                <li>• POSIX threads (pthreads)</li>
+                                <li>• CMake 3.5+ build system</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hardware Setup -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">Hardware Configuration</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Sensor Setup</h3>
+                    <div class="text-sm text-gray-300 space-y-2">
+                        <p class="font-semibold text-white">BNO055 IMU Connections:</p>
+                        <ul class="space-y-1 ml-4">
+                            <li>• SCL → Arduino Analog 5</li>
+                            <li>• SDA → Arduino Analog 4</li>
+                            <li>• VDD → 3.3-5V DC</li>
+                            <li>• GND → Common Ground</li>
+                        </ul>
+                        <p class="mt-3 text-gray-400">I2C Address: 0x28 (default)</p>
+                        <p class="text-gray-400">Sample Rate: 50ms (20Hz)</p>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Motor Layout</h3>
+                    <div class="text-sm text-gray-300 space-y-2">
+                        <p class="font-semibold text-white">PWM Pin Assignments:</p>
+                        <ul class="space-y-1 ml-4">
+                            <li>• Motor 1 (FR) → Pin 13</li>
+                            <li>• Motor 2 (FL) → Pin 11</li>
+                            <li>• Motor 3 (BR) → Pin 9</li>
+                            <li>• Motor 4 (BL) → Pin 8</li>
+                        </ul>
+                        <p class="mt-3 text-gray-400">PWM Range: 1000-1850μs</p>
+                        <p class="text-gray-400">Hover Thrust: ~1350μs</p>
+                    </div>
+                </div>
+
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Reference Frame</h3>
+                    <div class="text-sm text-gray-300">
+                        <p class="font-semibold text-white mb-2">BNO055 Orientation:</p>
+                        <div class="bg-[#0d1117] rounded border border-gray-700 p-3 font-mono text-xs">
+<pre>     +----------+
+     |         *| RST
+ ADR |*        *| SCL
+ INT |*        *| SDA    ^      /->
+ PS1 |*        *| GND    |      |
+ PS0 |*        *| 3VO    Y  Z-> \-X
+     |         *| VIN
+     +----------+
+
+ ROLL  → Z-axis
+ PITCH → Y-axis
+ YAW   → X-axis</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Usage Instructions -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">Getting Started</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Flight Controller Setup -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">1</span>
+                        Flight Controller Setup
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-[#0d1117] rounded border border-gray-700 p-3">
+                            <p class="text-xs text-gray-400 mb-2">Clone repository:</p>
+                            <pre class="text-xs text-cyan-400"><code>git clone https://github.com/aarwitz/Quadcopter-PID-Controller.git</code></pre>
+                        </div>
+                        <ol class="text-sm text-gray-300 space-y-2 ml-4">
+                            <li>1. Open <code class="text-cyan-400">FC_latest.ino</code> in Arduino IDE</li>
+                            <li>2. Install Adafruit BNO055 and Servo libraries</li>
+                            <li>3. Connect Arduino and upload code</li>
+                            <li>4. Wait for automatic IMU/ESC calibration</li>
+                            <li>5. Monitor serial output for PID tuning</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Digital Twin Setup -->
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">2</span>
+                        Digital Twin Setup
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-[#0d1117] rounded border border-gray-700 p-3">
+                            <p class="text-xs text-gray-400 mb-2">Build serial bridge:</p>
+                            <pre class="text-xs text-cyan-400"><code>cd SerialCom/build
+cmake -S ../src -B .
+make -j$(nproc)
+sudo chmod a+rw /dev/ttyACM1
+./ArduinoSerial</code></pre>
+                        </div>
+                        <div class="bg-[#0d1117] rounded border border-gray-700 p-3">
+                            <p class="text-xs text-gray-400 mb-2">Build Gazebo plugin:</p>
+                            <pre class="text-xs text-cyan-400"><code>cd Gazebo_Plugin/build
+cmake -S ../ -B .
+make -j$(nproc)
+export GAZEBO_PLUGIN_PATH=$GAZEBO_PLUGIN_PATH:$PWD
+gzserver -u Quad.world</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Highlights -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">Technical Highlights</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">Control Theory</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Independent 3-axis PID control for roll, pitch, yaw stabilization</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Complementary filter reduces high-frequency noise in derivative term</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Motor mixing algorithm distributes control effort across four motors</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>PWM saturation limits prevent motor over-speed or stall conditions</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="glow rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">Software Engineering</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Multi-threaded C++ architecture for concurrent serial/socket I/O</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Custom Gazebo ModelPlugin integrates with simulation event loop</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>TCP/IP socket abstraction provides clean hardware-software interface</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>CMake build system with dependency management for cross-platform builds</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Work -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-4">Future Enhancements</h2>
+            <div class="glow rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-300">
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Implement altitude hold using barometric pressure sensor</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Add GPS waypoint navigation for autonomous flight</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Integrate optical flow for velocity estimation</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Implement emergency failsafe modes (e.g., return-to-home)</span>
+                        </li>
+                    </ul>
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Develop web-based ground control station for tuning</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Add RC receiver input for manual override</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Implement state estimation using Extended Kalman Filter</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-400">→</span>
+                            <span>Enable bidirectional digital twin for simulation-based testing</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="include_header.js"></script>
+</body>
+</html>

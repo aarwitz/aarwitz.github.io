@@ -42,12 +42,12 @@
                 <div>
                     <h1 class="text-3xl md:text-4xl font-semibold">MobileRobot</h1>
                     <p class="mt-2 text-sm text-gray-300 max-w-2xl">
-                        Robot capable of autonomous navigation and object detection currently in development. Initial applications innclude household cleaning tasks, security patrols, and delivery.
+                        Robot capable of autonomous navigation and object detection currently in development. Initial applications are household cleaning tasks and delivery.
                         A GUI showing detections and point clouds in 3D is included, along with the predicted 3D center point of the object which is used for picking.
                     </p>
 
                     <div class="mt-4 flex flex-wrap gap-2 items-center">
-                        <a href="https://github.com/aarwitz/CleaningRobot" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
+                        <a href="https://github.com/aarwitz/isaac_ros_object_detection" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-[#0d1722] hover:bg-[#12202a]">
                             View repository
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 3h7v7M10 14L21 3M21 21H3V3" />
@@ -61,13 +61,12 @@
                 <div class="hidden md:block text-right">
                     <div class="glow rounded-xl p-4 w-56">
                         <div class="text-xs text-gray-300">Role</div>
-                        <div class="mt-1 text-sm font-medium">Developer / Robotics Engineer</div>
+                        <div class="mt-1 text-sm font-medium">Software/Hardware Engineer</div>
 
                         <div class="mt-4 text-xs text-gray-300">Tech</div>
                         <div class="mt-1 space-y-1 text-sm text-gray-200">
                             <div>• ROS2 + Isaac ROS</div>
                             <div>• YOLOv8 TensorRT</div>
-                            <div>• RealSense D455</div>
                             <div>• Three.js</div>
                             <div>• Python + OpenCV</div>
                         </div>
@@ -80,63 +79,91 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main column -->
             <section class="lg:col-span-2 space-y-6">
+                <!-- Robot Hardware Image -->
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Overview</h2>
-                    <p class="text-gray-300 leading-relaxed">
-                        CleaningRobot is a robotic vision pipeline enabling autonomous object detection and navigation. The system detects objects (dirt, socks, debris) in 3D space using YOLOv8 on NVIDIA hardware, estimates accurate poses via depth sensing, and provides real-time visualization for navigation planning.
+                    <h2 class="text-xl font-semibold mb-3">Hardware Platform</h2>
+                    <div class="rounded-lg overflow-hidden border border-gray-700">
+                        <img src="Robot v1.jpg" alt="Mobile Robot Platform" class="w-full h-auto object-cover">
+                    </div>
+                    <p class="text-gray-400 text-sm mt-3">
+                        Custom mobile robot platform featuring RealSense D455 depth camera, NVIDIA Jetson compute module, and omnidirectional drive system.
                     </p>
                 </article>
-
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Architecture</h2>
-                    <p class="text-gray-300 mb-4">Perception and navigation pipeline from camera to autonomous control:</p>
+                    <h2 class="text-xl font-semibold mb-3">Demo Clips</h2>
+                    <p class="text-gray-300 mb-4">Short captures demonstrating picking and point-cloud visualization during runtime.</p>
 
-                    <div class="bg-[#07101a] rounded-md p-6 font-mono text-xs text-gray-300">
-                        <pre>RealSense D455 → /depth, /color, /imu
-         ↓
-YOLOv8 TensorRT → Custom detection (socks, dirt)
-         ↓
-3D Detector → Point cloud + floor removal
-         ↓
-WebSocket Viewer → Real-time 3D visualization
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Picking demo video" data-src-webm="robotprogress-picking.webm" data-autoplay="true">
+                            </video>
+                            <p class="text-gray-400 text-xs mt-2 text-center">Picking demo (bloopers for now)</p>
+                        </div>
 
-Planned Integration:
-isaac_ros_visual_slam → /odom and /pose
-         ↓
-isaac_ros_nvblox → 3D map + costmap
-         ↓
-isaac_ros_nav2 → Path planning
-         ↓
-Robot Controller → /cmd_vel</pre>
+                        <div>
+                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Point cloud demo video" data-src-webm="robotprogress-pointcloud.webm" data-autoplay="true">
+                            </video>
+                            <p class="text-gray-400 text-xs mt-2 text-center">Point cloud demo</p>
+                        </div>
                     </div>
                 </article>
 
+
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Workflow</h2>
+                    <h2 class="text-xl font-semibold mb-3">System Architecture</h2>
                    
-                    <div class="space-y-4">
-                        <div class="border-l-4 border-green-500 pl-4">
-                            <h4 class="font-medium text-white">1. Detection</h4>
-                            <p class="text-gray-300 text-sm">RealSense D455 streams 720p RGB + aligned depth at 30 FPS. YOLOv8 (TensorRT) detects objects with custom-trained models achieving 83%+ confidence.</p>
+                    <!-- 3D Detection & Visualization Pipeline -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-yellow-400 mb-4">3D Object Detection & Visualization</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <h4 class="font-medium text-white">1. Sensor Input</h4>
+                                <p class="text-gray-300 text-sm">RealSense D455 streams 720p RGB + aligned depth at 30 FPS via <code class="text-cyan-400">/color</code>, <code class="text-cyan-400">/depth</code>, and <code class="text-cyan-400">/imu</code> topics.</p>
+                            </div>
+                           
+                            <div class="border-l-4 border-blue-500 pl-4">
+                                <h4 class="font-medium text-white">2. Object Detection</h4>
+                                <p class="text-gray-300 text-sm">YOLOv8 TensorRT detects custom objects (socks, dirt, debris) with 83%+ confidence. Outputs bounding boxes via <code class="text-cyan-400">/detections_output</code>.</p>
+                            </div>
+                           
+                            <div class="border-l-4 border-purple-500 pl-4">
+                                <h4 class="font-medium text-white">3. Point Cloud Generation</h4>
+                                <p class="text-gray-300 text-sm">For each YOLO bounding box, crop the corresponding depth ROI (100-5000mm range). Compute median depth from central 40% window to establish object plane. Filter pixels within ±50mm of median to isolate object from floor/background. Project filtered pixels to 3D using camera intrinsics (fx, fy, cx, cy).</p>
+                            </div>
+
+                            <div class="border-l-4 border-pink-500 pl-4">
+                                <h4 class="font-medium text-white">4. Pose Estimation & Visualization</h4>
+                                <p class="text-gray-300 text-sm">Compute object center from median point cloud coordinates. Publish via <code class="text-cyan-400">/detected_objects_pointcloud</code> and <code class="text-cyan-400">/detected_objects_3d</code>. Stream to WebSocket server for real-time Three.js visualization at 15+ FPS.</p>
+                            </div>
                         </div>
-                       
-                        <div class="border-l-4 border-blue-500 pl-4">
-                            <h4 class="font-medium text-white">2. Point Cloud Generation</h4>
-                            <p class="text-gray-300 text-sm">For each detection, crop RGB + depth ROI. Apply D455-optimized filters (spatial, temporal, decimation, hole-filling). Project valid pixels to 3D using camera intrinsics.</p>
-                        </div>
-                       
-                        <div class="border-l-4 border-purple-500 pl-4">
-                            <h4 class="font-medium text-white">3. Floor Plane Removal</h4>
-                            <p class="text-gray-300 text-sm">Estimate robust floor plane from downsampled depth (4x, 2000+ inliers) using constrained RANSAC. Apply EMA smoothing (α=0.2) for stability. Gate object points above adaptive threshold.</p>
-                        </div>
-                       
-                        <div class="border-l-4 border-orange-500 pl-4">
-                            <h4 class="font-medium text-white">4. Pose Estimation & Visualization</h4>
-                            <p class="text-gray-300 text-sm">Compute object center from median point cloud coordinates. Publish PointCloud2 messages and stream to WebSocket server for real-time Three.js visualization.</p>
+                    </div>
+
+                    <!-- Navigation Pipeline -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-yellow-400 mb-4">Autonomous Navigation (Planned)</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-teal-500 pl-4">
+                                <h4 class="font-medium text-white">1. Visual SLAM</h4>
+                                <p class="text-gray-300 text-sm">Isaac ROS Visual SLAM processes camera feed and IMU data to generate real-time odometry (<code class="text-cyan-400">/odom</code>) and global pose estimates (<code class="text-cyan-400">/pose</code>).</p>
+                            </div>
+                           
+                            <div class="border-l-4 border-indigo-500 pl-4">
+                                <h4 class="font-medium text-white">2. 3D Mapping</h4>
+                                <p class="text-gray-300 text-sm">Isaac ROS nvblox constructs real-time 3D occupancy maps and 2D costmaps from depth data, enabling obstacle-aware path planning.</p>
+                            </div>
+                           
+                            <div class="border-l-4 border-violet-500 pl-4">
+                                <h4 class="font-medium text-white">3. Path Planning</h4>
+                                <p class="text-gray-300 text-sm">Isaac ROS Nav2 computes collision-free trajectories from current pose to goal positions using costmaps and dynamic replanning.</p>
+                            </div>
+
+                            <div class="border-l-4 border-red-500 pl-4">
+                                <h4 class="font-medium text-white">4. Motion Control</h4>
+                                <p class="text-gray-300 text-sm">Robot controller translates path commands to motor velocities via <code class="text-cyan-400">/cmd_vel</code>, actuating the mecanum wheel base for omnidirectional movement.</p>
+                            </div>
                         </div>
                     </div>
                 </article>
-
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Custom Model Training</h2>
 
@@ -180,25 +207,6 @@ ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
                         <code>web_viewer_server_3d.py</code> subscribes to ROS2 topics and serves data via WebSocket endpoints (/3d, /center, /full_scene). The HTML viewer connects and renders using Three.js with efficient buffer geometry updates at 15+ FPS.
                     </p>
                 </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Demo Clips</h2>
-                    <p class="text-gray-300 mb-4">Short captures demonstrating picking and point-cloud visualization during runtime.</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Picking demo video" data-src-webm="robotprogress-picking.webm" data-autoplay="true">
-                            </video>
-                            <p class="text-gray-400 text-xs mt-2 text-center">Picking demo</p>
-                        </div>
-
-                        <div>
-                            <video class="w-full rounded lazy-video" playsinline muted loop preload="none" style="object-fit:cover;" poster="robot-poster.jpg" aria-label="Point cloud demo video" data-src-webm="robotprogress-pointcloud.webm" data-autoplay="true">
-                            </video>
-                            <p class="text-gray-400 text-xs mt-2 text-center">Point cloud demo</p>
-                        </div>
-                    </div>
-                </article>
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">How to Run</h2>
 
@@ -238,7 +246,7 @@ docker exec -it isaac_ros_dev-aarch64-container bash -c \
             <!-- Sidebar -->
             <aside class="space-y-6">
                 <div class="glow rounded-lg p-4">
-                    <h4 class="text-sm font-medium text-gray-200">Hardware</h4>
+                    <h4 class="text-sm font-medium text-gray-200">Hardware (parts list)</h4>
 		    <ul class="mt-3 text-sm text-gray-300 space-y-2">
 		     <li>
 		      NVIDIA Jetson Orin Nano Developer Kit
@@ -306,10 +314,9 @@ docker exec -it isaac_ros_dev-aarch64-container bash -c \
                 <div class="glow rounded-lg p-4">
                     <h4 class="text-sm font-medium text-gray-200">Trained Models</h4>
                     <ul class="mt-3 text-sm text-gray-300 space-y-2">
-                        <li><code>socks.plan</code> — Socks on carpet (83%)</li>
-                        <li><code>fixed.plan</code> — Dirt on wood</li>
-                        <li>Custom datasets via Roboflow</li>
-                        <li>YOLOv8n architecture (nano)</li>
+                        <li><code>socks.onnx</code> — Clothes on carpet</li>
+                        <li><code>clean.onnx</code> — Dirt/Debris/Dust on wood</li>
+                        <li><code>trash.onnx</code> — Trash on wood</li>
                     </ul>
                 </div>
 

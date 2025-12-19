@@ -89,7 +89,12 @@
             <div class="flex flex-col md:flex-row gap-6 mb-8">
                 <div class="flex-1">
                     <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
-                    <p class="text-gray-400 text-sm">Graduate Research — Boston University, 2020-2022</p>
+                    <p class="text-gray-400 text-sm mb-3">Graduate Research — Boston University, 2020-2022</p>
+                    <p class="text-gray-300">
+                        I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration.
+                        Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
+                        The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
+                    </p>
                 </div>
                
                 <div class="md:w-64 flex-shrink-0">
@@ -111,12 +116,10 @@
                 </div>
             </div>
 
-            <h2>Overview</h2>
-            <p>
-                I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration.
-                Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
-                The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
-            </p>
+            <div class="bg-[#0d1117] border border-gray-700 rounded-lg p-4 my-6">
+                <img src="IMUSetup.png" alt="IMU sensor setup on foot" class="w-full rounded">
+                <p class="text-gray-400 text-xs mt-2 text-center">IMU sensor placement for foot tracking during gait</p>
+            </div>
 
             <h2>Problem Setup</h2>
             <p>
