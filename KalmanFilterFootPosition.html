@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalman Filter for Foot Position Tracking — Aaron Horowitz</title>
+    <title>Kalman Filter for ankle Position Tracking — Aaron Horowitz</title>
    
     <!-- Performance optimizations: preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,12 +88,12 @@
         <article class="content-block">
             <div class="flex flex-col md:flex-row gap-6 mb-8">
                 <div class="flex-1">
-                    <h1>Zero-Velocity Update Kalman Filter for Foot Position</h1>
+                    <h1>Zero-Velocity Update Kalman Filter for ankle Position</h1>
                     <p class="text-gray-400 text-sm mb-3">Graduate Research — Boston University, 2020-2022</p>
                     <p class="text-gray-300">
-                        I implemented a Kalman filter to track foot position during walking by integrating IMU acceleration.
+                        I implemented a Kalman filter to track ankle position during walking by integrating IMU acceleration.
                         Integrating acceleration directly produces drift, so the filter uses zero-velocity updates (ZUPT) during stance phase to correct accumulated error.
-                        The measurement model simply checks if the predicted velocity is zero when the foot contacts the ground.
+                        The measurement model simply checks if the predicted velocity is zero when the ankle contacts the ground.
                     </p>
                 </div>
                
@@ -110,15 +110,15 @@
                             </svg>
                         </a>
                         <div class="text-xs text-gray-400">
-                            Conference paper describing the full pose estimation system incorporating ZUPT-based foot tracking
+                            Conference paper describing the full pose estimation system incorporating ZUPT-based ankle tracking
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-[#0d1117] border border-gray-700 rounded-lg p-4 my-6">
-                <img src="IMUSetup.png" alt="IMU sensor setup on foot" class="w-full rounded">
-                <p class="text-gray-400 text-xs mt-2 text-center">IMU sensor placement for foot tracking during gait</p>
+                <img src="IMUSetup.png" alt="IMU sensor setup on ankle" class="w-full rounded">
+                <p class="text-gray-400 text-xs mt-2 text-center">IMU sensor placement for ankle tracking during gait</p>
             </div>
 
             <h2>Problem Setup</h2>
@@ -176,7 +176,7 @@
             </div>
 
             <p>
-                During stance, the actual measurement is zero (ZUPT assumption: foot velocity = 0). The residual is:
+                During stance, the actual measurement is zero (ZUPT assumption: ankle velocity = 0). The residual is:
             </p>
             <div class="equation-block">
                 $$y_k = 0 - \hat{z}_k = -v_k^-$$
@@ -325,13 +325,13 @@
             </ul>
 
             <p>
-                By tuning \(R\) to be small relative to \(\mathbf{Q}\), the filter trusts the stance-phase measurements heavily, which is appropriate since the foot truly has zero velocity during ground contact.
+                By tuning \(R\) to be small relative to \(\mathbf{Q}\), the filter trusts the stance-phase measurements heavily, which is appropriate since the ankle truly has zero velocity during ground contact.
             </p>
         </article>
 
-        <footer class="text-center mt-12 text-gray-500 text-sm">
+        <ankleer class="text-center mt-12 text-gray-500 text-sm">
             <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
-        </footer>
+        </ankleer>
     </div>
     <script src="include_header.js" defer></script>
 </body>
