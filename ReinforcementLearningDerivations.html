@@ -66,6 +66,7 @@
                     <p class="text-center text-lg my-4">
                         $$\pi(a|s): S \to A$$
                     </p>
+                                θ are the actor (policy) parameters, φ are the critic (value function) parameters, and θ<sub>old</sub> is a snapshot of θ from before the current update.
                 </div>
 
                 <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Value Functions</h3>
@@ -79,6 +80,7 @@
                         $$V^\pi(s) = \mathbb{E}_\pi\left[R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots \mid s_0 = s\right]$$
                     </p>
                     <p class="text-center text-lg my-4">
+                                T is the rollout horizon (how many timesteps you collected in this batch). rₜ is the scalar reward observed at timestep t.
                         $$= \mathbb{E}_\pi\left[\sum_{t=0}^{\infty} \gamma^t R(s_t) \mid s_0 = s\right]$$
                     </p>
                     <p class="text-gray-400 text-sm mt-3">
@@ -190,13 +192,11 @@
 
                 <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
                     <p class="text-blue-300 font-bold mb-2">Equation explained:</p>
-                    <p class="text-gray-300">
-                        <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4">
-                            <li>The Advantage Function's first term $r(s,a)$ represents the immediate reward for taking action $a$ in state $s$.</li>
-                            <li>The second term is the discounted expected future value of following policy $\pi$ after taking action $a$ in state $s$.</li>
-                            <li>The third term subtracts the baseline value $V^\pi(s)$, representing the expected value of following policy $\pi$ from the beginning, state $s$.</li>
-                        </ul>
-                    </p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4">
+                        <li>The first term $R(s,a)$ is the immediate reward for taking action $a$ in state $s$.</li>
+                        <li>The second term is the discounted expected future value of following $\pi$ after taking $a$.</li>
+                        <li>The last term subtracts the baseline $V^\pi(s)$ (value of following $\pi$ from $s$).</li>
+                    </ul>
                 </div>
                 
             </div>
@@ -281,6 +281,39 @@
                     </ul>
                 </div>
 
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Advantage Estimation (GAE)</h3>
+                <p class="text-gray-300 mb-4">
+                    In practice, $A_t$ is computed from rollouts using <strong class="text-white">Generalized Advantage Estimation</strong> (GAE):
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$$
+                    </p>
+                    <p class="text-center text-lg my-4">
+                        $$A_t^{\text{GAE}(\gamma,\lambda)} = \sum_{l=0}^{T-t-1}(\gamma\lambda)^l\,\delta_{t+l}$$
+                    </p>
+                    <p class="text-center text-lg my-4">
+                        $$V^{\text{target}}_t = A_t^{\text{GAE}} + V_\phi(s_t)$$
+                    </p>
+                    <p class="text-gray-400 text-sm mt-3">
+                        Here $V_\phi$ is the learned value function (critic), and $\lambda\in[0,1]$ trades bias vs variance.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-blue-400 mb-3 mt-6">Full PPO Training Loss</h3>
+                <p class="text-gray-300 mb-4">
+                    PPO is usually trained with a combined actor-critic loss (maximize objective, or equivalently minimize the negative):
+                </p>
+                <div class="bg-[#0d1117] rounded-lg p-4 mb-4 border border-gray-800">
+                    <p class="text-center text-lg my-4">
+                        $$\mathcal{L}(\theta,\phi)= -\mathbb{E}_t\big[L^{\text{CLIP}}_t(\theta)\big] + c_v\,\mathbb{E}_t\big[(V_\phi(s_t)-V^{\text{target}}_t)^2\big] - c_e\,\mathbb{E}_t\big[\mathcal{H}(\pi_\theta(\cdot|s_t))\big]$$
+                    </p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-400 text-sm ml-4">
+                        <li>$c_v$ weights the value (critic) regression; $c_e$ weights entropy regularization</li>
+                        <li>$\mathcal{H}$ encourages exploration by penalizing low-entropy policies</li>
+                    </ul>
+                </div>
+
                 <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mt-6">
                     <p class="text-purple-300 font-bold mb-2">Why Clipping?</p>
                     <p class="text-gray-300">
@@ -315,6 +348,110 @@
                             <strong class="text-white">4. PPO:</strong> Uses advantages to update policy parameters $\theta$ while clipping prevents overly large updates
                         </p>
                     </div>
+
+                    <div class="bg-[#0d1117] rounded-lg p-4 border border-gray-800">
+                        <p class="text-gray-300 mb-3">
+                            <strong class="text-white">PPO + GAE: What We Are Actually Doing</strong>
+                        </p>
+
+                        <ol class="list-decimal list-inside space-y-4 text-gray-300 ml-2">
+
+                            <li>
+                                <strong class="text-white">Initialize the networks.</strong><br>
+                                We start with an actor π<sub>θ</sub> that chooses actions, and a critic V<sub>φ</sub> that guesses how good each state is.
+                                We also keep a frozen copy π<sub>θ_old</sub> that we will compare new policies against.
+                                <br><br>
+                                θ are the actor (policy) parameters, φ are the critic (value function) parameters, and θ<sub>old</sub> is a snapshot of θ from before the current update.
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Collect data (rollout).</strong><br>
+                                Run the environment using the old policy π<sub>θ_old</sub>.  
+                                Store states, actions, and rewards:<br>
+                                (s₀, a₀, r₀), (s₁, a₁, r₁), …, (s<sub>T</sub>, a<sub>T</sub>, r<sub>T</sub>)
+                                <br><br>
+                                T is the rollout horizon (how many timesteps you collected in this batch). rₜ is the scalar reward observed at timestep t.
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Compute TD residuals (how “surprised” we were).</strong><br>
+                                We measure how different the critic’s prediction was from what actually happened:<br><br>
+
+                                δₜ = rₜ + γ V<sub>φ</sub>(sₜ₊₁) − V<sub>φ</sub>(sₜ)
+
+                                <br><br>
+                                γ ∈ [0, 1] is the <em>discount factor</em>: larger γ means future rewards matter more.
+                                V<sub>φ</sub>(s) is the critic’s estimate of expected discounted return from state s.
+                                (At termination, you typically treat V<sub>φ</sub>(terminal) = 0.)
+                                <br><br>
+                                Intuition:  
+                                “This is the immediate reward plus the discounted value of the next state, minus what the critic thought the current state was worth.”
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Compute GAE Advantages (how much better or worse the action was).</strong><br>
+                                We blend short and long-term TD residuals to get a smoother estimate of advantage:<br><br>
+
+                                Aₜ = Σ<sub>l≥0</sub> (γλ)ˡ δ<sub>t+l</sub>
+
+                                <br><br>
+                                λ ∈ [0, 1] is the GAE parameter: it controls how much future TD residuals should be trusted.
+                                λ = 0 gives a 1-step advantage (≈ δₜ); λ → 1 includes more future TD residuals (lower bias, higher variance).
+                                <br><br>
+                                Intuition:  
+                                “If δₜ is how unexpectedly good step t was, GAE adds up future surprises, discounted over time, to tell us if the action was overall good or bad.”
+                                <br><br>
+                                Value targets are simply:  
+                                V<sub>target</sub>(sₜ) = Aₜ + V<sub>φ</sub>(sₜ)
+                                <br><br>
+                                V<sub>target</sub>(sₜ) is what we regress the critic toward.
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Compute importance ratios.</strong><br>
+                                We compare the probability of taking the same action under the new policy vs. old policy:<br><br>
+
+                                rₜ(θ) = π<sub>θ</sub>(aₜ | sₜ) / π<sub>θ_old</sub>(aₜ | sₜ)
+
+                                <br><br>
+                                This is the <em>importance sampling ratio</em>: it compares how likely the same sampled action aₜ is under π<sub>θ</sub> versus π<sub>θ_old</sub>.
+                                If rₜ(θ)=1, the policy did not change on that sample.
+                                <br><br>
+                                Intuition:  
+                                “If the new policy wants to take the same action much more often, the ratio gets large; if it wants to take it less often, the ratio shrinks.”
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Optimize PPO’s clipped objective.</strong><br>
+                                We want to improve the policy, but not too fast.  
+                                PPO takes the advantage Aₜ and scales it by how much the policy changed:<br><br>
+
+                                L<sub>clip</sub> = − E[ min( rₜ Aₜ , clip(rₜ, 1−ε, 1+ε ) Aₜ ) ]<br><br>
+
+                                ε is the clipping hyperparameter (often 0.1–0.2): it sets the safe ratio band [1−ε, 1+ε].
+                                E[·] means average over the collected batch (empirical expectation).
+                                <br><br>
+                                Intuition:  
+                                “If the new policy changes too much (ratio leaves the safe range), we ignore the extra improvement and clip it.  
+                                This prevents gigantic policy updates that break training.”
+
+                                <br><br>
+                                Critic loss:<br>
+                                (V<sub>φ</sub>(sₜ) − V<sub>target</sub>(sₜ))²
+                                <br><br>
+                                Entropy bonus keeps policy exploring (encourages higher-entropy π<sub>θ</sub>(·|s)).
+                            </li>
+
+                            <li>
+                                <strong class="text-white">Update old policy and repeat.</strong><br>
+                                After optimizing several epochs over the same batch, we set:<br><br>
+                                θ<sub>old</sub> ← θ<br><br>
+                                And start a new rollout.
+                            </li>
+
+                        </ol>
+                    </div>
+
                 </div>
             </div>
 

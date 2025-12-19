@@ -195,10 +195,21 @@
                 It tells each state component how much to adjust when the residual is applied.
             </p>
 
-            <p>State update:</p>
+            <p>The state update applies the correction:</p>
             <div class="equation-block">
                 $$\hat{\mathbf{x}}_k = \hat{\mathbf{x}}_k^- + \mathbf{K}_k y_k$$
             </div>
+            <p>
+                Here, \(\mathbf{K}_k\) is a 2×1 vector (one entry for position, one for velocity).
+                The Kalman gain is multiplied against the residual \(y_k = -v_k^-\) to compute corrections for both position and velocity:
+            </p>
+            <div class="equation-block">
+                $$\begin{bmatrix} p_k \\ v_k \end{bmatrix} = \begin{bmatrix} p_k^- \\ v_k^- \end{bmatrix} + \begin{bmatrix} K_1 \\ K_2 \end{bmatrix} (-v_k^-)$$
+            </div>
+            <p>
+                This updates both states simultaneously: the velocity is directly corrected toward zero (via \(K_2\)), 
+                while the position is indirectly corrected (via \(K_1\)) thanks to the cross-covariance term in \(\mathbf{P}_k^-\).
+            </p>
 
             <p>Covariance update:</p>
             <div class="equation-block">
@@ -220,112 +231,80 @@
                 The process noise \(\mathbf{Q}\) controls how quickly uncertainty grows during swing.
             </p>
 
-            <h2>Steady-State Covariance via Lyapunov Equation</h2>
+            <h2>Uncertainty and Convergence</h2>
+            
+            <h3>Why Covariance Converges</h3>
             <p>
-                The ZUPT measurement updates cause the covariance matrix \(\mathbf{P}_k\) to converge to a steady-state value.
-                Rather than simulating many gait cycles to observe convergence, we can solve for this steady state directly using the discrete-time algebraic Riccati equation (DARE), which is a form of Lyapunov equation.
-            </p>
-
-            <h3>Why Convergence Occurs</h3>
-            <p>
-                During each gait cycle, two competing processes act on the covariance:
+                During each gait cycle, two competing processes act on the covariance matrix \(\mathbf{P}_k\):
             </p>
             <ul class="list-disc list-inside ml-6 space-y-2">
-                <li><strong>Predict step:</strong> Uncertainty grows as \(\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}\)</li>
-                <li><strong>Update step (ZUPT):</strong> Uncertainty shrinks as \(\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k\mathbf{H})\mathbf{P}_k^-\)</li>
+                <li><strong>Predict step (swing):</strong> Uncertainty grows as \(\mathbf{P}_k^- = \mathbf{F}\mathbf{P}_{k-1}\mathbf{F}^T + \mathbf{Q}\)</li>
+                <li><strong>Update step (stance):</strong> Uncertainty shrinks as \(\mathbf{P}_k = (\mathbf{I} - \mathbf{K}_k\mathbf{H})\mathbf{P}_k^-\)</li>
             </ul>
             <p>
-                After many cycles, these effects balance out and \(\mathbf{P}_k\) reaches a fixed point \(\bar{\mathbf{P}}\) where the growth during prediction equals the reduction during measurement update.
-                This steady-state covariance tells you the long-term accuracy of your position and velocity estimates.
+                After several gait cycles, these effects balance out and \(\mathbf{P}_k\) converges to a steady pattern.
+                The converged covariance tells you the typical accuracy of your position and velocity estimates.
             </p>
 
-            <h3>The Discrete Algebraic Riccati Equation (DARE)</h3>
+            <h3>Extracting Error Bounds</h3>
             <p>
-                For a time-invariant Kalman filter (constant \(\mathbf{F}, \mathbf{G}, \mathbf{H}, \mathbf{Q}, R\)), the steady-state covariance \(\bar{\mathbf{P}}\) satisfies:
+                The covariance matrix \(\mathbf{P}_k\) directly gives you uncertainty estimates:
             </p>
             <div class="equation-block">
-                $$\bar{\mathbf{P}} = \mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T + \mathbf{Q} - \mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T$$
+                $$\mathbf{P}_k = \begin{bmatrix} P_{11} & P_{12} \\ P_{12} & P_{22} \end{bmatrix}$$
             </div>
-
             <p>
-                This is a quadratic matrix equation. It encodes the condition that after one full predict-update cycle, the covariance returns to itself.
-            </p>
-
-            <h3>Breaking Down the DARE</h3>
-            <p>Let's parse each term:</p>
-            <ul class="list-disc list-inside ml-6 space-y-2">
-                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Propagates steady-state uncertainty through state transition</li>
-                <li><strong>\(\mathbf{Q}\):</strong> Adds process noise (IMU drift, model error)</li>
-                <li><strong>\(\mathbf{F}\bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\mathbf{H}\bar{\mathbf{P}}\mathbf{F}^T\):</strong> Subtracts the information gain from the measurement update</li>
-            </ul>
-
-            <p>
-                The third term is the key: it quantifies how much uncertainty the ZUPT removes.
-                When \(R\) is small (you trust the zero-velocity measurement), this term is large and \(\bar{\mathbf{P}}\) is small (high accuracy).
-                When \(\mathbf{Q}\) is large (high process noise), \(\bar{\mathbf{P}}\) increases because drift accumulates faster than measurements can correct it.
-            </p>
-
-            <h3>Interpretation for ZUPT</h3>
-            <p>
-                In the ZUPT context, the measurement model is \(\mathbf{H} = [0 \quad 1]\), which observes velocity. The DARE tells us:
+                The diagonal elements are variances. Take the square root to get standard deviations:
             </p>
             <ul class="list-disc list-inside ml-6 space-y-2">
-                <li>Velocity uncertainty \(\bar{P}_{22}\) converges to a value balancing process noise against measurement updates</li>
-                <li>Position uncertainty \(\bar{P}_{11}\) converges based on how well velocity corrections propagate through \(\mathbf{F}\)</li>
-                <li>Cross-covariance \(\bar{P}_{12}\) captures the correlation between position and velocity errors at steady state</li>
+                <li><strong>Position error:</strong> \(\sigma_p = \sqrt{P_{11}}\) (e.g., 1.5 cm)</li>
+                <li><strong>Velocity error:</strong> \(\sigma_v = \sqrt{P_{22}}\) (e.g., 9 cm/s)</li>
             </ul>
-
             <p>
-                The cross-covariance term is critical: even though we only measure velocity (via ZUPT), the off-diagonal element \(\bar{P}_{12}\) allows the Kalman gain \(\mathbf{K}_k\) to correct position errors whenever velocity is updated.
-                This is why ZUPT works—the position and velocity errors are coupled through the dynamics \(\mathbf{F}\).
+                These standard deviations give you a ±1σ confidence interval (68% probability).
+                For 95% confidence, use ±2σ.
             </p>
 
-            <h3>Solving the DARE</h3>
+            <h3>Example After Convergence</h3>
             <p>
-                For our 2×2 system, the DARE can be solved:
-            </p>
-            <ul class="list-disc list-inside ml-6 space-y-2">
-                <li><strong>Analytically:</strong> Expand into scalar equations and solve the resulting polynomial (messy but exact)</li>
-                <li><strong>Numerically:</strong> Use iterative methods or built-in solvers (e.g., <code>scipy.linalg.solve_discrete_are</code> in Python)</li>
-                <li><strong>Simulation:</strong> Run the filter for many cycles until \(\mathbf{P}_k\) stops changing</li>
-            </ul>
-
-            <h3>Example Steady-State Result</h3>
-            <p>
-                Suppose \(\Delta t = 0.01\) s, \(\mathbf{Q} = \begin{bmatrix} 10^{-6} & 0 \\ 0 & 10^{-4} \end{bmatrix}\), and \(R = 0.01\).
-                After solving the DARE, you might find:
+                Suppose after running the filter for a few steps, \(\mathbf{P}_k\) settles to:
             </p>
             <div class="equation-block">
-                $$\bar{\mathbf{P}} \approx \begin{bmatrix} 2.3 \times 10^{-4} & 1.1 \times 10^{-3} \\ 1.1 \times 10^{-3} & 8.7 \times 10^{-3} \end{bmatrix}$$
+                $$\mathbf{P}_k \approx \begin{bmatrix} 2.3 \times 10^{-4} & 1.1 \times 10^{-3} \\ 1.1 \times 10^{-3} & 8.7 \times 10^{-3} \end{bmatrix}$$
             </div>
-
             <p>
-                This tells you:
+                This means:
             </p>
             <ul class="list-disc list-inside ml-6 space-y-2">
-                <li>Position uncertainty: \(\sigma_x = \sqrt{\bar{P}_{11}} \approx 1.5\) cm</li>
-                <li>Velocity uncertainty: \(\sigma_v = \sqrt{\bar{P}_{22}} \approx 9.3\) cm/s</li>
-                <li>Positive correlation between position and velocity errors (expected from \(\mathbf{F}\))</li>
+                <li>Position error: \(\sigma_p = \sqrt{2.3 \times 10^{-4}} \approx 1.5\) cm</li>
+                <li>Velocity error: \(\sigma_v = \sqrt{8.7 \times 10^{-3}} \approx 9.3\) cm/s</li>
+                <li>Off-diagonal \(P_{12} > 0\) indicates position and velocity errors are correlated (when velocity estimate drifts high, position tends to overshoot)</li>
             </ul>
 
+            <h3>Tuning for Better Accuracy</h3>
             <p>
-                Knowing \(\bar{\mathbf{P}}\) ahead of time lets you:
+                The converged uncertainty depends on your noise parameters:
             </p>
             <ul class="list-disc list-inside ml-6 space-y-2">
-                <li>Initialize \(\mathbf{P}_0 = \bar{\mathbf{P}}\) to skip the transient convergence phase</li>
-                <li>Tune \(\mathbf{Q}\) and \(R\) to achieve desired steady-state accuracy before running the filter</li>
-                <li>Compute the steady-state Kalman gain \(\bar{\mathbf{K}} = \bar{\mathbf{P}}\mathbf{H}^T(\mathbf{H}\bar{\mathbf{P}}\mathbf{H}^T + R)^{-1}\) and use a time-invariant filter for efficiency</li>
+                <li><strong>Smaller \(R\):</strong> Trust ZUPT measurements more → tighter convergence, smaller \(\sigma_p\) and \(\sigma_v\)</li>
+                <li><strong>Smaller \(\mathbf{Q}\):</strong> Assume less IMU drift → slower uncertainty growth during swing</li>
             </ul>
-
-            <h2>Key Parameters</h2>
-            <ul class="list-disc list-inside ml-6 space-y-2">
-                <li><strong>Process noise covariance \(\mathbf{Q}\):</strong> Accounts for IMU noise and integration drift</li>
-                <li><strong>Measurement noise covariance \(R\):</strong> Reflects confidence in zero-velocity assumption (typically 0.01)</li>
-                <li><strong>Initial state covariance \(\mathbf{P}_0\):</strong> Can be set to \(\bar{\mathbf{P}}\) from DARE solution to avoid transient</li>
-            </ul>
-
             <p>
-                By tuning \(R\) to be small relative to \(\mathbf{Q}\), the filter trusts the stance-phase measurements heavily, which is appropriate since the ankle truly has zero velocity during ground contact.
+                In practice, you run the filter for a few steps and check if \(\mathbf{P}_k\) stabilizes.
+                Once it does, you know your typical error margins.
+            </p>
+
+            <h2>Summary</h2>
+            <p>
+                The ZUPT Kalman filter corrects IMU integration drift by:
+            </p>
+            <ul class="list-disc list-inside ml-6 space-y-2">
+                <li>Predicting position and velocity using equations of motion during swing</li>
+                <li>Applying zero-velocity corrections during stance to reset accumulated error</li>
+                <li>Tracking uncertainty via the covariance matrix \(\mathbf{P}_k\), which converges after a few steps</li>
+            </ul>
+            <p>
+                The standard deviations \(\sigma_p = \sqrt{P_{11}}\) and \(\sigma_v = \sqrt{P_{22}}\) give you practical error bounds on your estimates, typically around 1-2 cm for position and 5-10 cm/s for velocity with well-tuned parameters.
             </p>
         </article>
 
