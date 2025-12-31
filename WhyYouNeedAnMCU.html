@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv='cache-control' content='no-cache'> 
+    <meta http-equiv='expires' content='0'> 
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why You Can't Do Motor Control on Linux (And Why That's Fine) — Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-5xl mx-auto sm:p-4 lg:p-8">
+        <!-- Header -->
+        <div id="site-header"></div>
+
+        <!-- Article Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
+                Why You Can't Do Motor Control on Linux (And Why That's Fine)
+            </h1>
+            <p class="text-gray-400 text-lg mb-2">Understanding the MCU + MPU split in robotics</p>
+            <p class="text-gray-500 text-sm">December 24, 2025</p>
+        </header>
+
+        <!-- Article Content -->
+        <article class="prose prose-invert max-w-none">
+            <p class="text-gray-300 mb-4">
+                If you've tried to build a robot with a Jetson or Raspberry Pi, you've probably discovered a frustrating truth: reading motor encoders from Linux is terrible. Pulses get missed, velocity estimates jitter, and control loops feel sloppy. You might wonder if you're doing something wrong.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                You're not. Linux just isn't built for this. Here's why—and what to do about it.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">The Problem: Hard Real-Time vs. Best-Effort</h2>
+
+            <p class="text-gray-300 mb-4">
+                Motor encoders produce asynchronous pulse trains. Every edge matters. Miss one, and your position estimate drifts. To calculate velocity, you need to count pulses over a precise, known time window. If that window stretches or shrinks unpredictably, your velocity estimate becomes garbage.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                This is a <strong class="text-white">hard real-time problem</strong>. "Hard real-time" means: if you miss a deadline, the system fails. Not "fails gracefully"—<em>fails</em>.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Linux is not a hard real-time system. It's a general-purpose operating system optimized for throughput, fairness, and safety. When you read a GPIO pin or talk to hardware from Linux userspace, every operation is a syscall—a request that crosses the user-kernel boundary, gets queued by the scheduler, and executes whenever the kernel decides it's safe.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                That delay is <strong class="text-white">unbounded</strong>. The scheduler might preempt you. A page fault might trigger. An interrupt handler might run. You have no guarantees.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Can't You Just Use PREEMPT_RT?</h2>
+
+            <p class="text-gray-300 mb-4">
+                You can get <em>closer</em> to real-time behavior with the right setup. With <code class="text-cyan-400">PREEMPT_RT</code> patches, isolated CPU cores, IRQ affinity tuning, and carefully pinned RT threads, Linux can achieve soft real-time performance:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>Wake a thread within 10–50 µs worst-case</li>
+                <li>Run control loops at 1–5 kHz</li>
+                <li>Avoid priority inversion</li>
+                <li>Behave predictably under load</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                This is <strong class="text-white">real</strong>, and it's used in industrial automation, CNC machines, and other systems where "mostly on time" is good enough.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                But here's what's missing:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>No guarantees about GPIO edge timing</li>
+                <li>No guarantees about I²C transaction completion</li>
+                <li>No deterministic response to asynchronous external events</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                <code class="text-cyan-400">PREEMPT_RT</code> improves <em>thread scheduling</em>. It doesn't give you hardware-level determinism. It doesn't turn Linux into a microcontroller. For encoder decoding, you still have jitter. You will still miss edges.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Why SMBus Doesn't Help</h2>
+
+            <p class="text-gray-300 mb-4">
+                Some motor drivers expose control over SMBus or I²C. You might think: "Great, I'll just poll the encoder count over I²C." This fails for the same reason.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                SMBus from Linux userspace is designed for <strong class="text-white">slow configuration and telemetry</strong>—reading temperatures, setting fan speeds, querying battery status. It deliberately adds timeouts, transaction framing, and safety checks to prevent any single process from wedging the bus.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                This is <em>good design</em> for a general-purpose OS. But it makes SMBus unsuitable for control loops. The bus is too slow, transactions are too unpredictable, and the kernel will abort your transfer if you try to hog it.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Why Arduino "Works" (Sort Of)</h2>
+
+            <p class="text-gray-300 mb-4">
+                An Arduino has no operating system. No scheduler. No syscalls. Just your code running in a loop. Interrupts fire immediately with bounded latency. This is why Arduino <em>can</em> do encoder decoding: you attach interrupt handlers to GPIO pins, and they fire on every edge.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                But this approach has limits:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>Every encoder pulse triggers an interrupt</li>
+                <li>CPU load scales with motor speed</li>
+                <li>At high RPM, interrupt handlers start overlapping</li>
+                <li>Jitter increases, pulses get missed</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                Arduino works fine for hobby robots with slow motors and low-resolution encoders. But it doesn't scale.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">The Real Solution: Hardware Encoder Support</h2>
+
+            <p class="text-gray-300 mb-4">
+                High-end microcontrollers—like STM32, NXP i.MX RT, and TI C2000—have something Arduino lacks: <strong class="text-white">hardware quadrature decoder logic built into the timer peripherals</strong>.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                This is not software. This is not firmware. This is actual digital logic—gates and flip-flops—running continuously in silicon, independent of the CPU.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Here's what the hardware does:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>Watches encoder A and B channels</li>
+                <li>Implements a state machine to determine rotation direction</li>
+                <li>Automatically increments or decrements a counter</li>
+                <li>Handles x1, x2, or x4 edge multiplication</li>
+                <li>Filters glitches</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                All of this happens <strong class="text-white">with zero CPU involvement</strong>. No interrupts. No polling. The CPU just reads a counter register whenever it needs the current position.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Why Bit Width Matters</h2>
+
+            <p class="text-gray-300 mb-4">
+                Arduino's 8-bit timers overflow constantly. Even 16-bit counters wrap quickly at high speeds. Handling overflow adds complexity and failure modes.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                STM32 offers 32-bit timers. A 32-bit counter at 1 MHz takes 71 minutes to overflow. You can safely ignore wraparound. Your math gets simpler. Your code gets safer.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">What About Kernel Drivers?</h2>
+
+            <p class="text-gray-300 mb-4">
+                You might think: "Why not write a Linux kernel driver that handles encoders?" Some people do this. It's a bad idea.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Kernel space has lower latency than userspace, but it's still not deterministic. You're still at the mercy of the scheduler, interrupt handlers, and CPU cache. And now you've coupled your motor control logic to the kernel, making it harder to maintain, debug, and port.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                A $5 STM32 solves the problem better than a kernel driver. Use it.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">The Correct Architecture</h2>
+
+            <p class="text-gray-300 mb-4">
+                Industry-standard robotics systems use a two-layer architecture:
+            </p>
+
+            <div class="bg-[#161b22] rounded-lg p-6 my-6 border border-gray-700">
+                <pre class="text-sm text-gray-300"><code>Encoders + Motors → MCU (hardware decode + PID)
+                         ↓
+                  position, velocity, state
+                         ↓
+               Linux / Jetson (ROS, planning, vision)</code></pre>
+            </div>
+
+            <p class="text-gray-300 mb-4">
+                The microcontroller handles:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>Encoder decoding (in hardware)</li>
+                <li>PID control loops (at fixed rate)</li>
+                <li>Motor PWM generation</li>
+                <li>Safety interlocks</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                The Linux system handles:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-300 mb-4 ml-6 space-y-2">
+                <li>Path planning</li>
+                <li>Computer vision</li>
+                <li>High-level logic</li>
+                <li>User interfaces</li>
+            </ul>
+
+            <p class="text-gray-300 mb-4">
+                Communication between the two happens over a simple serial protocol (UART, CAN, etc.) at a reasonable rate—maybe 50-100 Hz. The MCU sends position and velocity. The Linux system sends target velocities or trajectory points.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Why This Division Makes Sense</h2>
+
+            <p class="text-gray-300 mb-4">
+                Linux deliberately trades timing determinism for safety, isolation, and flexibility. That's the right trade-off for a general-purpose OS. You <em>want</em> the kernel to protect hardware from rogue processes. You <em>want</em> the scheduler to keep the system responsive.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                A microcontroller is the opposite: it's a timing authority with bounded latency and hardware assistance. It does one thing well.
+            </p>
+
+            <p class="text-gray-300 mb-4">
+                Use each for what it's good at. Don't fight the OS. Don't try to turn Linux into a real-time system. Add a $5 chip and move on.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mt-8 mb-4">Summary</h2>
+
+            <p class="text-gray-300 mb-6">
+                Real-time encoder decoding requires deterministic timing and hardware assistance. Microcontrollers provide this via dedicated timer logic. Linux deliberately trades timing determinism for safety and isolation. The MCU + MPU split is not a compromise—it's the correct and industry-standard design. Each layer does what it's built to do, and the system works better as a result.
+            </p>
+
+        </article>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 Aaron Horowitz. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
