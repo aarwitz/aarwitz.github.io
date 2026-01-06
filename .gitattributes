@@ -14,3 +14,4 @@ robot.webm -filter -diff -merge -text
 RobotDrivingForward.webm -filter -diff -merge -text
 quad.webm -filter -diff -merge -text
 socket.webm -filter -diff -merge -text
+CarRacing800.webm -filter -diff -merge -text
