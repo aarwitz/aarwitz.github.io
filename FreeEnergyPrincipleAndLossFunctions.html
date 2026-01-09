@@ -51,19 +51,14 @@
         <!-- Article Content -->
         <article class="prose prose-invert max-w-none">
             <p class="text-gray-300 mb-4">
-                Berekly, Descartes, Kant, Schopenhaeur, and so on over and over this isn't anything new. the map is not the territort. but what is it then that we are experiencing? 
+                Berekly, Descartes, Kant, Schopenhaeur, and so on, over and over, this isn't anything new. the map is not the territort. but what is it then that we are experiencing? 
                 what is our brain doing and why?
-                Karl Friston's <strong class="text-white">Free Energy Principle</strong> (FEP) has been called one of the most ambitious theories in neuroscience—a grand unified framework claiming that all adaptive systems, from single cells to entire brains, work by minimizing a single quantity called "free energy." When you first see the math, something looks strangely familiar. Wait a second... isn't this just cross-entropy loss? Or maybe KL divergence? Aren't neural networks doing the exact same thing?
+                Karl Friston's <strong class="text-white">Free Energy Principle</strong> (FEP) has been called one of the most ambitious theories in neuroscience. It claims that all adaptive systems, from single cells to entire brains, work by minimizing a single quantity called "free energy." Looking at the math fundamental to its theory, I just thought of cross-entropy loss.
             </p>
-
-            <p class="text-gray-300 mb-4">
-                The short answer: <em>kind of, yes</em>. The long answer is more interesting.
-            </p>
-
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">What is the Free Energy Principle?</h2>
 
             <p class="text-gray-300 mb-4">
-                Friston's Free Energy Principle states that biological systems maintain their existence by minimizing <strong class="text-white">variational free energy</strong>—a quantity borrowed from statistical physics and information theory. In the FEP framework, your brain builds an internal generative model of the world and constantly updates it to minimize surprise (or equivalently, prediction error).
+                Friston's Free Energy Principle states that biological systems maintain their existence by minimizing <strong class="text-white">variational free energy</strong>, a quantity borrowed from statistical physics and information theory. In the FEP framework, your brain builds an internal generative model of the world and constantly updates it to minimize surprise (or equivalently, prediction error).
             </p>
 
             <p class="text-gray-300 mb-4">
@@ -87,7 +82,7 @@
             </p>
 
             <p class="text-gray-300 mb-4">
-                The first term is the KL divergence between your approximate posterior and the true posterior (how wrong your beliefs are). The second term is the log evidence (how surprising the data is). Since $\log p(x)$ doesn't depend on $q$, minimizing $F$ with respect to $q$ is equivalent to minimizing the KL divergence—making your beliefs as accurate as possible.
+                The first term is the KL divergence between your approximate posterior and the true posterior (how wrong your beliefs are). The second term is the log evidence (how surprising the data is). Since $\log p(x)$ doesn't depend on $q$, minimizing $F$ with respect to $q$ is equivalent to minimizing the KL divergence, making your beliefs as accurate as possible.
             </p>
 
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">The ELBO Connection</h2>
@@ -170,9 +165,9 @@
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">So Are They the Same Thing?</h2>
 
             <p class="text-gray-300 mb-4">
-                Not quite. Here's what's similar and what's different:
+                Still learning about this and making edits here. Sorry!
             </p>
-
+<!-- 
             <p class="text-blue-400 font-semibold mb-2 mt-6">Similarities:</p>
             <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-4">
                 <li>Both minimize divergence between predictions and observations</li>
@@ -206,7 +201,7 @@
 
             <p class="text-gray-300 mb-6">
                 And if that's true, then maybe the next breakthrough in AI won't come from better architectures or bigger datasets—it'll come from understanding what the brain was optimizing for all along.
-            </p>
+            </p> -->
 
         </article>
 
