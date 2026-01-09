@@ -8,6 +8,12 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Mermaid for diagrams -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
 
   <style>
     :root {
@@ -68,9 +74,8 @@
                         <div class="mt-4 text-xs text-gray-300">Tech</div>
                         <div class="mt-1 space-y-1 text-sm text-gray-200">
                             <div>• Python (PyTorch)</div>
-                            <div>• OpenAI Gym / Gymnasium</div>
-                            <div>• CNN architecture</div>
-                            <div>• Imitation learning</div>
+                            <div>• AI Architecture</div>
+                            <div>• Dataset Curation</div>
                         </div>
                     </div>
                 </div>
@@ -81,42 +86,36 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main column -->
             <section class="lg:col-span-2 space-y-6">
-                <article class="glow rounded-lg p-6">
+                <div class="bg-[#0b1220] rounded-lg p-6 border border-gray-700">
+                    <h4 class="text-lg font-semibold text-white mb-3">Table of Contents</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#overview" class="text-blue-400 hover:text-blue-300 transition">Overview</a></li>
+                        <li><a href="#reinforcement-learning" class="text-blue-400 hover:text-blue-300 transition">Reinforcement Learning (PPO)</a></li>
+                        <li><a href="#supervised-learning" class="text-blue-400 hover:text-blue-300 transition">Supervised Learning (Imitation)</a></li>
+                    </ul>
+                </div>
+                <!-- Overview Section -->
+                <article id="overview" class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Project overview</h2>
                     <p class="text-gray-300 leading-relaxed">
-                        <strong>Supervised Learning Gym CarRacing</strong> implements behavioral cloning to train an autonomous 
-                        agent that learns to navigate racing tracks by imitating human expert demonstrations. The project uses 
-                        a convolutional neural network to learn the mapping from visual observations to control actions, 
-                        with support for iterative improvement through DAgger (Dataset Aggregation).
+                        The OpenAI Gym CarRacing environment is a game where keyboard input is used to drive a car around a racetrack.
+                        The environment provides a reward at each timestep based on how much new track is covered, with penalties for going off-track.
+                        The goal is to maximize the total reward by completing laps as quickly and efficiently as possible.
+                        <br><br>
+                        RL is a lot easier to implement, but the real world does not come with reward functions, so
+                        a lot of my effort has gone into improving the imitation learning network using
+                        <a href="https://arxiv.org/abs/1011.0686" target="_blank" rel="noopener" class="text-blue-300 hover:underline">DAgger</a>.
+                        I actually find the game difficult to achieve a high score on myself. So, I also trained a policy using RL to create the expert demonstrations
+                        used to train my imitiation learning network. The RL agent achieves a score of about 780 out of a maximum possible 1000. The imitation learning agent
+                        achieves a score of about 600, but continues to get better as I improve the network and demonstration data.
                     </p>
 
-                    <h3 class="mt-4 font-medium">Core Features</h3>
-                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
-                        <li>Interactive demonstration recording system with keyboard controls</li>
-                        <li>CNN-based policy network for vision-to-action mapping</li>
-                        <li>9-class action discretization for simplified learning</li>
-                        <li>DAgger algorithm implementation for iterative training (in progress)</li>
-                        <li>Comprehensive training pipeline with data augmentation</li>
-                        <li>Evaluation system with performance metrics</li>
-                        <li>PPO reinforcement learning comparison implementation</li>
-                    </ul>
-
-                    <h3 class="mt-4 font-medium">Action Space Design</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        The continuous control problem is discretized into 9 action classes:
-                    </p>
-                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1 ml-4">
-                        <li><code>Class 0:</code> Left + Brake</li>
-                        <li><code>Class 1:</code> Right + Brake</li>
-                        <li><code>Class 2:</code> Left + Gas</li>
-                        <li><code>Class 3:</code> Right + Gas</li>
-                        <li><code>Class 4:</code> Gas</li>
-                        <li><code>Class 5:</code> Brake</li>
-                        <li><code>Class 6:</code> Left</li>
-                        <li><code>Class 7:</code> Right</li>
-                        <li><code>Class 8:</code> No action</li>
-                    </ul>
                 </article>
+
+                <!-- Reinforcement Learning Section -->
+                <div id="reinforcement-learning" class="pt-4">
+                    <h2 class="text-2xl font-bold mb-6 text-blue-300">Reinforcement Learning (PPO)</h2>
+                </div>
 
                 <article class="glow rounded-lg p-6">
                     <h2 id="demo" class="text-xl font-semibold mb-3">Demo Video</h2>
@@ -137,6 +136,37 @@
 
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Network Architecture</h2>
+                     <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-3">Actor-Critic Network Architecture</h3>
+                        <p class="text-gray-300 mb-4">The reinforcement learning agent uses a shared CNN backbone that feeds into separate actor (policy) and critic (value) heads:</p>
+                        <div class="bg-[#07101a] rounded-md p-4 overflow-auto">
+                            <pre class="mermaid">
+flowchart TB
+    I["Input State<br/>(B, 4, 84, 84)"]
+
+    C1["Conv2d 4→32<br/>k=8 s=4<br/>ReLU"]
+    C2["Conv2d 32→64<br/>k=4 s=2<br/>ReLU"]
+    C3["Conv2d 64→64<br/>k=3 s=1<br/>ReLU"]
+
+    F["Flatten"]
+    S["Shared FC<br/>Linear → 512<br/>ReLU"]
+
+    A1["Actor FC<br/>512 → 256<br/>ReLU"]
+    AM["Action Mean<br/>256 → 3"]
+    ALS["action_log_std<br/>(learned param)"]
+    D["Gaussian + Tanh"]
+    ACT["Action<br/>[-1,1]^3"]
+
+    C4["Critic FC<br/>512 → 256<br/>ReLU"]
+    V["Value<br/>256 → 1"]
+
+    I --> C1 --> C2 --> C3 --> F --> S
+    S --> A1 --> AM --> D --> ACT
+    ALS --> D
+    S --> C4 --> V
+                            </pre>
+                        </div>
+                    </div>
 
                     <p class="text-gray-300 mb-4">Convolutional neural network designed for vision-based control:</p>
 
@@ -168,8 +198,14 @@ Action mapping: Continuous actions → 9 discrete classes</code></pre>
                     </div>
                 </article>
 
+                <!-- Supervised Learning Section -->
+                <div id="supervised-learning" class="pt-4">
+                    <h2 class="text-2xl font-bold mb-6 text-green-300">Supervised Learning (Imitation)</h2>
+                </div>
+
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Recording Expert Demonstrations</h2>
+                    Top of table of contents container and top of Tech stack container are not aligned horizontally. Not sure why
 
                     <p class="text-gray-300">Interactive system for collecting training data:</p>
                     <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Record expert demonstrations
