@@ -212,7 +212,7 @@ docker compose -f docker/docker-compose.yml up</code></pre>
                         <li><strong>Deployment:</strong> Dynamic model loading via ROS2 launch parameters</li>
                     </ul>
 
-                    <pre class="mt-4 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Launch with custom model
+                    <pre class="mt-4 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Can also test custom model standalone with ros2 example:
 ros2 launch isaac_ros_examples isaac_ros_examples.launch.py \
   launch_fragments:=realsense_mono_rect_depth,yolov8 \
   model_file_path:=${ISAAC_ROS_WS}/models/yolov8/socks.onnx \
