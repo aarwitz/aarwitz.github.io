@@ -1,52 +1,106 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const previews = {
-        "closed-form-preview": { url: "ClosedFormSolutions.html", paragraphIndex: 1 },  // Extract the introduction paragraph
-        "beliefs-preview": { url: "Beliefs.html", paragraphIndex: 0 },  // Extract the introduction paragraph
-        "flying-car-preview": { url: "FlyingCarReview.html", paragraphIndex: 1 },
-        "truss-preview": { url: "truss.html", paragraphIndex: 0 },
-        "swipt-preview": { url: "SWIPT.html", paragraphIndex: 1 },  // Extract the abstract paragraph
-        "portfolio-preview": { url: "PortfolioOptimizer.html", paragraphIndex: 0 },  // Extract the first paragraph from the overview
-        "robot-preview": { url: "RobotConfigurationSpace.html", paragraphIndex: 0 },  // Extract the project overview
-        "socket-preview": { url: "SocketCpp.html", paragraphIndex: 0 },  // Extract the project overview paragraph
-        "smbus-preview": { url: "SMBusProtocol.html", paragraphIndex: 0 },  // Extract the SMBus overview
-        "uart-i2c-preview": { url: "UartVsI2c.html", paragraphIndex: 0 },  // Extract the serial communication overview
-        "performance-engineering-preview": { url: "PerformanceEngineering.html", paragraphIndex: 0 },  // Extract the introduction paragraph
-        "camera-calibration-preview": { url: "CameraCalibration.html", paragraphIndex: 0 },  // Extract the introduction paragraph
-        "galois-theory-preview": { url: "GaloisTheoryExample.html", paragraphIndex: 0 },  // Galois theory note preview
-        "galois-covering-preview": { url: "GaloisCoveringSpaces.html", paragraphIndex: 0 },  // Galois-covering spaces analogy preview
-        "pseudolabeling-preview": { url: "TextBasedPseudolabeling.html", paragraphIndex: 0 }  // Text-based pseudolabeling project preview
-    };
-
-    for (const [previewId, config] of Object.entries(previews)) {
-        const container = document.getElementById(previewId);
-        if (!container) continue;
+    // Auto-discover all preview containers
+    const previewContainers = document.querySelectorAll('[id$="-preview"]');
+    
+    for (const container of previewContainers) {
+        const previewId = container.id;
+        
+        // Find the parent article element to get the URL
+        const linkElement = container.closest('a');
+        if (!linkElement) continue;
+        
+        const url = linkElement.getAttribute('href');
+        if (!url || url.startsWith('#')) continue;
 
         try {
-            const res = await fetch(config.url);
+            const res = await fetch(url);
             if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
             
             const text = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
             
-            // Try to find article first, then main content section
-            let contentMatch = text.match(/<article[\s\S]*?<\/article>/i);
-            if (!contentMatch) {
-                // For truss.html, look for the main content section (lg:col-span-2)
-                contentMatch = text.match(/<section class="lg:col-span-2[\s\S]*?<\/section>/i);
-                if (!contentMatch) {
-                    // Fallback to any section
-                    contentMatch = text.match(/<section[\s\S]*?<\/section>/i);
-                }
+            // Extract content - try article first, then main sections
+            let contentElement = doc.querySelector('article .prose, article');
+            if (!contentElement) {
+                contentElement = doc.querySelector('section.lg\\:col-span-2, main, section');
             }
             
-            if (contentMatch) {
-                const contentHTML = contentMatch[0];
-                const pMatches = [...contentHTML.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+            if (contentElement) {
+                // Extract text content - get first substantial paragraph
+                const paragraphs = contentElement.querySelectorAll('p');
+                let previewText = '';
                 
-                if (pMatches.length > config.paragraphIndex) {
-                    container.innerHTML = pMatches[config.paragraphIndex][1];
-                } else {
-                    container.textContent = "Preview not available.";
+                for (const p of paragraphs) {
+                    const text = p.textContent.trim();
+                    // Skip short paragraphs, get one with substance
+                    if (text.length > 100) {
+                        previewText = text;
+                        break;
+                    }
                 }
+                
+                // Truncate to reasonable preview length
+                if (previewText.length > 300) {
+                    previewText = previewText.substring(0, 300) + '...';
+                }
+                
+                // Extract first image or video
+                let mediaElement = contentElement.querySelector('img, video');
+                let mediaSrc = null;
+                let mediaType = null;
+                let posterSrc = null;
+                
+                if (mediaElement) {
+                    if (mediaElement.tagName === 'VIDEO') {
+                        const source = mediaElement.querySelector('source');
+                        mediaSrc = source ? source.getAttribute('src') : mediaElement.getAttribute('src');
+                        posterSrc = mediaElement.getAttribute('poster');
+                        
+                        // If no poster attribute, try to infer poster filename
+                        if (!posterSrc && mediaSrc) {
+                            const baseName = mediaSrc.replace(/\.(webm|mp4)$/i, '');
+                            posterSrc = `${baseName}-poster.jpg`;
+                        }
+                        
+                        mediaType = 'video';
+                    } else {
+                        mediaSrc = mediaElement.getAttribute('src');
+                        mediaType = 'image';
+                    }
+                }
+                
+                // Create preview layout with text on left, media on right
+                if (mediaSrc && mediaType) {
+                    container.innerHTML = `
+                        <div class="flex gap-4">
+                            <div class="flex-1 text-sm leading-relaxed opacity-0 animate-fade-in">
+                                ${previewText}
+                            </div>
+                            <div class="w-32 h-24 flex-shrink-0 rounded overflow-hidden bg-[#0d1117] opacity-0 animate-fade-in" style="animation-delay: 0.1s">
+                                ${mediaType === 'video' 
+                                    ? `<video autoplay loop muted playsinline preload="none" ${posterSrc ? `poster="${posterSrc}"` : ''} class="w-full h-full object-cover bg-[#0d1117]">
+                                           <source src="${mediaSrc}" type="video/webm">
+                                       </video>`
+                                    : `<img src="${mediaSrc}" alt="Preview" class="w-full h-full object-cover">`
+                                }
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="text-sm leading-relaxed opacity-0 animate-fade-in">
+                            ${previewText}
+                        </div>
+                    `;
+                }
+                
+                // Trigger animation
+                setTimeout(() => {
+                    const elements = container.querySelectorAll('.animate-fade-in');
+                    elements.forEach(el => el.style.opacity = '1');
+                }, 50);
+                
             } else {
                 container.textContent = "Preview not available.";
             }
@@ -56,3 +110,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 });
+
+// Add CSS animation for fade-in effect
+if (!document.querySelector('#preview-animations')) {
+    const style = document.createElement('style');
+    style.id = 'preview-animations';
+    style.textContent = `
+        .animate-fade-in {
+            transition: opacity 0.6s ease-in;
+        }
+    `;
+    document.head.appendChild(style);
+}

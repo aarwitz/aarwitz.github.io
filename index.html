@@ -22,6 +22,10 @@
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body class="p-2 sm:p-4">
@@ -41,8 +45,8 @@
                 <!-- Robot -->
                  <a href="MobileRobot.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
-                        <div class="relative">
-                                    <video autoplay loop muted playsinline class="w-full h-48 object-cover">
+                        <div class="relative bg-[#0d1117]">
+                                    <video autoplay loop muted playsinline preload="none" poster="robot-poster.jpg" class="w-full h-48 object-cover bg-[#0d1117] opacity-0" style="animation: fadeIn 0.3s ease-in forwards;" onloadeddata="this.style.opacity='1'">
                                         <source src="robot.webm" type="video/webm">
                                     </video>
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
@@ -139,7 +143,7 @@
                 <a href="CarRacingSupervisedLearning.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
                         <div class="relative bg-[#0d1117]">
-                            <video autoplay loop muted playsinline class="w-full h-48 object-cover">
+                            <video autoplay loop muted playsinline preload="none" poster="CarRacing800-poster.jpg" class="w-full h-48 object-cover bg-[#0d1117] opacity-0" style="animation: fadeIn 0.3s ease-in forwards;" onloadeddata="this.style.opacity='1'">
                                 <source src="CarRacing800.webm" type="video/webm">
                             </video>
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-80 transition-all duration-300 flex items-center justify-center">
@@ -187,7 +191,7 @@
                 <a href="QuadcopterPID.html" class="block group">
                     <div class="bg-[#161b22] rounded-lg border border-gray-700 hover:border-blue-500 transition overflow-hidden">
                         <div class="relative bg-[#0d1117] grid grid-cols-2 gap-1">
-                            <video autoplay loop muted playsinline preload="metadata" class="w-full h-48 object-cover">
+                            <video autoplay loop muted playsinline preload="none" poster="quad-poster.jpg" class="w-full h-48 object-cover bg-[#0d1117] opacity-0" style="animation: fadeIn 0.3s ease-in forwards;" onloadeddata="this.style.opacity='1'">
                                 <source src="quad.webm" type="video/webm">
                             </video>
                             <img src="quad_mount.jpg" alt="Quadcopter Test Stand" class="w-full h-48 object-contain">
@@ -255,7 +259,7 @@
                             </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Power Beaming Research</h3>
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition mb-2">Wireless Power Transmission</h3>
                             <div class="flex flex-wrap gap-1">
                                 <span class="px-2 py-1 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">Research</span>
                                 <span class="px-2 py-1 rounded text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">Wireless Power</span>
@@ -310,22 +314,26 @@
                             <div class="flex flex-col lg:flex-row lg:items-start gap-6">
                                 <div class="flex-1">
                                     <div class="mb-4">
-                                        <h3 class="text-xl font-bold text-white">Full-Stack Software Engineer</h3>
-                                        <p class="text-blue-400 font-semibold">Cognex InSight</p>
-                                        <p class="text-gray-400 text-sm mt-1">Aug. 2024 - Present • Natick, MA</p>
+                                        <h3 class="text-xl font-bold text-white">Software Engineer</h3>
+                                        <p class="text-blue-400 font-semibold">Cognex Corporation</p>
+                                        <p class="text-gray-400 text-sm mt-1">Dec. 2023 - Present • Boston, MA</p>
                                     </div>
                                     <ul class="space-y-2 text-gray-300 text-sm">
                                         <li class="flex items-start">
                                             <span class="text-blue-400 mr-3 mt-1">•</span>
-                                            <span>Integrate vision algorithms into C++ firmware for package detection on high-speed conveyor systems.</span>
+                                            <span>Architected C++ firmware APIs to support interactive model labeling, inference, and visualization, designing thread-safe data paths with RAII, strong typing, and explicit ownership to ensure memory safety and correct cross-layer behavior</span>
                                         </li>
                                         <li class="flex items-start">
                                             <span class="text-blue-400 mr-3 mt-1">•</span>
-                                            <span>Develop C#/WPF desktop applications to expose computer vision functionality to end-users.</span>
+                                            <span>Designed and implemented a system health monitoring and diagnostic tool to capture, persist, and plot runtime signals (image buffer utilization, available memory, device temperature) alongside severity-filtered, searchable logs</span>
                                         </li>
                                         <li class="flex items-start">
                                             <span class="text-blue-400 mr-3 mt-1">•</span>
-                                            <span>Lead data annotation pipelines and model training, improving accuracy by 15%.</span>
+                                            <span>Reduced CI/CD failures by 80% through automated hardware-in-the-loop testing, remote on-device debugging, and refactoring tests to support mute-test-in-code workflows</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <span class="text-blue-400 mr-3 mt-1">•</span>
+                                            <span>Resolved customer escalations by debugging across GUI and firmware to deliver root-cause fixes and targeted unit tests to prevent future regressions</span>
                                         </li>
                                     </ul>
                                     <div class="flex flex-wrap gap-2 mt-4">
@@ -357,21 +365,17 @@
                                 <div class="flex-1">
                                     <div class="mb-4">
                                         <h3 class="text-xl font-bold text-white">Associate Software Engineer</h3>
-                                        <p class="text-blue-400 font-semibold">Cognex Logistics</p>
-                                        <p class="text-gray-400 text-sm mt-1">July 2022 - Aug. 2024 • Natick, MA</p>
+                                        <p class="text-blue-400 font-semibold">Cognex Corporation</p>
+                                        <p class="text-gray-400 text-sm mt-1">June 2022 - Dec. 2023 • Boston, MA</p>
                                     </div>
                                     <ul class="space-y-2 text-gray-300 text-sm">
                                         <li class="flex items-start">
                                             <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Built text-based pseudolabeling system combining Grounding DINO, SAM, and ControlNet to automate/generate annotation of 100K+ training images.</span>
+                                            <span>Integrated an acquired robot path planning C++ library with a 3D pose estimation tool and a 6-axis industrial robot to deliver a bin-picking solution meeting production pick-rate and placement accuracy for automotive applications</span>
                                         </li>
                                         <li class="flex items-start">
                                             <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Integrated robotics library from acquired company into vision and software platform and productized a bin-picking solution.</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Trained object detection models and deployed a test application to field engineers.</span>
+                                            <span>Built synthetic data generation tools using Blender, Python, OpenCV, and open-source models, speeding up labeling 100x and improving our model's F1 score from 15% to 98% (Github)</span>
                                         </li>
                                     </ul>
                                     <div class="flex flex-wrap gap-2 mt-4">
@@ -404,21 +408,17 @@
                                 <div class="flex-1">
                                     <div class="mb-4">
                                         <h3 class="text-xl font-bold text-white">Graduate Research Assistant</h3>
-                                        <p class="text-blue-400 font-semibold">Boston University Robotics Lab</p>
-                                        <p class="text-gray-400 text-sm mt-1">Sep 2021 - July 2022 • Boston, MA</p>
+                                        <p class="text-blue-400 font-semibold">Boston University Robotics Laboratory</p>
+                                        <p class="text-gray-400 text-sm mt-1">June 2021 - June 2022 • Boston, MA</p>
                                     </div>
                                     <ul class="space-y-2 text-gray-300 text-sm">
                                         <li class="flex items-start">
                                             <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Maintained and ran labeling pipelines for sensor fusion dataset using ROS, Tkinter, and Qualysis.</span>
+                                            <span>Developed a sensor fusion data collection system for training an exoskeleton by configuring cameras and IMU's through I2C in STM32CubeIDE, recorded data through ROS, and wrote custom labeling GUI's with Gradio</span>
                                         </li>
                                         <li class="flex items-start">
                                             <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Developed a Kalman filter for estimating ankle position using data from IMU worn around the subject's ankle.</span>
-                                        </li>
-                                        <li class="flex items-start">
-                                            <span class="text-gray-500 mr-3 mt-1">•</span>
-                                            <span>Communicated with researchers and medical staff to ensure data quality.</span>
+                                            <span>Led 5-person undergraduate team in labeling 50,000+ images for neural network training and implementing random sampling quality checks, achieving 99.9% label accuracy and recognition in an IEEE Conference Paper</span>
                                         </li>
                                     </ul>
                                     <div class="flex flex-wrap gap-2 mt-4">
@@ -448,18 +448,18 @@
                         
                         <div class="block bg-[#161b22] rounded-lg p-6 border border-gray-700 opacity-90">
                             <div class="mb-4">
-                                <h3 class="text-xl font-bold text-white">Teaching Assistant, EK 125 – Programming for Engineers</h3>
-                                <p class="text-blue-400 font-semibold">Boston University College of Engineering</p>
-                                <p class="text-gray-400 text-sm mt-1">Aug. 2020 – June 2021 • Boston, MA</p>
+                                <h3 class="text-xl font-bold text-white">Teaching Assistant</h3>
+                                <p class="text-blue-400 font-semibold">Boston University EK125</p>
+                                <p class="text-gray-400 text-sm mt-1">Sept. 2020 - May 2021 • Boston, MA</p>
                             </div>
                             <ul class="space-y-2 text-gray-300 text-sm">
                                 <li class="flex items-start">
                                     <span class="text-gray-500 mr-3 mt-1">•</span>
-                                    <span>Led discussion sections and office hours. Topics included: MATLAB, C, and bash.</span>
+                                    <span>Led weekly discussion sections and office hours on C, data structures, OOP, algorithms, and memory management</span>
                                 </li>
                                 <li class="flex items-start">
                                     <span class="text-gray-500 mr-3 mt-1">•</span>
-                                    <span>Coordinated rubrics with faculty and fellow teaching assistants to grade exams and quizzes.</span>
+                                    <span>Debugged errors in student's code, and coordinated rubrics with faculty and teaching assistants to grade exams and quizzes</span>
                                 </li>
                             </ul>
                             <div class="flex flex-wrap gap-2 mt-4">
