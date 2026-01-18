@@ -43,7 +43,7 @@
                 <div>
                     <h1 class="text-3xl md:text-4xl font-semibold">Quadcopter PID Flight Controller & Digital Twin</h1>
                     <p class="mt-2 text-sm text-gray-300 max-w-2xl">
-                        Custom quadcopter flight controller with PID stabilization and real-time digital twin visualization. 
+                        Custom quadcopter flight controller with PID stabilization and digital twin visualization. 
                         Features Arduino-based attitude control, BNO055 IMU integration, and Gazebo physics simulation with 
                         hardware-in-the-loop testing capabilities.
                     </p>
@@ -78,29 +78,32 @@
 
         <!-- Demo Videos Section -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold text-white mb-6">System Demonstration</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Gazebo Simulation -->
                 <div class="glow rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-cyan-400 mb-3">Digital Twin Simulation</h3>
                     <div class="bg-[#0d1117] rounded border border-gray-700 overflow-hidden">
-                        <video autoplay loop muted playsinline preload="metadata" class="w-full h-48 object-cover">
+                        <video autoplay loop muted playsinline preload="metadata" class="w-full lg:h-[580px] object-contain">
                                 <source src="quad.webm" type="video/webm">
                         </video>
                     </div>
                     <p class="mt-3 text-sm text-gray-400">
-                        Real-time Gazebo visualization of quadcopter attitude driven by physical IMU sensor data via TCP/IP streaming.
+                        Live Gazebo visualization of quadcopter attitude driven by physical IMU sensor data via TCP/IP streaming.
                     </p>
                 </div>
 
                 <!-- Test Stand -->
                 <div class="glow rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-cyan-400 mb-3">Hardware Test Stand</h3>
-                    <div class="bg-[#0d1117] rounded border border-gray-700 overflow-hidden flex items-center justify-center" style="min-height: 300px;">
-                        <p class="text-gray-500 text-sm">Test stand image placeholder</p>
+
+                    <div class="bg-[#0d1117] rounded border border-gray-700 overflow-hidden">
+                      <img src="quad_mount.jpg" alt="Quadcopter mounted on hardware test stand" class="w-full h-auto object-cover">
+                      <p class="sr-only">Quadcopter mounted on hardware test stand</p>
                     </div>
+
                     <p class="mt-3 text-sm text-gray-400">
-                        Custom quadcopter frame with Arduino flight controller, BNO055 IMU, and brushless motor configuration for controlled testing.
+                        Quadcopter is mounted on a gimble that I screwed into a 3D-printed stand (including the internal threading).
+                        I then tied that to a guitar stand weighed down with dumbbell plates.
                     </p>
                 </div>
             </div>
