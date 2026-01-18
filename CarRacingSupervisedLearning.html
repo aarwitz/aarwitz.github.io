@@ -49,8 +49,8 @@
                 <div>
                     <h1 class="text-3xl md:text-4xl font-semibold">Supervised Learning Gym CarRacing</h1>
                     <p class="mt-2 text-sm text-gray-300 max-w-2xl">
-                        Deep learning project implementing behavioral cloning for autonomous racing in OpenAI Gym's CarRacing environment. 
-                        Features CNN-based policy network, expert demonstration recording, and DAgger algorithm for iterative improvement.
+                        Imitation learning and DAgger compared with reinforcement learning for autonomous racing in OpenAI Gym's CarRacing environment. 
+                        Imitation learning was less efficient and performed worse than RL, but is a useful technique when reward functions are unavailable.
                     </p>
 
                     <div class="mt-4 flex flex-wrap gap-2 items-center">
@@ -100,14 +100,13 @@
                     <p class="text-gray-300 leading-relaxed">
                         The OpenAI Gym CarRacing environment is a game where keyboard input is used to drive a car around a racetrack.
                         The environment provides a reward at each timestep based on how much new track is covered, with penalties for going off-track.
-                        The goal is to maximize the total reward by completing laps as quickly and efficiently as possible.
+                        The goal is to maximize the total reward by completing laps as quickly as possible while staying on the track.
                         <br><br>
                         RL is a lot easier to implement, but the real world does not come with reward functions, so
                         a lot of my effort has gone into improving the imitation learning network using
                         <a href="https://arxiv.org/abs/1011.0686" target="_blank" rel="noopener" class="text-blue-300 hover:underline">DAgger</a>.
-                        I actually find the game difficult to achieve a high score on myself. So, I also trained a policy using RL to create the expert demonstrations
-                        used to train my imitiation learning network. The RL agent achieves a score of about 780 out of a maximum possible 1000. The imitation learning agent
-                        achieves a score of about 600, but continues to get better as I improve the network and demonstration data.
+                        The RL agent achieves an average score of about 710 out of a maximum possible 1000 (state-of-the-art scores range around 800-900). The imitation learning agent
+                        achieves a score of about 560, but continues to get better as I improve the demonstration data. Using DAgger to improve an imitation model takes time because it requires collecting new data with the expert in the loop.
                     </p>
 
                 </article>
@@ -119,7 +118,6 @@
 
                 <article class="glow rounded-lg p-6">
                     <h2 id="demo" class="text-xl font-semibold mb-3">Demo Video</h2>
-                    <p class="text-gray-300 mb-4">Video demonstration showing the trained agent navigating the racing track using behavioral cloning.</p>
 
                     <div class="aspect-video rounded-md overflow-hidden border border-white/5 bg-gray-900">
                         <video autoplay loop muted playsinline class="w-full h-full object-cover">
@@ -129,15 +127,14 @@
                     
                     <div class="text-sm text-gray-400 mt-4">
                         <strong>Performance:</strong> The trained agent successfully navigates racing tracks using only visual input, 
-                        demonstrating learned steering, acceleration, and braking behaviors. <strong>Achieved a score of 780 out of a maximum possible 1000</strong>, 
-                        showing effective imitation of expert driving patterns.
+                        demonstrating learned steering, acceleration, and braking behaviors. <strong>Achieved an average score of 710 out of a maximum possible 1000</strong>.
                     </div>
                 </article>
 
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Network Architecture</h2>
                      <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-3">Actor-Critic Network Architecture</h3>
+                        <h3 class="text-lg font-semibold mb-3">Actor-Critic Network</h3>
                         <p class="text-gray-300 mb-4">The reinforcement learning agent uses a shared CNN backbone that feeds into separate actor (policy) and critic (value) heads:</p>
                         <div class="bg-[#07101a] rounded-md p-4 overflow-auto">
                             <pre class="mermaid">
@@ -168,34 +165,7 @@ flowchart TB
                         </div>
                     </div>
 
-                    <p class="text-gray-300 mb-4">Convolutional neural network designed for vision-based control:</p>
-
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="text-sm font-medium text-blue-300 mb-2">CNN Layers</h4>
-                            <pre class="rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code>Input: (3, 96, 96) RGB image from CarRacing environment
-
-Conv2D(3→8, kernel=3, stride=1, padding=1) + LeakyReLU(0.2)
-Conv2D(8→16, kernel=3, stride=1, padding=1) + LeakyReLU(0.2)
-Conv2D(16→32, kernel=3, stride=1, padding=1) + LeakyReLU(0.2)
-
-Flatten
-Fully Connected(294,912 → 512) + LeakyReLU(0.2)
-Fully Connected(512 → 9) → Softmax
-
-Output: 9-class action probabilities</code></pre>
-                        </div>
-
-                        <div>
-                            <h4 class="text-sm font-medium text-green-300 mb-2">Training Details</h4>
-                            <pre class="rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code>Optimizer: Adam (lr=1e-2)
-Loss: Cross-entropy
-Batch size: 64
-Epochs: 100
-Data: Expert demonstrations from keyboard control
-Action mapping: Continuous actions → 9 discrete classes</code></pre>
-                        </div>
-                    </div>
+                
                 </article>
 
                 <!-- Supervised Learning Section -->
@@ -205,7 +175,6 @@ Action mapping: Continuous actions → 9 discrete classes</code></pre>
 
                 <article class="glow rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-3">Recording Expert Demonstrations</h2>
-                    Top of table of contents container and top of Tech stack container are not aligned horizontally. Not sure why
 
                     <p class="text-gray-300">Interactive system for collecting training data:</p>
                     <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Record expert demonstrations
@@ -222,8 +191,7 @@ python main.py teach
 # action_00000.npy, action_00001.npy, ...</code></pre>
 
                     <p class="mt-3 text-gray-300">
-                        Each demonstration run captures synchronized observation-action pairs, automatically saved when 
-                        pressing TAB for high-quality recordings.
+                        Each demonstration run captures synchronized observation-action pairs.
                     </p>
                 </article>
 
@@ -275,63 +243,6 @@ python main.py score
                     <p class="mt-3 text-sm text-gray-400">
                         <strong>Status:</strong> DAgger implementation scripts and integration in progress.
                     </p>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Reinforcement Learning Alternative</h2>
-                    <p class="text-gray-300 leading-relaxed">
-                        The project also includes a complete PPO (Proximal Policy Optimization) implementation in the 
-                        <code>rl_approach/</code> folder, demonstrating an alternative approach that learns from 
-                        environmental rewards rather than expert demonstrations.
-                    </p>
-
-                    <h4 class="mt-4 text-sm font-medium text-blue-300 mb-2">PPO Features</h4>
-                    <ul class="mt-2 list-disc list-inside text-gray-300 space-y-1">
-                        <li>Actor-critic architecture with shared CNN backbone</li>
-                        <li>Frame stacking (4 frames) for temporal information</li>
-                        <li>GAE (Generalized Advantage Estimation)</li>
-                        <li>Reward shaping and off-track detection</li>
-                        <li>Comprehensive training and evaluation pipeline</li>
-                    </ul>
-
-                    <pre class="mt-3 rounded-md p-3 bg-[#07101a] text-sm overflow-auto"><code># Train with reinforcement learning
-cd rl_approach
-python main.py train
-
-# Evaluate trained RL agent
-python main.py evaluate</code></pre>
-
-                    <p class="mt-3 text-sm text-gray-400">
-                        See <code>rl_approach/WHY_RL.md</code> for detailed comparison between imitation learning 
-                        and reinforcement learning approaches.
-                    </p>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Project Structure</h2>
-                    <ul class="list-inside list-disc text-gray-300 space-y-2">
-                        <li><code>main.py</code> — entry point for train/teach/test/score modes</li>
-                        <li><code>network.py</code> — CNN architecture and action conversion</li>
-                        <li><code>training.py</code> — training loop with cross-entropy loss</li>
-                        <li><code>imitations.py</code> — demonstration recording and data I/O</li>
-                        <li><code>rl_approach/</code> — complete PPO implementation for comparison</li>
-                        <li><code>rl_approach/ppo_agent.py</code> — PPO algorithm with GAE</li>
-                        <li><code>rl_approach/network.py</code> — actor-critic neural network</li>
-                        <li><code>rl_approach/environment.py</code> — environment wrapper with preprocessing</li>
-                    </ul>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Technical Highlights</h2>
-                    <ul class="list-disc list-inside text-gray-300 space-y-2">
-                        <li><strong>Behavioral Cloning:</strong> Direct policy learning from expert demonstrations</li>
-                        <li><strong>Action Discretization:</strong> 9-class system balancing expressiveness and learnability</li>
-                        <li><strong>One-Hot Encoding:</strong> Action representation for classification training</li>
-                        <li><strong>Interactive Recording:</strong> Keyboard-based expert demonstration system</li>
-                        <li><strong>GPU Acceleration:</strong> CUDA support for faster training</li>
-                        <li><strong>Modular Design:</strong> Separate components for recording, training, and evaluation</li>
-                        <li><strong>Algorithm Comparison:</strong> Both imitation learning and RL implementations</li>
-                    </ul>
                 </article>
             </section>
 
