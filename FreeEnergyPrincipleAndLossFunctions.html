@@ -88,7 +88,7 @@
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">The ELBO Connection</h2>
 
             <p class="text-gray-300 mb-4">
-                If you've studied variational inference or Variational Autoencoders (VAEs), this should look extremely familiar. The free energy $F$ is exactly the negative of the <strong class="text-white">Evidence Lower BOund (ELBO)</strong>:
+                The free energy $F$ is exactly the negative of the <strong class="text-white">Evidence Lower BOund (ELBO)</strong>:
             </p>
 
             <p class="text-center text-lg my-4">
@@ -127,7 +127,7 @@
             </p>
 
             <p class="text-gray-300 mb-4">
-                Since the entropy $H(y)$ of the true labels is constant, minimizing cross-entropy is equivalent to minimizing the KL divergence between the true and predicted distributions. This is <em>structurally identical</em> to what the Free Energy Principle does—minimize the divergence between your beliefs and reality.
+                Since the entropy $H(y)$ of the true labels is constant, minimizing cross-entropy is equivalent to minimizing the KL divergence between the true and predicted distributions.
             </p>
 
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">MSE: Not Quite the Same</h2>
@@ -155,14 +155,8 @@
             <h2 class="text-2xl font-bold text-white mb-4 mt-8">Prediction Error and Predictive Coding</h2>
 
             <p class="text-gray-300 mb-4">
-                Friston's framework goes beyond static inference—it includes <strong class="text-white">predictive coding</strong>, a theory of how the brain might implement free energy minimization hierarchically. In predictive coding, each layer of the brain predicts the activity of the layer below, and only <em>prediction errors</em> (mismatches between predictions and actual signals) propagate upward.
+                Friston's framework includes the concept of <strong class="text-white">predictive coding</strong>, which sounds like a very similar concept to backpropagation.
             </p>
-
-            <p class="text-gray-300 mb-4">
-                This is remarkably similar to <strong class="text-white">backpropagation</strong> in neural networks, where gradients (which measure prediction error with respect to parameters) flow backward through layers. The difference is that in predictive coding, errors flow <em>in both directions</em>—upward to update beliefs about hidden causes, and downward to refine predictions.
-            </p>
-
-            <h2 class="text-2xl font-bold text-white mb-4 mt-8">So Are They the Same Thing?</h2>
 
             <p class="text-gray-300 mb-4">
                 Still learning about this and making edits here. Sorry!
