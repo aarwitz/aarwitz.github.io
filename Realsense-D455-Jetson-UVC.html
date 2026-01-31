@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealSense D455 — Jetson UVC Quirk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Optima'; background:#0d1117; color:#c9d1d9; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-3xl mx-auto">
+        <div id="site-header"></div>
+        <article class="bg-[#161b22] rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-2">RealSense D455 — Jetson UVC Quirk</h1>
+            <p class="text-sm text-gray-400 mb-4">Jan 31, 2026 • Aaron</p>
+
+            <p>Using an Intel RealSense D455 on an NVIDIA Orin Nano (8GB) I saw odd stdout and dmesg spam, but everything mostly worked.</p>
+
+            <p>When I tried vslam (30 Hz target) I couldn’t get past ~15 Hz. I turned everything off — aligned_depth, the emitter, unrelated nodes, even just RGB alone — and limited Jetson to 15W and lowered CPU clocks, still 15 Hz.</p>
+
+            <p>I fed logs to a chatbot which guessed two different processes grabbing the device (host vs container). I inspected PIDs and realized they were the same mapped process — the chatbot was wrong.</p>
+
+            <p>Looking closer, an "unrecognized video message" kept showing up. It looks like the RealSense UVC extension format descriptor isn’t recognized by the Jetson R36 OOT uvcvideo layer, causing repeated interface re-probing and dmesg spam and effectively stalling frame rate.</p>
+
+            <p>I found someone with the same problem (and same JetPack) and I’ll add my info on the thread: <a href="https://github.com/realsenseai/librealsense/issues/14624" class="text-blue-300">github.com/realsenseai/librealsense/issues/14624</a></p>
+
+            <p class="text-gray-400 text-sm mt-4">If you’ve seen this — please comment there; I’ll post updates here as I learn more.</p>
+        </article>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>

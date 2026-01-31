@@ -62,13 +62,12 @@
                 <div class="hidden md:block text-right">
                     <div class="glow rounded-xl p-4 w-56">
                         <div class="text-xs text-gray-300">Protocol</div>
-                        <div class="mt-1 text-sm font-medium">SMBus (System Management Bus)</div>
+                        <div class="mt-1 text-sm font-medium">SMBus</div>
 
                         <div class="mt-4 text-xs text-gray-300">Key Features</div>
                         <div class="mt-1 space-y-1 text-sm text-gray-200">
                             <div>• I²C with stricter timing</div>
                             <div>• Packet Error Checking</div>
-                            <div>• Host-centric design</div>
                             <div>• Python smbus2 library</div>
                         </div>
                     </div>
@@ -84,9 +83,8 @@
                     <h2 class="text-xl font-semibold mb-3">What is SMBus?</h2>
                     
                     <p class="text-gray-300 leading-relaxed mb-4">
-                        <strong>SMBus (System Management Bus)</strong> is a Python package that you can pip install, 
-                        providing functions to read and write data to other devices. But more fundamentally, 
-                        it implements the <strong>SMBus protocol</strong>, which is built on top of the I²C protocol.
+                        <strong>SMBus (System Management Bus)</strong> is is built on top of the I²C protocol. Smbus2 is a Python package that you can pip install, 
+                        providing functions to read and write data to other devices.
                     </p>
 
                     <div class="bg-purple-900/20 border border-purple-600/30 rounded-lg p-4 mb-4">
@@ -94,76 +92,10 @@
                             💡 SMBus = I²C + Stricter Rules + Enhanced Features
                         </p>
                     </div>
-
-                    <p class="text-gray-300 leading-relaxed mb-4">
-                        At its core, SMBus is a <strong>subset of I²C but with more rigid rules</strong>. 
-                        While I²C is a general-purpose protocol, SMBus adds specific, standardized features 
-                        and constraints that make it more reliable and predictable.
-                    </p>
-
-                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
-                        <code class="text-sm text-gray-200">
-                            <span class="text-green-400"># Install the smbus2 library</span><br/>
-                            pip install smbus2<br/><br/>
-                            
-                            <span class="text-green-400"># Import and use</span><br/>
-                            <span class="text-purple-400">import</span> smbus2<br/>
-                            bus = smbus2.<span class="text-blue-400">SMBus</span>(1)  <span class="text-green-400"># Use I2C bus 1</span>
-                        </code>
-                    </div>
                 </article>
 
                 <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">SMBus vs I²C: Key Differences</h2>
-                    
-                    <div class="space-y-4">
-                        <div class="step-box rounded-lg p-4">
-                            <h3 class="smbus-accent font-semibold mb-2">1. Strict Timing Requirements</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                SMBus specifies <strong>maximum and minimum clock speeds</strong> and timeouts 
-                                for transactions. This makes it more predictable and reliable, especially for 
-                                power-sensitive applications where devices might be in low-power states and slow to respond.
-                            </p>
-                        </div>
-
-                        <div class="step-box rounded-lg p-4">
-                            <h3 class="smbus-accent font-semibold mb-2">2. Packet Error Checking (PEC)</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                This is a key difference. SMBus adds an <strong>optional one-byte CRC</strong> 
-                                (Cyclic Redundancy Check) to the end of each transaction. This helps detect errors 
-                                caused by noise on the bus - a feature that standard I²C lacks.
-                            </p>
-                        </div>
-
-                        <div class="step-box rounded-lg p-4">
-                            <h3 class="smbus-accent font-semibold mb-2">3. Host-Centric Behavior</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                SMBus is designed for a <strong>single host</strong> (like a CPU or Baseboard Management Controller) 
-                                to communicate with multiple slave devices (battery chargers, thermal sensors, fan controllers).
-                            </p>
-                        </div>
-
-                        <div class="step-box rounded-lg p-4">
-                            <h3 class="smbus-accent font-semibold mb-2">4. Defined Transaction Types</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                SMBus defines specific transaction types and command formats, such as 
-                                <strong>"Read Word"</strong> or <strong>"Write Byte"</strong>, which are implemented 
-                                as convenience functions in libraries like smbus2.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4 mt-4">
-                        <p class="text-blue-200 text-sm">
-                            <strong>🔧 Bottom Line:</strong> When smbus2 says it's an "SMBus" library, 
-                            it's handling both the I²C electrical signals AND the higher-level protocols 
-                            for how data is framed on the I²C bus.
-                        </p>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Real-World Code Example</h2>
+                    <h2 class="text-xl font-semibold mb-3">Code Example</h2>
                     
                     <p class="text-gray-300 leading-relaxed mb-4">
                         Let's examine a common use case: reading from a sensor with I²C address 
@@ -183,12 +115,6 @@
                             &nbsp;&nbsp;<span class="text-yellow-400">print</span>(<span class="text-orange-400">f"Data from register {register:#x} is {data:#x}"</span>)
                         </code>
                     </div>
-
-                    <h3 class="smbus-accent text-lg font-medium mb-3">What Actually Happens: Step-by-Step Breakdown</h3>
-                    <p class="text-gray-300 leading-relaxed mb-4">
-                        Here's a detailed breakdown of what the <code>bus.read_byte_data(address, register)</code> 
-                        call actually does on the I²C bus:
-                    </p>
                 </article>
 
                 <article class="glow rounded-lg p-6">
@@ -226,7 +152,7 @@
                             <h4 class="smbus-accent font-semibold mb-2">Step 4: Repeated Start</h4>
                             <p class="text-gray-300 text-sm leading-relaxed">
                                 Instead of a Stop Condition, smbus2 issues a <strong>Repeated Start</strong>. 
-                                This crucial step keeps the transaction alive - SDA is pulled low while SCL is high again.
+                                This keeps the transaction alive: SDA is pulled low while SCL is high again.
                             </p>
                         </div>
 
@@ -255,202 +181,6 @@
                                 freeing up the bus for other devices.
                             </p>
                         </div>
-                    </div>
-
-                    <div class="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mt-4">
-                        <p class="text-green-200 text-sm">
-                            <strong>🚀 The Magic:</strong> All these low-level steps are handled by the smbus2 library, 
-                            which interacts directly with the Linux kernel's I²C driver. This abstraction lets you 
-                            perform complex I²C transactions with a single line of Python code!
-                        </p>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">SMBus Transaction Types</h2>
-                    
-                    <p class="text-gray-300 leading-relaxed mb-4">
-                        SMBus defines standardized transaction types that are implemented as convenient 
-                        methods in the smbus2 library:
-                    </p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-[#161b22] rounded-lg p-4">
-                            <h4 class="smbus-accent font-semibold mb-2">Read Operations</h4>
-                            <div class="space-y-2 text-sm text-gray-300">
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.read_byte(address)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.read_byte_data(addr, reg)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.read_word_data(addr, reg)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.read_block_data(addr, reg)</code>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-[#161b22] rounded-lg p-4">
-                            <h4 class="smbus-accent font-semibold mb-2">Write Operations</h4>
-                            <div class="space-y-2 text-sm text-gray-300">
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.write_byte(address, value)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.write_byte_data(addr, reg, val)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.write_word_data(addr, reg, val)</code>
-                                </div>
-                                <div class="bg-[#07101a] rounded p-2">
-                                    <code>bus.write_block_data(addr, reg, data)</code>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Practical Examples</h2>
-                    
-                    <h3 class="smbus-accent text-lg font-medium mb-3">Reading from an IMU Sensor</h3>
-                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
-                        <code class="text-sm text-gray-200">
-                            <span class="text-purple-400">import</span> smbus2<br/>
-                            <span class="text-purple-4000">import</span> time<br/><br/>
-                            
-                            <span class="text-green-400"># MPU6050 IMU sensor</span><br/>
-                            IMU_ADDRESS = <span class="text-orange-400">0x68</span><br/>
-                            ACCEL_X_REG = <span class="text-orange-400">0x3B</span><br/><br/>
-                            
-                            <span class="text-purple-400">with</span> smbus2.<span class="text-blue-400">SMBus</span>(1) <span class="text-purple-400">as</span> bus:<br/>
-                            &nbsp;&nbsp;<span class="text-green-400"># Wake up the sensor</span><br/>
-                            &nbsp;&nbsp;bus.<span class="text-blue-400">write_byte_data</span>(IMU_ADDRESS, <span class="text-orange-400">0x6B</span>, <span class="text-orange-400">0</span>)<br/>
-                            &nbsp;&nbsp;time.<span class="text-blue-400">sleep</span>(<span class="text-orange-400">0.1</span>)<br/><br/>
-                            
-                            &nbsp;&nbsp;<span class="text-green-400"># Read accelerometer X-axis (2 bytes)</span><br/>
-                            &nbsp;&nbsp;accel_x = bus.<span class="text-blue-400">read_word_data</span>(IMU_ADDRESS, ACCEL_X_REG)<br/>
-                            &nbsp;&nbsp;<span class="text-yellow-400">print</span>(<span class="text-orange-400">f"Accelerometer X: {accel_x}"</span>)
-                        </code>
-                    </div>
-
-                    <h3 class="smbus-accent text-lg font-medium mb-3">Controlling a Motor Driver</h3>
-                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
-                        <code class="text-sm text-gray-200">
-                            <span class="text-purple-400">import</span> smbus2<br/><br/>
-                            
-                            <span class="text-green-400"># Hiwonder motor board</span><br/>
-                            MOTOR_ADDRESS = <span class="text-orange-400">0x42</span><br/>
-                            SPEED_COMMAND = <span class="text-orange-400">0x01</span><br/><br/>
-                            
-                            <span class="text-purple-400">def</span> <span class="text-yellow-400">set_motor_speed</span>(speed):<br/>
-                            &nbsp;&nbsp;<span class="text-purple-400">with</span> smbus2.<span class="text-blue-400">SMBus</span>(1) <span class="text-purple-400">as</span> bus:<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-green-400"># Send speed command</span><br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;bus.<span class="text-blue-400">write_byte_data</span>(MOTOR_ADDRESS, SPEED_COMMAND, speed)<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-yellow-400">print</span>(<span class="text-orange-400">f"Motor speed set to {speed}"</span>)<br/><br/>
-                            
-                            <span class="text-green-400"># Set motor to 75% speed</span><br/>
-                            <span class="text-yellow-400">set_motor_speed</span>(<span class="text-orange-400">150</span>)  <span class="text-green-400"># 0-200 range</span>
-                        </code>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Error Handling & Best Practices</h2>
-                    
-                    <h3 class="smbus-accent text-lg font-medium mb-3">Robust Error Handling</h3>
-                    <div class="bg-[#07101a] rounded-md p-4 mb-4">
-                        <code class="text-sm text-gray-200">
-                            <span class="text-purple-400">import</span> smbus2<br/>
-                            <span class="text-purple-400">import</span> time<br/><br/>
-                            
-                            <span class="text-purple-400">def</span> <span class="text-yellow-400">safe_read_sensor</span>(address, register, retries=<span class="text-orange-400">3</span>):<br/>
-                            &nbsp;&nbsp;<span class="text-purple-400">for</span> attempt <span class="text-purple-400">in</span> <span class="text-blue-400">range</span>(retries):<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">try</span>:<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">with</span> smbus2.<span class="text-blue-400">SMBus</span>(1) <span class="text-purple-400">as</span> bus:<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data = bus.<span class="text-blue-400">read_byte_data</span>(address, register)<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">return</span> data<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">except</span> <span class="text-blue-400">OSError</span> <span class="text-purple-400">as</span> e:<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-yellow-400">print</span>(<span class="text-orange-400">f"I2C error on attempt {attempt + 1}: {e}"</span>)<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-purple-400">if</span> attempt &lt; retries - <span class="text-orange-400">1</span>:<br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.<span class="text-blue-400">sleep</span>(<span class="text-orange-400">0.1</span>)  <span class="text-green-400"># Brief delay before retry</span><br/>
-                            &nbsp;&nbsp;<span class="text-purple-400">return</span> <span class="text-blue-400">None</span>  <span class="text-green-400"># All retries failed</span>
-                        </code>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="bg-[#161b22] rounded-lg p-4">
-                            <h4 class="text-green-300 font-semibold mb-2">✅ Best Practices</h4>
-                            <ul class="text-gray-300 text-sm space-y-1">
-                                <li>• Use context managers (<code>with</code> statement) for automatic cleanup</li>
-                                <li>• Implement retry logic for transient I²C errors</li>
-                                <li>• Add delays between rapid transactions</li>
-                                <li>• Check device datasheets for timing requirements</li>
-                                <li>• Use appropriate SMBus transaction types (byte, word, block)</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-[#161b22] rounded-lg p-4">
-                            <h4 class="text-red-300 font-semibold mb-2">⚠️ Common Pitfalls</h4>
-                            <ul class="text-gray-300 text-sm space-y-1">
-                                <li>• Forgetting pull-up resistors on SDA/SCL lines</li>
-                                <li>• Using wrong I²C bus number (check <code>/dev/i2c-*</code>)</li>
-                                <li>• Not handling OSError exceptions</li>
-                                <li>• Trying to access non-existent registers</li>
-                                <li>• Insufficient permissions (need to be in <code>i2c</code> group)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">SMBus vs Raw I²C Comparison</h2>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-gray-600">
-                                    <th class="text-left p-3 text-gray-300">Feature</th>
-                                    <th class="text-left p-3 i2c-accent">Raw I²C</th>
-                                    <th class="text-left p-3 smbus-accent">SMBus</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-300">
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Timing</td>
-                                    <td class="p-3">Flexible, implementation-dependent</td>
-                                    <td class="p-3">Strict min/max timing requirements</td>
-                                </tr>
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Error Detection</td>
-                                    <td class="p-3">Basic ACK/NACK only</td>
-                                    <td class="p-3">Optional Packet Error Checking (PEC)</td>
-                                </tr>
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Transaction Types</td>
-                                    <td class="p-3">Custom, varies by implementation</td>
-                                    <td class="p-3">Standardized (byte, word, block)</td>
-                                </tr>
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Host Behavior</td>
-                                    <td class="p-3">Multi-master possible</td>
-                                    <td class="p-3">Single host, multiple slaves</td>
-                                </tr>
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Timeouts</td>
-                                    <td class="p-3">Implementation-specific</td>
-                                    <td class="p-3">Defined timeout periods</td>
-                                </tr>
-                                <tr class="border-b border-gray-700">
-                                    <td class="p-3 font-medium">Power Management</td>
-                                    <td class="p-3">Not specified</td>
-                                    <td class="p-3">Designed for low-power devices</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </article>
             </section>
