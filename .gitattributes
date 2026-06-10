@@ -15,3 +15,4 @@ RobotDrivingForward.webm -filter -diff -merge -text
 quad.webm -filter -diff -merge -text
 socket.webm -filter -diff -merge -text
 CarRacing800.webm -filter -diff -merge -text
+pseudolabel_demo_new.webm -filter -diff -merge -text
