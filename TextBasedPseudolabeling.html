@@ -67,12 +67,13 @@
                 <div class="hidden md:block text-right">
                     <div class="glow rounded-xl p-4 w-56">
                         <h3 class="text-xs uppercase tracking-wide text-gray-400 mb-2">Interactive Demo</h3>
-                        <p class="text-2xl font-bold text-white">Upload & Label</p>
-                        <p class="text-xs text-gray-400 mt-1">Gradio web interface</p>
+                        <p class="text-2xl font-bold text-white">Launch Studio</p>
+                        <p class="text-xs text-gray-400 mt-1">Separate GPU-hosted React workspace</p>
                         <div class="mt-3 pt-3 border-t border-gray-700/50">
                             <div class="text-xs text-gray-400">Processing:</div>
-                            <div class="text-sm font-medium">Real-time detection</div>
+                            <div class="text-sm font-medium">GPU-backed detection + editing</div>
                         </div>
+                        <a href="https://rsl.taile4b84f.ts.net" target="_blank" rel="noopener" class="mt-3 inline-flex w-full justify-center items-center rounded-md px-3 py-2 text-sm font-medium bg-amber-500/20 border border-amber-400/40 text-amber-200 hover:bg-amber-500/30 transition">Open Live Demo</a>
                     </div>
                 </div>
             </div>
@@ -98,7 +99,8 @@
                         <li>Dual output formats: ImageNet XML and custom Cartel JSON</li>
                         <li>Synthetic data generation through background overlay</li>
                         <li>Dockerized deployment with CUDA GPU support</li>
-                        <li>Interactive Gradio web interface for real-time labeling</li>
+                        <li>Interactive React studio with ROI drawing and box editing</li>
+                        <li>Model selection for baseline + finetuned GroundingDINO checkpoints</li>
                     </ul>
 
                     <h3 class="mt-4 font-medium">Technical Implementation</h3>
@@ -109,8 +111,28 @@
                     </p>
                 </article>
 
+                <article class="glow rounded-lg p-6 border border-amber-500/20">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-semibold mb-2">Live Interactive Demo</h2>
+                            <p class="text-gray-300 text-sm leading-relaxed max-w-2xl">Use the production annotation studio to run text-based detections, draw ROI filters, tune per-class thresholds, and edit predicted boxes before export. The demo is hosted separately from this GitHub Pages site on a GPU-backed server and is gated behind a shared access key.</p>
+                            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                                <span class="px-2 py-1 rounded bg-cyan-900/30 text-cyan-300 border border-cyan-700/30">Draw ROI</span>
+                                <span class="px-2 py-1 rounded bg-blue-900/30 text-blue-300 border border-blue-700/30">Min/Max box guides</span>
+                                <span class="px-2 py-1 rounded bg-emerald-900/30 text-emerald-300 border border-emerald-700/30">Drag + resize detections</span>
+                                <span class="px-2 py-1 rounded bg-fuchsia-900/30 text-fuchsia-300 border border-fuchsia-700/30">Per-class thresholds</span>
+                                <span class="px-2 py-1 rounded bg-orange-900/30 text-orange-300 border border-orange-700/30">COCO / VOC / rotated export</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 md:items-end">
+                            <a href="https://rsl.taile4b84f.ts.net" target="_blank" rel="noopener" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-amber-500/20 border border-amber-400/40 text-amber-200 hover:bg-amber-500/30 transition">Launch Interactive Demo</a>
+                            <p class="text-xs text-gray-400">Access key required &mdash; shared during live walkthroughs.</p>
+                        </div>
+                    </div>
+                </article>
+
                 <article id="visualizations" class="glow rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-3">Live Demo</h2>
+                    <h2 class="text-xl font-semibold mb-3">Recorded Demo</h2>
                     <p class="text-gray-300 mb-4">Example outputs showing original images and pseudolabeled results segmented.</p>
 
                     <div class="mb-6">
@@ -257,7 +279,8 @@ python gradio_demo/gradio_demo.py
                         <div>• Grounding DINO (zero-shot detection)</div>
                         <div>• Segment Anything (SAM)</div>
                         <div>• OpenCV (image processing)</div>
-                        <div>• Gradio (web interface)</div>
+                        <div>• FastAPI (inference API)</div>
+                        <div>• React + TypeScript (interactive UI)</div>
                         <div>• Docker + NVIDIA Container Toolkit</div>
                         <div>• NumPy & SciPy</div>
                     </div>
@@ -311,6 +334,7 @@ python gradio_demo/gradio_demo.py
                 <div class="glow rounded-lg p-4">
                     <h4 class="text-sm font-medium text-gray-200">Quick links</h4>
                     <div class="mt-3 flex flex-col gap-2 text-sm">
+                        <a class="text-amber-300 hover:underline" href="https://rsl.taile4b84f.ts.net" target="_blank" rel="noopener">Launch Interactive Demo</a>
                         <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/GroundingDINO_Autolabeling" target="_blank" rel="noopener">Autolabeling Repository</a>
                         <a class="text-blue-300 hover:underline" href="https://github.com/aarwitz/Dockerized_GroundingSAM" target="_blank" rel="noopener">Dockerized Repository</a>
                         <a class="text-blue-300 hover:underline" href="#visualizations">Example Results</a>
