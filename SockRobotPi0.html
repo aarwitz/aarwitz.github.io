@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine-Tuning π0 on My Sock-Collecting Robot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Optima'; background:#0d1117; color:#c9d1d9; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-3xl mx-auto">
+        <div id="site-header"></div>
+        <article class="bg-[#161b22] rounded-lg p-6">
+            <h1 class="text-2xl font-bold mb-2">Fine-Tuning π0 on My Sock-Collecting Robot</h1>
+            <p class="text-sm text-gray-400 mb-4">Jul 24, 2026 • Aaron</p>
+
+            <p>For about a year I've been building a robot that picks socks up off my floor: a Jetson Orin Nano, a RealSense D455, a mecanum base, and a Waveshare RoArm M2-S. The plan was always to get a real robot foundation model in the loop eventually. This week it happened — π0 (Physical Intelligence's model), fine-tuned on 50 demonstrations collected in my living room, picked a sock off a cardboard box and set it back down, over and over, on hardware that costs less than a nice bicycle.</p>
+
+            <p>Getting there took a chain of things I didn't expect to need: a teleop system, a grasp strategy invented for a one-fingered claw, a demonstration collector that fires the arm over ROS topics, and about $4 of rented GPU.</p>
+
+            <h2 class="text-xl font-bold mt-6 mb-2">Teleop first</h2>
+
+            <p>I don't have a VR rig or a space mouse, so teleop is a web page with WASD keys — the same console I already used for camera feeds. The arm's vendor protocol turned out to be the interesting part. The documented "move to XYZ" command (T:104) is blocking: stream it at 10 Hz and the ESP32 wedges so hard only a serial DTR pulse revives it. Buried further down the wiki are T:123, a real velocity-jog command, and T:1041, a non-blocking setpoint. Those two plus server-side acceleration limiting gave motion smooth enough to look intentional.</p>
+
+            <p>The safety design I'm most happy with: the browser stops the robot by <em>ceasing to publish</em>. Deadman timers on the robot side do the rest, so a crashed laptop can't leave a jog running.</p>
+
+            <h2 class="text-xl font-bold mt-6 mb-2">A grasp for a one-fingered claw</h2>
+
+            <p>The RoArm's gripper only moves one jaw; the other is a rigid backstop. Pinching a scrunched sock from above fails in a way that's obvious in retrospect: the claw closes on a fold, and as the arm lifts, the fold extrudes out of the jaws like toothpaste. I could watch it happen in the numbers — the claw would stall 0.28 rad short of closed at grasp time, then read 0.01 by the top of the lift. Empty.</p>
+
+            <p>What works is a sweep: descend <em>beside</em> the sock, then curve down-and-in laterally while the claw closes, so the moving jaw catches the sock's outer edge and drags it into the fixed jaw. The whole thing is one arc, tuned until it stopped looking like a robot doing three steps and started looking like a hand.</p>
+
+            <p>The arm has no force sensor, but the gripper servo's torque reading is a perfectly good one: closing on nothing settles around 32, closing on a sock strains at 200+. Every demonstration gets verified twice — after the grab and again after the lift — and misses are discarded automatically.</p>
+
+            <h2 class="text-xl font-bold mt-6 mb-2">50 demos and a rented A40</h2>
+
+            <p>The collector chains ground truth forward: wherever it places the sock (plus a little random jitter) becomes the next episode's pick point, so no perception is needed in the loop. 50 clean episodes, 6,808 frames, each frame carrying the camera image, the arm's cartesian pose, joint angles, and all four servo torques at 15 Hz.</p>
+
+            <p>I converted them to LeRobot format with actions in cartesian space — [x, y, z, gripper] — for a reason I like: the policy's output maps 1:1 onto the arm's own setpoint command. No IK, no retargeting. What the model says is literally what gets sent.</p>
+
+            <p>Training ran on a RunPod A40 at 44 cents an hour: a LoRA fine-tune of the π0 base checkpoint via openpi, 5,000 steps, about eight hours. Adapting openpi to a 4-DoF arm with one camera meant padding the state into π0's 32-dim action space and masking off the two wrist cameras I don't have, plus converting my absolute setpoints to the delta actions π0 was pretrained on. None of this was documented for my case; most of it was read out of their LIBERO example and fixed against whatever their current API actually was. I did a lot of this pair-programming with Claude Code, which debugged the API drift faster than I would have alone.</p>
+
+            <h2 class="text-xl font-bold mt-6 mb-2">Did it work?</h2>
+
+            <p>Yes — with an asterisk that teaches the real lesson. Started in-distribution (sock scrunched, arm at its usual hover), the policy picks and places repeatedly. Watching a 3.3-billion-parameter model reproduce my little sweep-in grasp, torque numbers landing in the same range as the demos, is genuinely strange the first time.</p>
+
+            <p>Started out-of-distribution, it fails exactly the way behavior cloning theory says it should: at states the dataset never visited, the position deltas average toward zero and the arm freezes in a hover while the gripper — whose actions are absolute, not deltas — oscillates open and closed. It cannot recover from a miss, and the reason is my own data pipeline: I deleted every failed episode to keep the dataset clean. The dataset taught it that nothing ever goes wrong. The fix for next collection round is to keep a slice of miss-and-retry demonstrations instead of pretending failure doesn't exist.</p>
+
+            <p>50 demos, $4 of GPU, and a sock robot that runs a foundation model. The list for round two: recovery demos, more sock variety, and probably a wrist camera. I'll post updates as it gets less brittle.</p>
+        </article>
+    </div>
+    <script src="include_header.js" defer></script>
+</body>
+</html>
