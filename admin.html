@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compose - Aaron Horowitz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="site-system.css">
+    <style>
+        body {
+            font-family: 'Optima';
+            font-weight: 400;
+            font-size: 17px;
+            line-height: 1.7;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+    <div class="max-w-6xl mx-auto sm:p-4 lg:p-8">
+        <div id="site-header"></div>
+
+        <section id="composer-guard" class="composer-panel" hidden>
+            <h1 class="text-2xl font-bold text-white mb-3">Admin Login Required</h1>
+            <p class="text-gray-400 mb-4">Log in as the site owner to compose posts, essays, and projects.</p>
+            <button id="composer-login" class="site-shell-button primary" type="button">Log in</button>
+        </section>
+
+        <main id="composer-app" hidden>
+            <div class="mb-6">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Compose</h1>
+                <p class="text-gray-400">Create one standardized page, then use the generated snippet in the matching listing page.</p>
+            </div>
+
+            <div class="composer-grid">
+                <section class="composer-panel">
+                    <form id="composer-form" class="site-form-grid">
+                        <input type="hidden" name="draftId">
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <label class="site-form-label">Type
+                                <select class="site-shell-select" name="type">
+                                    <option value="blog">Blog</option>
+                                    <option value="essay">Essay</option>
+                                    <option value="project">Project</option>
+                                </select>
+                            </label>
+                            <label class="site-form-label sm:col-span-2">Title
+                                <input class="site-shell-input" name="title" required>
+                            </label>
+                        </div>
+
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <label class="site-form-label">Slug
+                                <input class="site-shell-input" name="slug" placeholder="my-post-title">
+                            </label>
+                            <label class="site-form-label">Date
+                                <input class="site-shell-input" name="date" type="date">
+                            </label>
+                            <label class="site-form-label">Category
+                                <input class="site-shell-input" name="category" placeholder="engineering">
+                            </label>
+                        </div>
+
+                        <label class="site-form-label">Hero image or video URL
+                            <input class="site-shell-input" name="hero" placeholder="image.jpg">
+                        </label>
+
+                        <label class="site-form-label">Tags
+                            <input class="site-shell-input" name="tags" placeholder="robotics, ros2, controls">
+                        </label>
+
+                        <label class="site-form-label">Summary
+                            <textarea class="site-shell-textarea" name="summary" rows="3" maxlength="700"></textarea>
+                        </label>
+
+                        <label class="site-form-label">Body
+                            <textarea class="site-shell-textarea" name="content" rows="18"></textarea>
+                            <span class="site-field-note">Supports paragraphs, headings with #, bullets with -, and numbered lists.</span>
+                        </label>
+
+                        <div class="composer-actions">
+                            <button class="site-shell-button primary" type="submit">Save draft</button>
+                            <button id="composer-download" class="site-shell-button" type="button">Download HTML</button>
+                            <button id="composer-copy-html" class="site-shell-button" type="button">Copy page HTML</button>
+                            <button id="composer-copy-snippet" class="site-shell-button" type="button">Copy listing snippet</button>
+                            <button id="composer-reset" class="site-shell-button" type="button">New draft</button>
+                        </div>
+                        <p id="composer-status" class="composer-status"></p>
+                    </form>
+                </section>
+
+                <aside class="site-form-grid">
+                    <section class="composer-panel">
+                        <h2 class="text-xl font-bold text-white mb-3">Preview</h2>
+                        <div id="composer-preview" class="composer-preview"></div>
+                    </section>
+
+                    <section class="composer-panel">
+                        <h2 class="text-xl font-bold text-white mb-3">Saved Drafts</h2>
+                        <div id="composer-drafts" class="site-comment-list"></div>
+                    </section>
+                </aside>
+            </div>
+
+            <section class="composer-panel mt-4">
+                <h2 class="text-xl font-bold text-white mb-3">Generated Page HTML</h2>
+                <textarea id="composer-output" class="site-shell-textarea composer-output" readonly></textarea>
+            </section>
+
+            <section class="composer-panel mt-4">
+                <h2 class="text-xl font-bold text-white mb-3">Listing Snippet</h2>
+                <textarea id="composer-snippet" class="site-shell-textarea composer-output" readonly></textarea>
+            </section>
+        </main>
+    </div>
+
+    <script src="include_header.js" defer></script>
+</body>
+</html>
