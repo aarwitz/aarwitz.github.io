@@ -1,30 +1,11 @@
 (function () {
-  const STORAGE = {
-    users: 'aarwitz.users.v1',
-    session: 'aarwitz.session.v1',
-    comments: 'aarwitz.comments.v1',
-    drafts: 'aarwitz.drafts.v1'
-  };
-
+  const API_BASE = 'https://aarwitz-site-api.aaronhorowits97.workers.dev';
+  const STORAGE = { session: 'aarwitz.api.session.v1' };
   const ADMIN_EMAIL = 'aaron@lidisolutions.ai';
-  const ADMIN_PASSWORD = 'Lemonade';
   const LISTING_PAGES = new Set(['', 'index.html', 'blog.html', 'essays.html', 'projects.html', 'about.html', 'Notes.html', 'admin.html']);
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-
-  function readJson(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch {
-      return fallback;
-    }
-  }
-
-  function writeJson(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
 
   function escapeHtml(value) {
     return String(value || '').replace(/[&<>"']/g, (char) => ({
@@ -50,41 +31,59 @@
     return window.location.pathname.split('/').pop() || 'index.html';
   }
 
-  function users() {
-    const stored = readJson(STORAGE.users, []);
-    if (!stored.some((user) => user.email === ADMIN_EMAIL)) {
-      stored.push({
-        id: 'admin-aaron',
-        name: 'Aaron',
-        email: ADMIN_EMAIL,
-        role: 'admin',
-        createdAt: '2026-08-06T00:00:00.000Z'
-      });
-      writeJson(STORAGE.users, stored);
+  function pageKey() {
+    if (pageName() === 'post.html') {
+      const slug = new URLSearchParams(window.location.search).get('slug') || '';
+      return `/posts/${slug}`;
     }
-    return stored;
+    return window.location.pathname || '/';
   }
 
-  function session() {
-    const active = readJson(STORAGE.session, null);
-    if (!active) return null;
-    return users().find((user) => user.id === active.userId) || null;
+  function readSession() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE.session) || 'null');
+    } catch {
+      return null;
+    }
   }
 
-  function setSession(user) {
-    writeJson(STORAGE.session, { userId: user.id, email: user.email, at: new Date().toISOString() });
+  function writeSession(session) {
+    localStorage.setItem(STORAGE.session, JSON.stringify(session));
   }
 
   function clearSession() {
     localStorage.removeItem(STORAGE.session);
   }
 
-  function isAdmin(user) {
+  function activeUser() {
+    return readSession()?.user || null;
+  }
+
+  function authHeaders() {
+    const token = readSession()?.token;
+    return token ? { authorization: `Bearer ${token}` } : {};
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'content-type': 'application/json',
+        ...authHeaders(),
+        ...(options.headers || {})
+      }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
+    return data;
+  }
+
+  function isAdmin(user = activeUser()) {
     return Boolean(user && user.email === ADMIN_EMAIL && user.role === 'admin');
   }
 
   function showStatus(text, error = false) {
-    let status = $('#site-auth-status');
+    const status = $('#site-auth-status');
     if (!status) return;
     status.textContent = text;
     status.style.color = error ? 'var(--site-red)' : 'var(--site-muted)';
@@ -123,8 +122,8 @@
               <input class="site-shell-input" name="email" type="email" autocomplete="email" required>
             </label>
             <label class="site-form-label">Password
-              <input class="site-shell-input" name="password" type="password" autocomplete="new-password" minlength="4" required>
-              <span class="site-field-note">Accounts are stored in this browser for this static site.</span>
+              <input class="site-shell-input" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <span class="site-field-note">Passwords and sessions are handled by the site API.</span>
             </label>
             <button class="site-shell-button primary" type="submit">Create account</button>
           </form>
@@ -155,69 +154,62 @@
   function openAuth() {
     ensureModal();
     $('#site-auth-modal').classList.add('open');
-    const email = $('#site-login-form input[name="email"]');
-    if (email) email.focus();
+    $('#site-login-form input[name="email"]')?.focus();
   }
 
   function closeAuth() {
-    const modal = $('#site-auth-modal');
-    if (modal) modal.classList.remove('open');
+    $('#site-auth-modal')?.classList.remove('open');
   }
 
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const email = form.elements.email.value.trim().toLowerCase();
-    const password = form.elements.password.value;
-    const user = users().find((item) => item.email.toLowerCase() === email);
-
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      setSession(user);
+    showStatus('Logging in...');
+    try {
+      const session = await api('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: form.elements.email.value.trim(),
+          password: form.elements.password.value
+        })
+      });
+      writeSession(session);
       closeAuth();
-      renderAccountBar();
-      renderComments();
-      initComposer();
-      return;
+      await refreshAll();
+    } catch (error) {
+      showStatus(error.message, true);
     }
-
-    const storedPassword = localStorage.getItem(`aarwitz.password.${email}`);
-    if (user && storedPassword && password === storedPassword) {
-      setSession(user);
-      closeAuth();
-      renderAccountBar();
-      renderComments();
-      initComposer();
-      return;
-    }
-
-    showStatus('Email or password did not match this browser.', true);
   }
 
-  function handleSignup(event) {
+  async function handleSignup(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const email = form.elements.email.value.trim().toLowerCase();
-    const allUsers = users();
-    if (allUsers.some((user) => user.email.toLowerCase() === email)) {
-      showStatus('That email already has an account in this browser.', true);
-      return;
+    showStatus('Creating account...');
+    try {
+      const session = await api('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: form.elements.name.value.trim(),
+          email: form.elements.email.value.trim(),
+          password: form.elements.password.value
+        })
+      });
+      writeSession(session);
+      closeAuth();
+      await refreshAll();
+    } catch (error) {
+      showStatus(error.message, true);
     }
+  }
 
-    const user = {
-      id: `user-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      name: form.elements.name.value.trim(),
-      email,
-      role: 'reader',
-      createdAt: new Date().toISOString()
-    };
-    allUsers.push(user);
-    writeJson(STORAGE.users, allUsers);
-    localStorage.setItem(`aarwitz.password.${email}`, form.elements.password.value);
-    setSession(user);
-    closeAuth();
-    renderAccountBar();
-    renderComments();
-    initComposer();
+  async function signOut() {
+    try {
+      await api('/auth/logout', { method: 'POST', body: '{}' });
+    } catch {
+      // Local session removal is the important user-visible action.
+    }
+    clearSession();
+    await refreshAll();
   }
 
   function renderAccountBar() {
@@ -231,55 +223,36 @@
       header.appendChild(bar);
     }
 
-    const active = session();
-    if (!active) {
-      bar.innerHTML = `<button type="button" class="site-shell-button" data-open-auth>Log in / Create account</button>`;
+    const user = activeUser();
+    if (!user) {
+      bar.innerHTML = '<button type="button" class="site-shell-button" data-open-auth>Log in / Create account</button>';
       $('[data-open-auth]', bar).addEventListener('click', openAuth);
       return;
     }
 
     bar.innerHTML = `
-      <span>Signed in as <strong class="text-white">${escapeHtml(active.name || active.email)}</strong></span>
-      ${isAdmin(active) ? '<a class="site-shell-button primary" href="admin.html">Compose</a>' : ''}
+      <span>Signed in as <strong class="text-white">${escapeHtml(user.name || user.email)}</strong></span>
+      ${isAdmin(user) ? '<a class="site-shell-button primary" href="admin.html">Compose</a>' : ''}
       <button type="button" class="site-shell-button" data-sign-out>Sign out</button>
     `;
-    $('[data-sign-out]', bar).addEventListener('click', () => {
+    $('[data-sign-out]', bar).addEventListener('click', signOut);
+  }
+
+  async function verifySession() {
+    if (!readSession()?.token) return;
+    try {
+      const data = await api('/me');
+      if (data.user) {
+        writeSession({ ...readSession(), user: data.user });
+      } else {
+        clearSession();
+      }
+    } catch {
       clearSession();
-      renderAccountBar();
-      renderComments();
-    });
+    }
   }
 
-  function commentsForPage() {
-    const all = readJson(STORAGE.comments, {});
-    return all[window.location.pathname] || [];
-  }
-
-  function saveComment(text) {
-    const active = session();
-    if (!active) return;
-    const all = readJson(STORAGE.comments, {});
-    const key = window.location.pathname;
-    const list = all[key] || [];
-    list.push({
-      id: `comment-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      authorName: active.name || active.email,
-      authorEmail: active.email,
-      body: text,
-      createdAt: new Date().toISOString()
-    });
-    all[key] = list;
-    writeJson(STORAGE.comments, all);
-  }
-
-  function deleteComment(id) {
-    const all = readJson(STORAGE.comments, {});
-    const key = window.location.pathname;
-    all[key] = (all[key] || []).filter((comment) => comment.id !== id);
-    writeJson(STORAGE.comments, all);
-  }
-
-  function renderComments() {
+  async function renderComments() {
     const name = pageName();
     if (LISTING_PAGES.has(name)) return;
     const main = $('main') || $('article') || $('.max-w-5xl');
@@ -293,17 +266,24 @@
       main.insertAdjacentElement(main.matches('main') ? 'afterend' : 'beforeend', panel);
     }
 
-    const active = session();
-    const comments = commentsForPage();
+    const user = activeUser();
+    let comments = [];
+    let error = '';
+    try {
+      comments = (await api(`/comments?page=${encodeURIComponent(pageKey())}`)).comments || [];
+    } catch (err) {
+      error = err.message;
+    }
+
     panel.innerHTML = `
       <div class="site-comment-header">
         <div>
           <h2 class="text-xl font-bold text-white">Comments</h2>
-          <p class="site-field-note">${comments.length} saved in this browser for this page.</p>
+          <p class="site-field-note">${error ? escapeHtml(error) : `${comments.length} public comment${comments.length === 1 ? '' : 's'}.`}</p>
         </div>
-        ${active ? '' : '<button type="button" class="site-shell-button" data-open-auth>Log in to comment</button>'}
+        ${user ? '' : '<button type="button" class="site-shell-button" data-open-auth>Log in to comment</button>'}
       </div>
-      ${active ? `
+      ${user ? `
         <form id="site-comment-form" class="site-form-grid">
           <label class="site-form-label">Add a comment
             <textarea class="site-shell-textarea" name="comment" rows="4" maxlength="2000" required></textarea>
@@ -319,347 +299,253 @@
               <span>${new Date(comment.createdAt).toLocaleString()}</span>
             </div>
             <p>${escapeHtml(comment.body).replace(/\n/g, '<br>')}</p>
-            ${active && (active.email === comment.authorEmail || isAdmin(active)) ? `<button type="button" class="site-shell-button danger" data-delete-comment="${comment.id}">Delete</button>` : ''}
+            ${user && (user.email === comment.authorEmail || isAdmin(user)) ? `<button type="button" class="site-shell-button danger" data-delete-comment="${comment.id}">Delete</button>` : ''}
           </article>
         `).join('') : '<p class="site-field-note">No comments yet.</p>'}
       </div>
     `;
 
-    const open = $('[data-open-auth]', panel);
-    if (open) open.addEventListener('click', openAuth);
-
-    const form = $('#site-comment-form', panel);
-    if (form) {
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const text = form.elements.comment.value.trim();
-        if (!text) return;
-        saveComment(text);
-        renderComments();
-      });
-    }
-
+    $('[data-open-auth]', panel)?.addEventListener('click', openAuth);
+    $('#site-comment-form', panel)?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const body = event.currentTarget.elements.comment.value.trim();
+      if (!body) return;
+      await api('/comments', { method: 'POST', body: JSON.stringify({ pageKey: pageKey(), body }) });
+      await renderComments();
+    });
     $$('[data-delete-comment]', panel).forEach((button) => {
-      button.addEventListener('click', () => {
-        deleteComment(button.dataset.deleteComment);
-        renderComments();
+      button.addEventListener('click', async () => {
+        await api(`/comments/${button.dataset.deleteComment}`, { method: 'DELETE' });
+        await renderComments();
       });
     });
   }
 
-  function markdownToHtml(markdown) {
-    const lines = String(markdown || '').replace(/\r\n/g, '\n').split('\n');
-    const html = [];
-    let paragraph = [];
-    let list = null;
-
-    function flushParagraph() {
-      if (!paragraph.length) return;
-      html.push(`<p>${paragraph.map(escapeHtml).join(' ')}</p>`);
-      paragraph = [];
-    }
-
-    function closeList() {
-      if (!list) return;
-      html.push(`</${list}>`);
-      list = null;
-    }
-
-    lines.forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed) {
-        flushParagraph();
-        closeList();
-        return;
-      }
-      const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
-      if (heading) {
-        flushParagraph();
-        closeList();
-        const level = heading[1].length + 1;
-        html.push(`<h${level} class="text-xl font-bold mt-6 mb-2">${escapeHtml(heading[2])}</h${level}>`);
-        return;
-      }
-      const bullet = trimmed.match(/^[-*]\s+(.+)$/);
-      if (bullet) {
-        flushParagraph();
-        if (list !== 'ul') {
-          closeList();
-          list = 'ul';
-          html.push('<ul class="list-disc pl-6 space-y-2">');
-        }
-        html.push(`<li>${escapeHtml(bullet[1])}</li>`);
-        return;
-      }
-      const numbered = trimmed.match(/^\d+\.\s+(.+)$/);
-      if (numbered) {
-        flushParagraph();
-        if (list !== 'ol') {
-          closeList();
-          list = 'ol';
-          html.push('<ol class="list-decimal pl-6 space-y-2">');
-        }
-        html.push(`<li>${escapeHtml(numbered[1])}</li>`);
-        return;
-      }
-      closeList();
-      paragraph.push(trimmed);
-    });
-
-    flushParagraph();
-    closeList();
-    return html.join('\n');
+  function buildArticleHtml(post) {
+    return `
+      <p class="text-sm font-semibold uppercase tracking-wide text-blue-400 mb-2">${escapeHtml(post.type || 'post')}</p>
+      <h1 class="text-2xl sm:text-4xl font-bold mb-2 text-white">${escapeHtml(post.title)}</h1>
+      <p class="text-sm text-gray-400 mb-6">${post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Draft'} &bull; Aaron</p>
+      ${post.heroUrl ? `<img src="${escapeHtml(post.heroUrl)}" alt="${escapeHtml(post.title)}" class="w-full rounded-lg border border-gray-700 mb-6">` : ''}
+      <div class="dynamic-post-body">${post.bodyHtml || ''}</div>
+    `;
   }
 
-  function buildArticleHtml(draft) {
-    const title = escapeHtml(draft.title);
-    const date = escapeHtml(draft.date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
-    const typeLabel = escapeHtml(draft.type || 'blog');
-    const body = markdownToHtml(draft.content);
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title} - Aaron Horowitz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: 'Optima'; background:#0d1117; color:#c9d1d9; font-size:17px; line-height:1.7; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-        article p { margin-bottom: 1rem; }
-    </style>
-</head>
-<body class="p-4">
-    <div class="max-w-3xl mx-auto sm:p-4 lg:p-8">
-        <div id="site-header"></div>
-        <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8">
-            <p class="text-sm font-semibold uppercase tracking-wide text-blue-400 mb-2">${typeLabel}</p>
-            <h1 class="text-2xl sm:text-4xl font-bold mb-2 text-white">${title}</h1>
-            <p class="text-sm text-gray-400 mb-6">${date} &bull; Aaron</p>
-            ${draft.hero ? `<img src="${escapeHtml(draft.hero)}" alt="${title}" class="w-full rounded-lg border border-gray-700 mb-6">` : ''}
-            ${body}
-        </article>
-    </div>
-    <script src="include_header.js" defer></script>
-</body>
-</html>`;
-  }
-
-  function buildCardSnippet(draft) {
-    const target = `${slugify(draft.slug || draft.title)}.html`;
-    const typeClass = draft.type === 'project' ? 'project-item' : draft.type === 'essay' ? 'essay-item' : 'blog-item';
-    return `<a href="${target}" class="${typeClass} block group"${draft.category ? ` data-category="${escapeHtml(slugify(draft.category))}"` : ''}>
-    <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
-        <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">${escapeHtml(draft.title)}</h2>
-        <p class="text-gray-400 text-sm mb-4">Published on ${escapeHtml(draft.date || '')}</p>
-        <div class="relative h-24 overflow-hidden">
-            <div class="prose max-w-none text-gray-300">
-                <p>${escapeHtml(draft.summary || '')}</p>
-            </div>
+  function buildCard(post) {
+    const date = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Draft';
+    return `
+      <a href="post.html?slug=${encodeURIComponent(post.slug)}" class="block group" data-api-post="${escapeHtml(post.type)}">
+        <article class="bg-[#161b22] rounded-lg shadow-lg p-6 sm:p-8 transition transform group-hover:scale-[1.02] group-hover:shadow-xl cursor-pointer">
+          <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-white group-hover:text-blue-400 transition">${escapeHtml(post.title)}</h2>
+          <p class="text-gray-400 text-sm mb-4">Published on ${escapeHtml(date)}</p>
+          <div class="relative h-24 overflow-hidden">
+            <div class="prose max-w-none text-gray-300"><p>${escapeHtml(post.summary)}</p></div>
             <div class="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#161b22] to-transparent pointer-events-none"></div>
-        </div>
-    </article>
-</a>`;
+          </div>
+        </article>
+      </a>
+    `;
+  }
+
+  async function renderApiPostsOnListing() {
+    const name = pageName();
+    const type = name === 'blog.html' ? 'blog' : name === 'essays.html' ? 'essay' : name === 'projects.html' ? 'project' : null;
+    if (!type) return;
+    const main = $('main');
+    if (!main) return;
+    $$('[data-api-post]', main).forEach((item) => item.remove());
+    try {
+      const posts = (await api(`/posts?type=${type}`)).posts || [];
+      posts.reverse().forEach((post) => main.insertAdjacentHTML('afterbegin', buildCard(post)));
+    } catch {
+      // Existing hand-coded posts remain available if the API is unreachable.
+    }
+  }
+
+  async function renderDynamicPost() {
+    if (pageName() !== 'post.html') return;
+    const slug = new URLSearchParams(window.location.search).get('slug');
+    const target = $('#dynamic-post');
+    if (!slug || !target) return;
+    try {
+      const { post } = await api(`/posts/${encodeURIComponent(slug)}`);
+      document.title = `${post.title} - Aaron Horowitz`;
+      target.innerHTML = buildArticleHtml(post);
+    } catch (error) {
+      target.innerHTML = `<h1 class="text-2xl font-bold text-white mb-2">Post unavailable</h1><p class="text-gray-400">${escapeHtml(error.message)}</p>`;
+    }
   }
 
   function draftFromForm() {
     const form = $('#composer-form');
     if (!form) return null;
     return {
-      id: form.elements.draftId.value || `draft-${Date.now()}`,
       type: form.elements.type.value,
       title: form.elements.title.value.trim(),
       slug: slugify(form.elements.slug.value || form.elements.title.value),
-      date: form.elements.date.value,
       category: form.elements.category.value.trim(),
-      tags: form.elements.tags.value.trim(),
-      hero: form.elements.hero.value.trim(),
+      tags: form.elements.tags.value.split(',').map((tag) => tag.trim()).filter(Boolean),
+      heroUrl: form.elements.hero.value.trim(),
       summary: form.elements.summary.value.trim(),
-      content: form.elements.content.value.trim(),
-      updatedAt: new Date().toISOString()
+      bodyMarkdown: form.elements.content.value.trim(),
+      status: form.elements.status.value
     };
   }
 
-  function fillComposer(draft) {
+  function fillComposer(post = {}) {
     const form = $('#composer-form');
-    if (!form || !draft) return;
-    form.elements.draftId.value = draft.id || '';
-    form.elements.type.value = draft.type || 'blog';
-    form.elements.title.value = draft.title || '';
-    form.elements.slug.value = draft.slug || slugify(draft.title);
-    form.elements.date.value = draft.date || new Date().toISOString().slice(0, 10);
-    form.elements.category.value = draft.category || '';
-    form.elements.tags.value = draft.tags || '';
-    form.elements.hero.value = draft.hero || '';
-    form.elements.summary.value = draft.summary || '';
-    form.elements.content.value = draft.content || '';
-    updateComposerOutput();
+    if (!form) return;
+    form.elements.type.value = post.type || 'blog';
+    form.elements.title.value = post.title || '';
+    form.elements.slug.value = post.slug || slugify(post.title);
+    form.elements.category.value = post.category || '';
+    form.elements.tags.value = Array.isArray(post.tags) ? post.tags.join(', ') : (post.tags || '');
+    form.elements.hero.value = post.heroUrl || '';
+    form.elements.summary.value = post.summary || '';
+    form.elements.content.value = post.bodyMarkdown || '';
+    form.elements.status.value = post.status || 'draft';
+    updateComposerPreview();
   }
 
-  function allDrafts() {
-    return readJson(STORAGE.drafts, []);
-  }
-
-  function saveDraft(draft) {
-    const drafts = allDrafts();
-    const existing = drafts.findIndex((item) => item.id === draft.id);
-    if (existing >= 0) drafts[existing] = draft;
-    else drafts.unshift(draft);
-    writeJson(STORAGE.drafts, drafts);
-  }
-
-  function deleteDraft(id) {
-    writeJson(STORAGE.drafts, allDrafts().filter((draft) => draft.id !== id));
-  }
-
-  function renderDraftList() {
-    const target = $('#composer-drafts');
-    if (!target) return;
-    const drafts = allDrafts();
-    target.innerHTML = drafts.length ? drafts.map((draft) => `
-      <div class="site-comment">
-        <div class="site-comment-meta">
-          <span class="site-comment-author">${escapeHtml(draft.title || 'Untitled')}</span>
-          <span>${escapeHtml(draft.type)}</span>
-        </div>
-        <p class="site-field-note">${escapeHtml(draft.summary || 'No summary')}</p>
-        <div class="composer-actions">
-          <button class="site-shell-button" type="button" data-load-draft="${draft.id}">Load</button>
-          <button class="site-shell-button danger" type="button" data-delete-draft="${draft.id}">Delete</button>
-        </div>
-      </div>
-    `).join('') : '<p class="site-field-note">No saved drafts in this browser.</p>';
-
-    $$('[data-load-draft]', target).forEach((button) => {
-      button.addEventListener('click', () => fillComposer(allDrafts().find((draft) => draft.id === button.dataset.loadDraft)));
-    });
-    $$('[data-delete-draft]', target).forEach((button) => {
-      button.addEventListener('click', () => {
-        deleteDraft(button.dataset.deleteDraft);
-        renderDraftList();
-      });
-    });
-  }
-
-  function updateComposerOutput() {
+  function updateComposerPreview() {
     const draft = draftFromForm();
     if (!draft) return;
-    if (!draft.title && !draft.content) return;
-    const html = buildArticleHtml(draft);
-    const snippet = buildCardSnippet(draft);
     const preview = $('#composer-preview');
-    const output = $('#composer-output');
-    const snippetOutput = $('#composer-snippet');
-    if (preview) preview.innerHTML = html.match(/<article[\s\S]*<\/article>/)?.[0] || '';
-    if (output) output.value = html;
-    if (snippetOutput) snippetOutput.value = snippet;
+    if (!preview) return;
+    preview.innerHTML = `
+      <article>
+        <p class="text-sm font-semibold uppercase tracking-wide text-blue-400 mb-2">${escapeHtml(draft.status)} ${escapeHtml(draft.type)}</p>
+        <h1>${escapeHtml(draft.title || 'Untitled')}</h1>
+        ${draft.summary ? `<p class="text-gray-400">${escapeHtml(draft.summary)}</p>` : ''}
+        <div>${window.AarwitzSite.markdownToHtml(draft.bodyMarkdown)}</div>
+      </article>
+    `;
   }
 
-  function downloadText(filename, text) {
-    const blob = new Blob([text], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+  async function renderAdminPosts() {
+    const target = $('#composer-drafts');
+    if (!target || !isAdmin()) return;
+    try {
+      const posts = (await api('/admin/posts')).posts || [];
+      target.innerHTML = posts.length ? posts.map((post) => `
+        <div class="site-comment">
+          <div class="site-comment-meta">
+            <span class="site-comment-author">${escapeHtml(post.title)}</span>
+            <span>${escapeHtml(post.type)}</span>
+            <span>${escapeHtml(post.status)}</span>
+          </div>
+          <p class="site-field-note">${escapeHtml(post.summary || 'No summary')}</p>
+          <div class="composer-actions">
+            <button class="site-shell-button" type="button" data-load-post="${escapeHtml(post.slug)}">Load</button>
+            <a class="site-shell-button" href="post.html?slug=${encodeURIComponent(post.slug)}">View</a>
+            <button class="site-shell-button danger" type="button" data-delete-post="${escapeHtml(post.slug)}">Delete</button>
+          </div>
+        </div>
+      `).join('') : '<p class="site-field-note">No server-side posts yet.</p>';
+      $$('[data-load-post]', target).forEach((button) => button.addEventListener('click', async () => {
+        const { post } = await api(`/admin/posts/${encodeURIComponent(button.dataset.loadPost)}`);
+        fillComposer(post);
+      }));
+      $$('[data-delete-post]', target).forEach((button) => button.addEventListener('click', async () => {
+        await api(`/admin/posts/${encodeURIComponent(button.dataset.deletePost)}`, { method: 'DELETE' });
+        await renderAdminPosts();
+      }));
+    } catch (error) {
+      target.innerHTML = `<p class="site-field-note">${escapeHtml(error.message)}</p>`;
+    }
   }
 
-  function initComposer() {
+  async function initComposer() {
     if (pageName() !== 'admin.html') return;
-    const active = session();
     const guard = $('#composer-guard');
     const app = $('#composer-app');
-    if (!isAdmin(active)) {
+    if (!isAdmin()) {
       if (guard) guard.hidden = false;
       if (app) app.hidden = true;
-      const login = $('#composer-login');
-      if (login) login.addEventListener('click', openAuth);
+      $('#composer-login')?.addEventListener('click', openAuth);
       return;
     }
 
     if (guard) guard.hidden = true;
     if (app) app.hidden = false;
     const form = $('#composer-form');
-    if (!form) return;
-    fillComposer({
-      type: 'blog',
-      date: new Date().toISOString().slice(0, 10),
-      content: '# Section title\n\nWrite the first paragraph here.\n\n- Bullet point\n- Another bullet point'
-    });
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = 'true';
+    fillComposer({ type: 'blog', status: 'draft', bodyMarkdown: '# Section title\n\nWrite the first paragraph here.' });
 
     form.addEventListener('input', () => {
-      if (form.elements.title.value && !form.elements.slug.dataset.touched) form.elements.slug.value = slugify(form.elements.title.value);
-      updateComposerOutput();
+      if (form.elements.title.value && !form.elements.slug.dataset.touched) {
+        form.elements.slug.value = slugify(form.elements.title.value);
+      }
+      updateComposerPreview();
     });
     form.elements.slug.addEventListener('input', () => {
       form.elements.slug.dataset.touched = 'true';
     });
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const draft = draftFromForm();
-      saveDraft(draft);
-      form.elements.draftId.value = draft.id;
-      renderDraftList();
-      const status = $('#composer-status');
-      if (status) status.textContent = `Saved draft: ${draft.title}`;
-    });
-
-    $('#composer-download')?.addEventListener('click', () => {
-      const draft = draftFromForm();
-      downloadText(`${draft.slug}.html`, buildArticleHtml(draft));
-    });
-    $('#composer-copy-html')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText($('#composer-output').value);
-      $('#composer-status').textContent = 'Copied page HTML.';
-    });
-    $('#composer-copy-snippet')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText($('#composer-snippet').value);
-      $('#composer-status').textContent = 'Copied listing snippet.';
+      const method = 'POST';
+      const data = await api('/admin/posts', { method, body: JSON.stringify(draft) });
+      fillComposer(data.post);
+      $('#composer-status').textContent = `${draft.status === 'published' ? 'Published' : 'Saved'}: ${data.post.title}`;
+      await renderAdminPosts();
     });
     $('#composer-reset')?.addEventListener('click', () => {
-      fillComposer({ type: 'blog', date: new Date().toISOString().slice(0, 10), content: '' });
-      $('#composer-status').textContent = 'Started a new draft.';
+      fillComposer({ type: 'blog', status: 'draft', bodyMarkdown: '' });
+      $('#composer-status').textContent = 'Started a new post.';
     });
-
-    renderDraftList();
+    $('#composer-copy-html')?.addEventListener('click', async () => {
+      const draft = draftFromForm();
+      await navigator.clipboard.writeText(window.AarwitzSite.markdownToHtml(draft.bodyMarkdown));
+      $('#composer-status').textContent = 'Copied body HTML.';
+    });
+    $('#composer-copy-snippet')?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(buildCard({ ...draftFromForm(), publishedAt: new Date().toISOString() }));
+      $('#composer-status').textContent = 'Copied listing card.';
+    });
+    $('#composer-download')?.addEventListener('click', () => {
+      $('#composer-status').textContent = 'Server publishing is active. Use Save/Publish instead.';
+    });
+    await renderAdminPosts();
   }
 
-  function renderLocalDraftCards() {
-    const name = pageName();
-    const type = name === 'blog.html' ? 'blog' : name === 'essays.html' ? 'essay' : name === 'projects.html' ? 'project' : null;
-    if (!type) return;
-    const main = $('main');
-    if (!main) return;
-    const drafts = allDrafts().filter((draft) => draft.type === type);
-    drafts.forEach((draft) => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = buildCardSnippet(draft);
-      const card = wrapper.firstElementChild;
-      card.classList.add('site-local-draft');
-      card.querySelector('article').insertAdjacentHTML('afterbegin', '<span class="site-local-draft-badge">Browser draft</span>');
-      main.prepend(card);
-    });
+  async function refreshAll() {
+    renderAccountBar();
+    await renderDynamicPost();
+    await renderApiPostsOnListing();
+    await renderComments();
+    await initComposer();
   }
 
   window.AarwitzSite = {
-    buildArticleHtml,
-    buildCardSnippet,
-    markdownToHtml,
-    slugify
+    api,
+    slugify,
+    markdownToHtml(markdown) {
+      const escape = escapeHtml;
+      return String(markdown || '').replace(/\r\n/g, '\n').split(/\n{2,}/).map((block) => {
+        const trimmed = block.trim();
+        if (!trimmed) return '';
+        const heading = trimmed.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+          const level = Math.min(heading[1].length + 1, 4);
+          return `<h${level}>${escape(heading[2])}</h${level}>`;
+        }
+        if (/^[-*]\s+/m.test(trimmed)) {
+          return `<ul>${trimmed.split('\n').map((line) => line.replace(/^[-*]\s+/, '')).map((line) => `<li>${escape(line)}</li>`).join('')}</ul>`;
+        }
+        if (/^\d+\.\s+/m.test(trimmed)) {
+          return `<ol>${trimmed.split('\n').map((line) => line.replace(/^\d+\.\s+/, '')).map((line) => `<li>${escape(line)}</li>`).join('')}</ol>`;
+        }
+        return `<p>${escape(trimmed).replace(/\n/g, ' ')}</p>`;
+      }).join('\n');
+    }
   };
 
-  function boot() {
-    users();
+  async function boot() {
     ensureModal();
-    renderAccountBar();
-    renderLocalDraftCards();
-    renderComments();
-    initComposer();
+    await verifySession();
+    await refreshAll();
   }
 
   if (document.readyState === 'loading') {

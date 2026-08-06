@@ -35,7 +35,7 @@
         <main id="composer-app" hidden>
             <div class="mb-6">
                 <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Compose</h1>
-                <p class="text-gray-400">Create one standardized page, then use the generated snippet in the matching listing page.</p>
+                <p class="text-gray-400">Create and publish standardized blogs, essays, and projects through the site API.</p>
             </div>
 
             <div class="composer-grid">
@@ -59,8 +59,11 @@
                             <label class="site-form-label">Slug
                                 <input class="site-shell-input" name="slug" placeholder="my-post-title">
                             </label>
-                            <label class="site-form-label">Date
-                                <input class="site-shell-input" name="date" type="date">
+                            <label class="site-form-label">Status
+                                <select class="site-shell-select" name="status">
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                </select>
                             </label>
                             <label class="site-form-label">Category
                                 <input class="site-shell-input" name="category" placeholder="engineering">
@@ -86,8 +89,8 @@
 
                         <div class="composer-actions">
                             <button class="site-shell-button primary" type="submit">Save draft</button>
-                            <button id="composer-download" class="site-shell-button" type="button">Download HTML</button>
-                            <button id="composer-copy-html" class="site-shell-button" type="button">Copy page HTML</button>
+                            <button id="composer-download" class="site-shell-button" type="button">Publish via API</button>
+                            <button id="composer-copy-html" class="site-shell-button" type="button">Copy body HTML</button>
                             <button id="composer-copy-snippet" class="site-shell-button" type="button">Copy listing snippet</button>
                             <button id="composer-reset" class="site-shell-button" type="button">New draft</button>
                         </div>
@@ -109,8 +112,8 @@
             </div>
 
             <section class="composer-panel mt-4">
-                <h2 class="text-xl font-bold text-white mb-3">Generated Page HTML</h2>
-                <textarea id="composer-output" class="site-shell-textarea composer-output" readonly></textarea>
+                <h2 class="text-xl font-bold text-white mb-3">Publishing</h2>
+                <p class="site-field-note">Posts are stored in Cloudflare D1. Published posts appear automatically on the matching Blog, Essays, or Projects page and open through post.html.</p>
             </section>
 
             <section class="composer-panel mt-4">
