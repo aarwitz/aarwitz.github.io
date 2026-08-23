@@ -66,6 +66,13 @@ live_about="$(curl --fail --silent --show-error --max-time 20 "$SITE_ORIGIN/abou
 live_article="$(curl --fail --silent --show-error --max-time 20 "$SITE_ORIGIN/SockRobotPi0.html$cache_bust")"
 
 grep -Fq 'Dec. 2023 - May 2026' <<<"$live_home" || fail "live homepage has the wrong Cognex end date"
+grep -Fq 'Co-Founder &amp; Software Engineer' <<<"$live_home" || fail "live homepage is missing the LIDI role"
+grep -Fq 'Built a hardware-in-the-loop testing rig pairing oscilloscope capture of encoder pulses and camera triggers with remote on-device debugging and kernel traces, and refactored the test suite to support mute-test-in-code workflows' <<<"$live_home" ||
+  fail "live homepage has stale Cognex testing copy"
+if grep -Fq 'Reduced CI/CD failures by 80%' <<<"$live_home"; then
+  fail "live homepage contains the unsupported CI/CD percentage"
+fi
+grep -Fq 'href="https://github.com/aarwitz"' <<<"$live_home" || fail "live footer has the wrong GitHub account"
 grep -Fq 'From June 2022 through May 2026' <<<"$live_about" || fail "live About page has stale Cognex copy"
 grep -Fq 'Video coming soon.' <<<"$live_article" || fail "live robot article is stale"
 curl --fail --silent --show-error --output /dev/null --max-time 20 \

@@ -27,6 +27,14 @@ grep -Fq 'database_id = "dc17752a-51d8-4216-b6bf-593f0c33cc3f"' worker/wrangler.
   fail "unexpected D1 database id"
 grep -Fq 'Dec. 2023 - May 2026' index.html || fail "Cognex end date regressed"
 grep -Fq 'From June 2022 through May 2026' about.html || fail "Cognex biography regressed"
+grep -Fq 'Co-Founder &amp; Software Engineer' index.html || fail "LIDI current role is missing"
+grep -Fq 'Jan. 2025 - Present • Boston, MA' index.html || fail "LIDI role dates regressed"
+grep -Fq 'Built a hardware-in-the-loop testing rig pairing oscilloscope capture of encoder pulses and camera triggers with remote on-device debugging and kernel traces, and refactored the test suite to support mute-test-in-code workflows' index.html ||
+  fail "Cognex hardware-in-the-loop bullet regressed"
+if grep -Fq 'Reduced CI/CD failures by 80%' index.html; then
+  fail "unsupported CI/CD percentage is present"
+fi
+grep -Fq 'href="https://github.com/aarwitz"' index.html || fail "footer GitHub account regressed"
 grep -Fq 'RobotTrain_PI_Attempt1.jpg' SockRobotPi0.html || fail "robot article image is not referenced"
 
 python3 - <<'PY'
