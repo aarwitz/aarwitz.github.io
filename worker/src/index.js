@@ -1,4 +1,5 @@
 const SESSION_DAYS = 30;
+const PASSWORD_ITERATIONS = 210000;
 
 function json(data, status = 200, request, env) {
   return new Response(JSON.stringify(data), {
@@ -21,6 +22,13 @@ function corsHeaders(request, env) {
   };
 }
 
+function requestOriginAllowed(request, env) {
+  const origin = request.headers.get('origin');
+  if (!origin) return true;
+  const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map((item) => item.trim()).filter(Boolean);
+  return allowed.includes(origin);
+}
+
 function textEncoder() {
   return new TextEncoder();
 }
@@ -39,8 +47,54 @@ async function sha256(value) {
   return bytesToHex(await crypto.subtle.digest('SHA-256', textEncoder().encode(value)));
 }
 
-async function passwordHash(password, salt) {
+async function legacyPasswordHash(password, salt) {
   return sha256(`${salt}:${password}`);
+}
+
+async function pbkdf2Hex(password, salt, iterations = PASSWORD_ITERATIONS) {
+  const key = await crypto.subtle.importKey('raw', textEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({
+    name: 'PBKDF2',
+    hash: 'SHA-256',
+    salt: textEncoder().encode(salt),
+    iterations
+  }, key, 256);
+  return bytesToHex(bits);
+}
+
+async function passwordHash(password, salt) {
+  const hash = await pbkdf2Hex(password, salt);
+  return `pbkdf2-sha256$${PASSWORD_ITERATIONS}$${hash}`;
+}
+
+function constantTimeEqual(left, right) {
+  const a = textEncoder().encode(String(left));
+  const b = textEncoder().encode(String(right));
+  const length = Math.max(a.length, b.length);
+  let difference = a.length ^ b.length;
+  for (let index = 0; index < length; index += 1) {
+    difference |= (a[index] || 0) ^ (b[index] || 0);
+  }
+  return difference === 0;
+}
+
+async function verifyPassword(password, user) {
+  const stored = String(user.password_hash || '');
+  if (stored.startsWith('pbkdf2-sha256$')) {
+    const [, iterationsText, expected] = stored.split('$');
+    const iterations = Number(iterationsText);
+    if (!Number.isInteger(iterations) || iterations < 100000 || !expected) return false;
+    return constantTimeEqual(await pbkdf2Hex(password, user.password_salt, iterations), expected);
+  }
+  return constantTimeEqual(await legacyPasswordHash(password, user.password_salt), stored);
+}
+
+async function upgradePasswordHash(env, user, password) {
+  if (String(user.password_hash || '').startsWith('pbkdf2-sha256$')) return;
+  const upgraded = await passwordHash(password, user.password_salt);
+  await env.DB.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+    .bind(upgraded, now(), user.id)
+    .run();
 }
 
 function id(prefix) {
@@ -56,6 +110,27 @@ function requireString(value, name, max = 1000) {
   if (!text) throw new Error(`${name} is required`);
   if (text.length > max) throw new Error(`${name} is too long`);
   return text;
+}
+
+function requireEmail(value) {
+  const email = requireString(value, 'email', 254).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('email must be valid');
+  return email;
+}
+
+async function enforceRateLimit(request, env, action, limit, windowSeconds) {
+  const address = request.headers.get('cf-connecting-ip') || 'unknown';
+  const key = await sha256(`${action}:${address}`);
+  const windowStart = Math.floor(Date.now() / (windowSeconds * 1000)) * windowSeconds;
+  const result = await env.DB.prepare(
+    `INSERT INTO rate_limits (key, action, window_start, count)
+     VALUES (?, ?, ?, 1)
+     ON CONFLICT(key, window_start) DO UPDATE SET count = count + 1
+     RETURNING count`
+  ).bind(key, action, windowStart).first();
+  if (Number(result?.count || 0) > limit) {
+    throw Object.assign(new Error('Too many requests; please try again later'), { status: 429 });
+  }
 }
 
 function publicUser(user) {
@@ -230,11 +305,15 @@ async function requireAdmin(request, env) {
 }
 
 async function handleSignup(request, env) {
+  await enforceRateLimit(request, env, 'signup', 5, 3600);
   const body = await readBody(request);
-  const email = requireString(body.email, 'email', 254).toLowerCase();
+  const email = requireEmail(body.email);
   const name = requireString(body.name, 'name', 100);
   const password = requireString(body.password, 'password', 256);
-  if (password.length < 8) throw new Error('password must be at least 8 characters');
+  if (password.length < 12) throw new Error('password must be at least 12 characters');
+  if (email === String(env.ADMIN_EMAIL || '').toLowerCase()) {
+    throw Object.assign(new Error('This address cannot be created through public signup'), { status: 403 });
+  }
   if (await userByEmail(env, email)) throw Object.assign(new Error('An account already exists for that email'), { status: 409 });
   const user = await createUser(env, { email, name, password });
   const session = await createSession(env, user.id);
@@ -242,8 +321,9 @@ async function handleSignup(request, env) {
 }
 
 async function handleLogin(request, env) {
+  await enforceRateLimit(request, env, 'login', 20, 900);
   const body = await readBody(request);
-  const email = requireString(body.email, 'email', 254).toLowerCase();
+  const email = requireEmail(body.email);
   const password = requireString(body.password, 'password', 256);
   let user = await userByEmail(env, email);
 
@@ -252,13 +332,8 @@ async function handleLogin(request, env) {
   }
 
   if (!user) throw Object.assign(new Error('Email or password did not match'), { status: 401 });
-  const hash = await passwordHash(password, user.password_salt);
-  if (hash !== user.password_hash) throw Object.assign(new Error('Email or password did not match'), { status: 401 });
-
-  if (email === String(env.ADMIN_EMAIL || '').toLowerCase() && user.role !== 'admin') {
-    await env.DB.prepare('UPDATE users SET role = ?, updated_at = ? WHERE id = ?').bind('admin', now(), user.id).run();
-    user.role = 'admin';
-  }
+  if (!(await verifyPassword(password, user))) throw Object.assign(new Error('Email or password did not match'), { status: 401 });
+  await upgradePasswordHash(env, user, password);
 
   const session = await createSession(env, user.id);
   return { user: publicUser(user), ...session };
@@ -280,17 +355,19 @@ async function listComments(request, env) {
      WHERE comments.page_key = ? AND comments.deleted_at IS NULL
      ORDER BY comments.created_at ASC LIMIT 200`
   ).bind(pageKey).all();
+  const viewer = await authUser(request, env);
   return { comments: rows.results.map((row) => ({
     id: row.id,
     body: row.body,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     authorName: row.author_name,
-    authorEmail: row.author_email
+    canDelete: Boolean(viewer && (viewer.email === row.author_email || viewer.role === 'admin'))
   })) };
 }
 
 async function createComment(request, env) {
+  await enforceRateLimit(request, env, 'comment', 10, 600);
   const user = await requireAuth(request, env);
   const body = await readBody(request);
   const pageKey = requireString(body.pageKey, 'pageKey', 500);
@@ -420,10 +497,15 @@ async function route(request, env) {
 export default {
   async fetch(request, env) {
     try {
+      if (!requestOriginAllowed(request, env)) {
+        throw Object.assign(new Error('Origin not allowed'), { status: 403 });
+      }
       const data = await route(request, env);
       return data instanceof Response ? data : json(data, 200, request, env);
     } catch (error) {
-      return json({ error: error.message || 'Unexpected error' }, error.status || 400, request, env);
+      const status = error.status || 500;
+      if (status >= 500) console.error(error);
+      return json({ error: status >= 500 ? 'Unexpected error' : (error.message || 'Request failed') }, status, request, env);
     }
   }
 };

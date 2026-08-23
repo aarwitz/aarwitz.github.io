@@ -51,3 +51,13 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_type_status ON posts(type, status, published_at DESC);
+
+CREATE TABLE IF NOT EXISTS rate_limits (
+  key TEXT NOT NULL,
+  action TEXT NOT NULL,
+  window_start INTEGER NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (key, window_start)
+);
+
+CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window_start);

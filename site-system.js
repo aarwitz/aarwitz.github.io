@@ -122,7 +122,7 @@
               <input class="site-shell-input" name="email" type="email" autocomplete="email" required>
             </label>
             <label class="site-form-label">Password
-              <input class="site-shell-input" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <input class="site-shell-input" name="password" type="password" autocomplete="new-password" minlength="12" required>
               <span class="site-field-note">Passwords and sessions are handled by the site API.</span>
             </label>
             <button class="site-shell-button primary" type="submit">Create account</button>
@@ -299,7 +299,7 @@
               <span>${new Date(comment.createdAt).toLocaleString()}</span>
             </div>
             <p>${escapeHtml(comment.body).replace(/\n/g, '<br>')}</p>
-            ${user && (user.email === comment.authorEmail || isAdmin(user)) ? `<button type="button" class="site-shell-button danger" data-delete-comment="${comment.id}">Delete</button>` : ''}
+            ${comment.canDelete ? `<button type="button" class="site-shell-button danger" data-delete-comment="${comment.id}">Delete</button>` : ''}
           </article>
         `).join('') : '<p class="site-field-note">No comments yet.</p>'}
       </div>
