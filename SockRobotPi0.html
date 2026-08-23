@@ -7,6 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Optima'; background:#0d1117; color:#c9d1d9; }
+        .media-placeholder {
+            border: 1px dashed #4b5563;
+            background: #0b1220;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -16,59 +21,94 @@
             <h1 class="text-2xl font-bold mb-2">Fine-Tuning π0 on My Sock-Collecting Robot</h1>
             <p class="text-sm text-gray-400 mb-4">Jul 24, 2026 • Aaron</p>
 
-            <p>For about a year I've been building a robot that picks socks up off my floor: a Jetson Orin Nano, a RealSense D455, a mecanum base, and a $200-class Waveshare RoArm M2-S. The plan was always to get a real robot foundation model in the loop eventually. This week it happened: π0 (Physical Intelligence's model), LoRA fine-tuned on <strong>50 demonstrations — 11 minutes of robot time — and about $5 of rented GPU</strong>, picked a sock off a box in my living room in 2 of 3 live attempts, from one RGB camera, four floats of proprioception, and the string "pick up the sock."</p>
+            <figure class="mb-6">
+                <img src="RobotTrain_PI_Attempt1.jpg" alt="Robot arm during an early π0 sock-picking attempt" class="w-full rounded-lg border border-gray-700">
+                <figcaption class="mt-2 text-center text-sm text-gray-400">An early π0 sock-picking attempt.</figcaption>
+            </figure>
 
-            <p>Every failure I saw traced back to a specific, fixable property of my data — not to the model. That's the story worth telling.</p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>I have been using a CNN-detection and vSLAM stack with a differential driver PI controller on <a href="MobileRobot.html">MobileRobot</a>.</li>
+                <li>Grasping arbitrary objects is the hard part, so I finally put a real robot foundation model in the loop.</li>
+                <li>π0, LoRA fine-tuned on <strong>50 demonstrations, 11 minutes of robot time, and $4 of rented GPU</strong>, picked a sock off a box in my living room in 2 of 3 live attempts.</li>
+                <li>The model saw one RGB camera, four floats of proprioception, and the prompt: "pick up the sock."</li>
+                <li>Every failure I saw traced back to a specific, fixable property of my data, not to the model.</li>
+            </ul>
 
             <h2 class="text-xl font-bold mt-6 mb-2">Teleop first</h2>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>I do teleop from a web page with WASD keys, since I do not have a VR rig or a space mouse.</li>
+                <li>The arm's vendor protocol was the interesting part: the documented "move to XYZ" command (T:104) is blocking and can wedge the ESP32 if streamed at 10 Hz.</li>
+                <li>T:123 is a real velocity-jog command, and T:1041 is a non-blocking setpoint.</li>
+                <li>Those two commands, plus server-side acceleration limiting, made motion smooth enough to look intentional.</li>
+            </ul>
 
-            <p>I don't have a VR rig or a space mouse, so teleop is a web page with WASD keys — the same console I already used for camera feeds. The arm's vendor protocol turned out to be the interesting part. The documented "move to XYZ" command (T:104) is blocking: stream it at 10 Hz and the ESP32 wedges so hard only a serial DTR pulse revives it. Buried further down the wiki are T:123, a real velocity-jog command, and T:1041, a non-blocking setpoint. Those two plus server-side acceleration limiting gave motion smooth enough to look intentional.</p>
-
-            <p>The safety design I'm most happy with: the browser stops the robot by <em>ceasing to publish</em>. Deadman timers on the robot side do the rest, so a crashed laptop can't leave a jog running. This mattered more than I expected later — the policy executes through the exact same channel, so the same E-STOP and workspace envelope gate a 3-billion-parameter network the same way they gate my keyboard.</p>
+            <div class="media-placeholder rounded-lg p-4 my-6 text-center text-sm">
+                Video coming soon.
+            </div>
 
             <h2 class="text-xl font-bold mt-6 mb-2">The grasp had to be engineered before it could be demonstrated</h2>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>The RoArm's gripper only moves one jaw; the other is a rigid backstop.</li>
+                <li>Pinching a scrunched sock from above fails because the claw closes on a fold and the sock extrudes back out as the arm lifts.</li>
+                <li>What works is a sweep: descend beside the sock on the moving-jaw side, fold the last 25 mm into a lateral sweep, and close during the sweep so the moving jaw drags the sock into the fixed jaw.</li>
+                <li>The gripper servo's torque reading is my force sensor: nothing settles around 32, while a sock strains at 150–240.</li>
+                <li>Every demonstration gets verified twice, after the grab and again after the lift.</li>
+            </ul>
 
-            <p>The RoArm's gripper only moves one jaw; the other is a rigid backstop. Pinching a scrunched sock from above fails in a way that's obvious in retrospect: the claw closes on a fold, and as the arm lifts, the fold extrudes out of the jaws like toothpaste. I could watch it happen in the numbers — the claw would stall 0.28 rad short of closed at grasp time, then read 0.01 by the top of the lift. Empty.</p>
-
-            <p>What works is a sweep: descend <em>beside</em> the sock on the moving-jaw side, fold the last 25 mm of descent into a lateral sweep, and close the claw <em>during</em> the sweep — finishing before the lateral motion ends — so the moving jaw drags the sock into the fixed jaw. Tuned until it stopped looking like a robot doing three steps and started looking like a hand.</p>
-
-            <p>The arm has no force sensor, but the gripper servo's torque reading is a perfectly good one: closing on nothing settles around 32, closing on a sock strains at 150–240. Every demonstration gets verified twice — after the grab and again after the lift.</p>
+            <div class="media-placeholder rounded-lg p-4 my-6 text-center text-sm">
+                Picture coming soon.
+            </div>
 
             <h2 class="text-xl font-bold mt-6 mb-2">11 minutes of data, one rented A40</h2>
-
-            <p>The collector drives the arm purely over ROS topics — it owns no hardware, so the browser E-STOP halts scripted collection too. Ground truth chains forward with no perception in the loop: wherever it places the sock (plus bounded random jitter) becomes the next episode's pick point. 50 clean episodes at ~13 seconds each, 6,808 frames, each frame carrying the RGB image, the arm's cartesian pose, joint angles, and all four servo torques at 15 Hz.</p>
-
-            <p>I converted to LeRobot format with actions in cartesian space — [x, y, z, gripper] — for a reason I like: a policy action maps 1:1 onto the arm's own setpoint command. No IK, no retargeting. Two adaptation details did all the cross-embodiment work: pad the 4-DoF state into π0's 32-dim action space and mask the two wrist cameras I don't have; and convert my absolute setpoints to the delta actions π0 was pretrained on (gripper stays absolute — remember that detail, it pays off below). Training: LoRA on the pi0_base checkpoint, 5,000 steps at 6.1 s/step on a RunPod A40 at $0.44/hr — 8¼ hours, about $4, plus change for the debugging. I did a lot of this pair-programming with Claude Code, which fixed openpi's API drift against their LIBERO example faster than I would have alone.</p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>The collector drives the arm purely over ROS topics, so the browser E-STOP halts scripted collection too.</li>
+                <li>Ground truth chains forward with no perception in the loop: wherever the sock is placed becomes the next episode's pick point, with bounded random jitter.</li>
+                <li>I collected 50 clean episodes at about 13 seconds each, for 6,808 frames.</li>
+                <li>Each frame carries RGB, cartesian pose, joint angles, and all four servo torques at 15 Hz.</li>
+                <li>I converted to LeRobot format with cartesian actions, padded the 4-DoF state into π0's 32-dim action space, masked the wrist cameras I do not have, and converted absolute setpoints to delta actions.</li>
+                <li>Training was LoRA on the pi0_base checkpoint, 5,000 steps at 6.1 s/step on a RunPod A40 at $0.44/hr, or about $4 total.</li>
+            </ul>
 
             <h2 class="text-xl font-bold mt-6 mb-2">What the policy actually gets</h2>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>Per inference, the policy sees one 224×224 letterboxed frame, four floats of real arm state, and the prompt.</li>
+                <li>No depth, no detector, and no history are used.</li>
+                <li>It returns a 50×4 action chunk, which is about 3.3 seconds of motion at the demo rate.</li>
+                <li>Each action becomes a setpoint on the same topic my keyboard uses, with envelope clamping and E-STOP gating.</li>
+                <li>I recorded a full run to a rosbag: 601 commands, 15 inferences, and 5,038 camera frames.</li>
+            </ul>
 
-            <p>Per inference (~half a second round trip, robot → A40 over an SSH tunnel → robot): one 224×224 letterboxed frame, four floats of real arm state, the prompt. No depth, no detector, no history. Out comes a 50×4 action chunk — about 3.3 seconds of motion at the demo rate. Each action becomes a setpoint on the same topic my keyboard uses, envelope-clamped and E-STOP-gated. I recorded a full run to a rosbag: 601 commands, 15 inferences, 5,038 camera frames.</p>
+            <div class="media-placeholder rounded-lg p-4 my-6 text-center text-sm">
+                Video coming soon.
+            </div>
 
             <h2 class="text-xl font-bold mt-6 mb-2">Did it work?</h2>
-
-            <p>First a dry run with the motors off: the returned chunk reproduced my trained sweep almost exactly — descend from the correct side, close from 1.5 to 2.7 rad mid-sweep, bottom out at z −117 against a trained −121, endpoint on the sock's actual position. That's the moment I knew the pipeline was real.</p>
-
-            <p>Live: two clean picks out of three attempts, verified by the same torque telemetry the collector uses — a real hold reads a sustained 150–240 where an empty close reads 32. One run picked and placed repeatedly. The best one grasped three seconds in, held through the lift... then released 40 mm above the surface, re-descended, and froze.</p>
-
-            <p>That freeze is the most instructive thing I've seen all year. It's behavior-cloning mode averaging, made visible by my own action-space choice: x,y,z are <em>delta</em> actions, so indecision between "descend" and "lift" averages to roughly zero motion — the arm freezes. The gripper is <em>absolute</em>, so the same indecision oscillates between the open-mode and close-mode values. One confused network, two encodings, both failure modes perfectly legible in the telemetry.</p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>A dry run with the motors off reproduced the trained sweep almost exactly.</li>
+                <li>That was the moment I knew the pipeline was real.</li>
+                <li>Live, I got two clean picks out of three attempts, verified by the same torque telemetry the collector uses.</li>
+                <li>One run picked and placed repeatedly.</li>
+                <li>The best one grasped, held through the lift, then released 40 mm above the surface, re-descended, and froze.</li>
+                <li>The freeze is behavior-cloning mode averaging made visible by the action-space choice: x, y, z as delta actions freeze when the model is unsure, while the absolute gripper oscillates between open and close values.</li>
+            </ul>
 
             <h2 class="text-xl font-bold mt-6 mb-2">Five things I learned</h2>
-
-            <p><strong>1. Pretrained generality is real and cheap to tap.</strong> Eleven minutes of demos on an embodiment π0 never saw produced a working visuomotor pick. The base model contributed everything I had no data for: it shrugged off furniture changes, lighting shift, and a guitar appearing in frame.</p>
-
-            <p><strong>2. Zero-shot cross-embodiment does not work; fine-tuning bridges it.</strong> The stock DROID checkpoint (7-DoF Franka, joint velocities, two cameras) can't drive this arm at all. The entire gap closed with a config file.</p>
-
-            <p><strong>3. Never curate away your failures.</strong> My collector deleted every missed grasp to keep the dataset "clean." So the policy had never seen the state that follows a miss — and at exactly those states it has no mode to express, and freezes. PI keeps corrections and recoveries in their demonstration data, and that is load-bearing, not a nicety. My dataset taught the robot that nothing ever goes wrong.</p>
-
-            <p><strong>4. Respect the chunk.</strong> The demos are effectively open-loop 50-step motion programs. When I executed 25 steps and re-planned, the mid-descent re-plan injected state jitter the training never saw, and the policy closed the gripper 35 mm high. Executing full chunks — matching the temporal structure of the data — is what both successful picks ran on.</p>
-
-            <p><strong>5. Verify state; never trust your own success message.</strong> Three incidents in one project with the same root cause: a monitor whose <code>pgrep</code> matched its own command line and reported a dead process as alive; a training launch that failed in one second under a monitor that wouldn't have noticed for eight hours; and a "STOP SENT" message that printed unconditionally while the stop had actually failed — leaving the policy armed until I watched the arm lift the sock un-commanded. Everything now emits explicit outcome markers, and monitors read those. On a robot this isn't software hygiene, it's safety.</p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li><strong>Pretrained generality is real and cheap to tap.</strong> Eleven minutes of demos on an embodiment π0 never saw still produced a working visuomotor pick.</li>
+                <li><strong>Zero-shot cross-embodiment does not work; fine-tuning bridges it.</strong> The stock DROID checkpoint cannot drive this arm at all, but the gap closed with a config file.</li>
+                <li><strong>Never curate away your failures.</strong> If the policy never sees recovery states, it has no mode to express when things go wrong.</li>
+                <li><strong>Respect the chunk.</strong> Executing the full temporal structure of the data was key; mid-chunk replans injected jitter the policy never saw.</li>
+                <li><strong>Verify state; never trust your own success message.</strong> Explicit outcome markers matter on a robot because software hygiene is safety.</li>
+            </ul>
 
             <h2 class="text-xl font-bold mt-6 mb-2">Round two</h2>
-
-            <p>π0's recipe is two layers: their base model absorbs ~10,000 hours of cross-robot teleop; your fine-tune is supposed to be 1–20 <em>hours</em> of your task, including corrections. My 11 minutes sits two orders of magnitude below the recommended floor — and still picked. That's the strongest evidence I have for what the base layer is worth.</p>
-
-            <p>Queued next: 200–300 episodes (~90 minutes of robot time, hands-off), this time keeping the miss-and-retry sequences, with position variety, a few sock types, and both lighting conditions. Same pipeline, another ~$4 to retrain. Prediction: the freeze disappears, the place height tightens, and success goes from probable to repeatable. I'll report back.</p>
+            <ul class="list-disc pl-6 space-y-3">
+                <li>π0's recipe is two layers: a base model with roughly 10,000 hours of cross-robot teleop, then a fine-tune with 1–20 hours of your task.</li>
+                <li>My 11 minutes sits far below that floor and still picked, which is the strongest evidence I have for what the base layer is worth.</li>
+                <li>Next up is 200–300 episodes, keeping miss-and-retry sequences, position variety, a few sock types, and both lighting conditions.</li>
+                <li>Same pipeline, another roughly $4 to retrain.</li>
+                <li>My prediction is that the freeze disappears, place height tightens, and success becomes repeatable.</li>
+            </ul>
         </article>
     </div>
     <script src="include_header.js" defer></script>

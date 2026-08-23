@@ -281,6 +281,30 @@
   margin-bottom: 1rem;
 }
 
+.dynamic-post-body h2,
+.dynamic-post-body h3,
+.dynamic-post-body h4 {
+  margin-top: 1.6rem;
+  margin-bottom: 0.55rem;
+  color: #fff;
+  font-weight: 800;
+}
+
+.dynamic-post-body h2 {
+  font-size: 1.35rem;
+}
+
+.dynamic-post-body p,
+.dynamic-post-body li {
+  margin-bottom: 0.85rem;
+}
+
+.dynamic-post-body ul,
+.dynamic-post-body ol {
+  margin-left: 1.35rem;
+  margin-bottom: 1rem;
+}
+
 .composer-output {
   min-height: 12rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

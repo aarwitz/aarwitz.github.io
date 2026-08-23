@@ -1,0 +1,14 @@
+name = "aarwitz-site-api"
+main = "src/index.js"
+compatibility_date = "2026-08-06"
+account_id = "6729a939101c819b5a656b06c3bb0d0b"
+workers_dev = true
+
+[vars]
+ADMIN_EMAIL = "aaron@lidisolutions.ai"
+ALLOWED_ORIGINS = "https://aarwitz.github.io,http://127.0.0.1:8079,http://localhost:8079"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aarwitz-site"
+database_id = "dc17752a-51d8-4216-b6bf-593f0c33cc3f"
